@@ -1,0 +1,35 @@
+#pragma once
+
+enum DIRECTION
+{
+	DIR_LEFT,
+	DIR_RIGHT,
+	DIR_UP,
+	DIR_DOWN,
+
+	DIR_UNKNOWN
+};
+
+enum WINDOW_SNAP_FLAGS
+{
+	WINDOW_SNAP_ADJACENT	= 1,
+	WINDOW_SNAP_TO_OTHERS	= 2,
+	WINDOW_SNAP_TO_GRID		= 4,
+	WINDOW_SNAP_FINE_GRID	= 8,
+
+	WINDOW_SNAP_DEFAULT		= 0xFF
+};
+
+struct WINDOW_SNAP_PARAMS
+{
+	WINDOW_SNAP_PARAMS();
+
+	DWORD Flags;
+	DWORD GridDivisorX;
+	DWORD GridDivisorY;
+};
+
+BOOL 
+ForegroundWindowSnap( 
+	DIRECTION direction, 
+	const WINDOW_SNAP_PARAMS* params );
