@@ -1,6 +1,33 @@
 #include "stdafx.h"
 #include "RegistryKeys.h"
 
+BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
+{
+	HKEY hKey;
+	if ( ::RegOpenKeyEx(
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		0,
+		KEY_SET_VALUE,
+		&hKey ) != ERROR_SUCCESS )
+	{
+		return FALSE;
+	}
+
+	DWORD dwValueSize = sizeof( DWORD );
+	LONG ret = ::RegSetValueEx(
+		hKey,
+		strName,
+		0,
+		REG_DWORD,
+		(BYTE*) &dwValue, 
+		dwValueSize );
+	
+	::RegCloseKey( hKey );
+
+	return ret == ERROR_SUCCESS;
+}
+
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 {
 	DWORD dwValue = 0;

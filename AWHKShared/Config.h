@@ -1,5 +1,8 @@
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 struct AWHK_APP_CONFIG
 {
 	AWHK_APP_CONFIG();
@@ -16,10 +19,12 @@ struct AWHK_APP_CONFIG
 	DWORD			HelpKeyMod;
 	DWORD			ConfigKey;
 	DWORD			ConfigKeyMod;
+
 	DWORD			LeftKey;
 	DWORD			RightKey;
 	DWORD			UpKey;
 	DWORD			DownKey;
+
 	DWORD			MoveKeyMod;
 	DWORD			SoloKeyMod;
 	DWORD			FineKeyMod;

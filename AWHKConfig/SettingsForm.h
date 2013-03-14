@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..\AWHKShared\Config.h"
+
 namespace AWHKConfig {
 
 	using namespace System;
@@ -48,7 +50,8 @@ namespace AWHKConfig {
 	private: System::Windows::Forms::Label^  label4;
 	private: System::Windows::Forms::ComboBox^  cmbMoveMod;
 	private: System::Windows::Forms::ComboBox^  cmbFineMod;
-	private: System::Windows::Forms::ComboBox^  cmdSoloMod;
+	private: System::Windows::Forms::ComboBox^  cmbSoloMod;
+
 	private: System::Windows::Forms::Label^  label5;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
@@ -85,7 +88,7 @@ namespace AWHKConfig {
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->cmbMoveMod = (gcnew System::Windows::Forms::ComboBox());
 			this->cmbFineMod = (gcnew System::Windows::Forms::ComboBox());
-			this->cmdSoloMod = (gcnew System::Windows::Forms::ComboBox());
+			this->cmbSoloMod = (gcnew System::Windows::Forms::ComboBox());
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label7 = (gcnew System::Windows::Forms::Label());
@@ -213,6 +216,7 @@ namespace AWHKConfig {
 			// 
 			this->cmbMoveMod->DisplayMember = L"0";
 			this->cmbMoveMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->cmbMoveMod->Enabled = false;
 			this->cmbMoveMod->FormattingEnabled = true;
 			this->cmbMoveMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"Alt", L"Shift", L"Ctrl"});
 			this->cmbMoveMod->Location = System::Drawing::Point(12, 94);
@@ -224,21 +228,23 @@ namespace AWHKConfig {
 			// 
 			this->cmbFineMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cmbFineMod->FormattingEnabled = true;
-			this->cmbFineMod->Items->AddRange(gcnew cli::array< System::Object^  >(4) {L"(disabled)", L"Alt", L"Shift", L"Ctrl"});
+			this->cmbFineMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
 			this->cmbFineMod->Location = System::Drawing::Point(12, 121);
 			this->cmbFineMod->Name = L"cmbFineMod";
 			this->cmbFineMod->Size = System::Drawing::Size(93, 21);
 			this->cmbFineMod->TabIndex = 3;
+			this->cmbFineMod->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsForm::cmbSoloMod_SelectedIndexChanged);
 			// 
-			// cmdSoloMod
+			// cmbSoloMod
 			// 
-			this->cmdSoloMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
-			this->cmdSoloMod->FormattingEnabled = true;
-			this->cmdSoloMod->Items->AddRange(gcnew cli::array< System::Object^  >(4) {L"(disabled)", L"Alt", L"Shift", L"Ctrl"});
-			this->cmdSoloMod->Location = System::Drawing::Point(12, 148);
-			this->cmdSoloMod->Name = L"cmdSoloMod";
-			this->cmdSoloMod->Size = System::Drawing::Size(93, 21);
-			this->cmdSoloMod->TabIndex = 3;
+			this->cmbSoloMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->cmbSoloMod->FormattingEnabled = true;
+			this->cmbSoloMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
+			this->cmbSoloMod->Location = System::Drawing::Point(12, 148);
+			this->cmbSoloMod->Name = L"cmbSoloMod";
+			this->cmbSoloMod->Size = System::Drawing::Size(93, 21);
+			this->cmbSoloMod->TabIndex = 3;
+			this->cmbSoloMod->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsForm::cmbSoloMod_SelectedIndexChanged);
 			// 
 			// label5
 			// 
@@ -281,7 +287,7 @@ namespace AWHKConfig {
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label1);
-			this->Controls->Add(this->cmdSoloMod);
+			this->Controls->Add(this->cmbSoloMod);
 			this->Controls->Add(this->cmbFineMod);
 			this->Controls->Add(this->cmbMoveMod);
 			this->Controls->Add(this->cmbFineY);
@@ -307,31 +313,118 @@ namespace AWHKConfig {
 
 		}
 #pragma endregion
+
+	private:
+
+		DWORD StringToDword( String^ str )
+		{
+			System::UInt32 i = System::UInt32::Parse( str );
+			return (DWORD) i;
+		}
+
+		DWORD StringToKeyMod( String^ v )
+		{
+			if ( v == "Shift" )
+				return MOD_SHIFT;
+			else if ( v == "Alt" )
+				return MOD_ALT;
+			else if ( v == "Ctrl" )
+				return MOD_CONTROL;
+			else
+				return 0;
+		}
+
 	private: System::Void okBtn_Click(System::Object^  sender, System::EventArgs^  e) {
 
 
 				 //
-				 // TODO: save the configuration
+				 // save the configuration
 				 //
+				 AWHK_APP_CONFIG cfg;
 
+				 cfg.AllowSnapToOthers = chkAllowSnap->Checked;
+				 cfg.AllowModifyAdjacent = chkAdjacency->Checked;
+
+				 cfg.GridX = StringToDword( cmbGridX->Text );
+				 cfg.GridY = StringToDword( cmbGridY->Text );
+				 cfg.FineX = StringToDword( cmbFineX->Text );
+				 cfg.FineY = StringToDword( cmbFineY->Text );
+
+				 // TODO: validate these!
+				 cfg.MoveKeyMod = StringToKeyMod( cmbMoveMod->Text );
+				 cfg.SoloKeyMod = StringToKeyMod( cmbSoloMod->Text );
+				 cfg.FineKeyMod = StringToKeyMod( cmbFineMod->Text );
+
+				 SaveConfiguration( &cfg );
 
 				 this->Close();
 			 }
 	private: System::Void closeBtn_Click(System::Object^  sender, System::EventArgs^  e) {
 				 this->Close();
 			 }
+
+	Void LoadGridValue( UInt32 value, Windows::Forms::ComboBox^ combo )
+	{
+		String^ i = value.ToString();
+		if ( !combo->Items->Contains( i ) )
+			combo->Items->Add( i );
+
+		combo->Text = i;
+	}
+
+	String^ KeyModToString( DWORD value, String^ def )
+	{
+		switch ( value )
+		{
+		case MOD_SHIFT:
+			return "Shift";
+		case MOD_ALT:
+			return "Alt";
+		case MOD_CONTROL:
+			return "Ctrl";
+		default:
+			return def;
+		}
+	}
+
 	private: System::Void SettingsForm_Load(System::Object^  sender, System::EventArgs^  e) {
 
 				 //
-				 // TODO: load the configuration
+				 // load the configuration
 				 //
+				 AWHK_APP_CONFIG cfg;
+				 LoadConfiguration( &cfg );
 
+				 chkAllowSnap->Checked = ( cfg.AllowSnapToOthers != 0 );
+				 chkAdjacency->Checked = ( cfg.AllowModifyAdjacent != 0 );
 
+				 LoadGridValue( cfg.GridX, cmbGridX );
+				 LoadGridValue( cfg.GridY, cmbGridY );
+				 LoadGridValue( cfg.FineX, cmbFineX );
+				 LoadGridValue( cfg.FineY, cmbFineY );
+
+				 cmbMoveMod->Text = KeyModToString( cfg.MoveKeyMod, cmbMoveMod->Items[0]->ToString() );
+				 cmbSoloMod->Text = KeyModToString( cfg.SoloKeyMod, cmbSoloMod->Items[0]->ToString() );
+				 cmbFineMod->Text = KeyModToString( cfg.FineKeyMod, cmbFineMod->Items[0]->ToString() );
 			 }
 	private: System::Void SettingsForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
 			 }
 private: System::Void SettingsForm_Shown(System::Object^  sender, System::EventArgs^  e) {
 				 okBtn->Focus();
+		 }
+private: System::Void cmbSoloMod_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if ( cmbSoloMod->SelectedIndex == cmbFineMod->SelectedIndex &&
+				  cmbSoloMod->SelectedIndex > 0 &&
+				  cmbSoloMod->Items->Count == cmbFineMod->Items->Count )
+			 {
+				 int count = cmbFineMod->Items->Count - 1;
+				 int newIndex = 1 + ( cmbFineMod->SelectedIndex ) % count;
+
+				 if ( sender == cmbSoloMod )
+					 cmbFineMod->SelectedIndex = newIndex;
+				 else
+					 cmbSoloMod->SelectedIndex = newIndex;
+			 }
 		 }
 };
 }

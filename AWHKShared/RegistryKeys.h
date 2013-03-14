@@ -25,6 +25,7 @@
 #define AWHK_REG_FINE_KEY_MOD	L"FineKeyMod"
 
 
+BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut );
 BOOL LoadRegistryBool( LPCWSTR strName, BOOL* pOut );
