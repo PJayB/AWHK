@@ -123,8 +123,7 @@ void LoadConfiguration( AWHK_APP_CONFIG* cfg )
 }
 
 void AsyncControlPanelClosedCallback(
-	const AWHK_APP_STATE* pState,
-	int /* Reserved */ )
+	const AWHK_APP_STATE* pState )
 {
 	::PostThreadMessage( 
 		pState->dwMainThreadID,
