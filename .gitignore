@@ -1,0 +1,8 @@
+Debug
+Release
+*.opensdf
+*.sdf
+*.user
+ipch
+WindowEnum.v11.suo
+AWH.v11.suo
