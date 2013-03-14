@@ -48,7 +48,7 @@ void RollWindowUp( const RECT* displayRect, RECT* wndRect )
 	LONG height = wndRect->bottom - wndRect->top;
 
 	// If the window is at the top of the screen, roll it up.
-	if ( y == displayRect->top )
+	if ( y <= displayRect->top )
 	{
 		height /= 2;
 	}
@@ -93,7 +93,7 @@ void RollWindowLeft( const RECT* displayRect, RECT* wndRect )
 
 	// If the window already hits the left edge, pull in the right
 	// edge:
-	if ( wndRect->left == displayRect->left )
+	if ( wndRect->left <= displayRect->left )
 	{
 		wndRect->right -= increment;
 	}
@@ -111,7 +111,7 @@ void RollWindowRight( const RECT* displayRect, RECT* wndRect )
 
 	// If the window already hits the right edge, pull in the left
 	// edge:
-	if ( wndRect->right == displayRect->right )
+	if ( wndRect->right >= displayRect->right )
 	{
 		wndRect->left += increment;
 	}
