@@ -19,3 +19,9 @@ These are useful if you like using Win+Cursor, but wish you could:
 - Make windows take up anything other than exactly half of your screen,
 - Put two or more windows on each half, vertically.
 
+ToDo
+----
+
+- Add help display hotkey (Alt+F1)
+- Add quit hotkey (Alt+Esc maybe?)
+- More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
