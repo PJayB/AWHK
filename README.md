@@ -25,3 +25,4 @@ ToDo
 - Add help display hotkey (Alt+F1)
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
+- Expand/contract left/right all windows whose edges align in that column
