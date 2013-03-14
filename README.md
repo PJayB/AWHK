@@ -28,6 +28,8 @@ In addition to the usual [Align Left], [Align Right], [Maximize], [Minimize] fun
 - Expands the window's left or right edges by 1/8th screen width (Alt+Left, Alt+Right),
 - Contracts the window's left or right edges by 1/8th screen width (Alt+Left, Alt+Right)
 
+Windows in the same column will react the same way. If you have two windows stacked on top of eachother, using Alt+Left will expand them both left, for example.
+
 These are useful if you like using Win+Cursor, but wish you could:
 
 - Make windows take up anything other than exactly half of your screen,
@@ -40,7 +42,6 @@ ToDo
 - Add help display hotkey (Alt+F1)
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
-- Expand/contract left/right all windows whose edges align in that column
 - Configuration panel
 - Auto-start-on-log-in functionality
 
