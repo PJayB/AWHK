@@ -13,7 +13,7 @@ This application is provivded free for private or commercial use. By downloading
 
 http://gibbering.net/AdvancedWindowHotkeys.zip (7KB)
 
-Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test.
+Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
 
 For questions, help or feedback, please email [awhtool@gibbering.net]. Feedback is greatly welcomed. 
 
@@ -41,3 +41,6 @@ ToDo
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
 - Expand/contract left/right all windows whose edges align in that column
+- Configuration panel
+- Auto-start-on-log-in functionality
+
