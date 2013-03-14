@@ -485,7 +485,7 @@ BOOL HandleHotKey(
 		hWnd,
 		&wmi ) )
 	{
-		return false;
+		return FALSE;
 	}
 	
 	DIRECTION direction = DirectionFromVKey( vKey );
