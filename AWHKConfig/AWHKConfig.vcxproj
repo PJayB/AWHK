@@ -105,6 +105,11 @@
       <DependentUpon>SettingsForm.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AWHKShared\AWHKShared.vcxproj">
+      <Project>{ba92561f-0cb1-4a9d-a47a-c375f0de8adc}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -174,13 +174,13 @@ BOOL InitalizeWindowManipulation(
 	wmi->SafeZoneY = SafeZoneY( wmi->MonitorRect, gridY );
 
 	// Get the increment, which might be at a finer resolution
-	LONG gridMultiplier = 1;
 	if ( ( params->Flags & WINDOW_SNAP_FINE_GRID ) != 0 )
 	{
-		gridMultiplier = 4;
+		gridX = max( 1, (LONG) params->FineDivisorX );
+		gridY = max( 1, (LONG) params->FineDivisorY );
 	}
-	wmi->IncrementX = SafeZoneX( wmi->MonitorRect, gridX * gridMultiplier );
-	wmi->IncrementY = SafeZoneY( wmi->MonitorRect, gridY * gridMultiplier );
+	wmi->IncrementX = SafeZoneX( wmi->MonitorRect, gridX );
+	wmi->IncrementY = SafeZoneY( wmi->MonitorRect, gridY );
 
 	// Copy the window rect
 	wmi->SrcWindowRect = wndi.rcWindow;
@@ -420,6 +420,9 @@ BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params
 	{
 		return FALSE;
 	}
+
+	// TODO: build a list of edges to snap to
+	// TODO: integrate WINDOW_SNAP_ADJACENT
 		
 	// Manipulate the active window.
 	RECT newWindowRect = wmi.SrcWindowRect;
@@ -433,7 +436,7 @@ BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params
 		return TRUE;
 
 	// If we DON'T have shift down, we could look for other reorganization possibilities
-	if ( ( params->Flags & WINDOW_SNAP_ADJACENT ) != 0 )
+	if ( ( params->Flags & WINDOW_MODIFY_ADJACENT ) != 0 )
 	{
 		// Align the windows. This may return a modified window rect.
 		RECT modifiedRect = newWindowRect;
