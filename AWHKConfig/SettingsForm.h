@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SupportLibrary {
+namespace AWHKConfig {
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -15,12 +15,9 @@ namespace SupportLibrary {
 	public ref class SettingsForm : public System::Windows::Forms::Form
 	{
 	public:
-		SettingsForm(void)
+		SettingsForm()
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
@@ -39,6 +36,7 @@ namespace SupportLibrary {
 	private: System::Windows::Forms::Button^  closeBtn;
 
 	private:
+
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -58,7 +56,8 @@ namespace SupportLibrary {
 			// 
 			// okBtn
 			// 
-			this->okBtn->Location = System::Drawing::Point(464, 243);
+			this->okBtn->DialogResult = System::Windows::Forms::DialogResult::OK;
+			this->okBtn->Location = System::Drawing::Point(301, 243);
 			this->okBtn->Name = L"okBtn";
 			this->okBtn->Size = System::Drawing::Size(80, 27);
 			this->okBtn->TabIndex = 0;
@@ -69,7 +68,7 @@ namespace SupportLibrary {
 			// closeBtn
 			// 
 			this->closeBtn->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			this->closeBtn->Location = System::Drawing::Point(378, 243);
+			this->closeBtn->Location = System::Drawing::Point(215, 243);
 			this->closeBtn->Name = L"closeBtn";
 			this->closeBtn->Size = System::Drawing::Size(80, 27);
 			this->closeBtn->TabIndex = 0;
@@ -83,7 +82,7 @@ namespace SupportLibrary {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->closeBtn;
-			this->ClientSize = System::Drawing::Size(556, 282);
+			this->ClientSize = System::Drawing::Size(393, 282);
 			this->Controls->Add(this->closeBtn);
 			this->Controls->Add(this->okBtn);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
@@ -93,6 +92,7 @@ namespace SupportLibrary {
 			this->Name = L"SettingsForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Advanced Window Hotkeys - Settings";
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &SettingsForm::SettingsForm_FormClosed);
 			this->Load += gcnew System::EventHandler(this, &SettingsForm::SettingsForm_Load);
 			this->ResumeLayout(false);
 
@@ -119,5 +119,7 @@ namespace SupportLibrary {
 
 
 			 }
-	};
+	private: System::Void SettingsForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
+			 }
+};
 }

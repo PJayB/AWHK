@@ -1,16 +1,10 @@
 #pragma once
 
+typedef void (* ASYNC_FORM_CLOSED_PROC)( 
+	LPVOID pUserData, 
+	INT bFormAccepted );
 
-
-class SupportModule
-{
-public:
-	SupportModule();
-	~SupportModule();
-
-	BOOL ShowSettingsDialog();
-
-private:
-	class SupportModuleImpl* pImpl;
-};
+BOOL ShowSettingsDialogAsync(
+	ASYNC_FORM_CLOSED_PROC pfCallback,
+	LPVOID pUserData);
 

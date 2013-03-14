@@ -11,12 +11,12 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("SupportLibrary")];
+[assembly:AssemblyTitleAttribute("AWHKConfig")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("SupportLibrary")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c)  2013")];
+[assembly:AssemblyProductAttribute("AWHKConfig")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) Peter J. B. Lewis 2013")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

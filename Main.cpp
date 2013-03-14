@@ -11,6 +11,31 @@
 
 using namespace std;
 
+struct AWHK_APP_STATE
+{
+	HINSTANCE		hInstance;
+	DWORD			dwMainThreadID;
+	UINT			ControlPanelOpenMsg;
+	UINT			ControlPanelClosedMsg;
+	volatile BOOL	ControlPanelOpen;
+};
+
+struct AWHK_APP_CONFIG
+{
+	AWHK_APP_CONFIG();
+
+	BOOL			AllowSnapToOthers;
+	UINT			GridX;
+	UINT			GridY;
+};
+
+AWHK_APP_CONFIG::AWHK_APP_CONFIG()
+	: AllowSnapToOthers( TRUE )
+	, GridX( 8 )
+	, GridY( 4 )
+{
+}
+
 DIRECTION DirectionFromVKey( USHORT vKey )
 {
 	switch ( vKey )
@@ -39,14 +64,34 @@ BOOL ShowWebHelp()
 		SW_SHOWNORMAL ) > 32;
 }
 
-BOOL ShowControlPanel()
+BOOL ShowControlPanel( const AWHK_APP_STATE* pState )
 {
-	SupportModule supportLib;
+	return ::PostThreadMessage(
+		pState->dwMainThreadID,
+		pState->ControlPanelOpenMsg,
+		0, 0 );
+}
 
-	return supportLib.ShowSettingsDialog();
+void ConfigureWindowSnapParams( 
+	const AWHK_APP_CONFIG* cfg,
+	USHORT modifiers,
+	WINDOW_SNAP_PARAMS* params )
+{
+	params->Flags = WINDOW_SNAP_TO_GRID;
+	if ( cfg->AllowSnapToOthers )
+		params->Flags |= WINDOW_SNAP_TO_OTHERS;
+	if ( ( modifiers & MOD_SHIFT ) == 0 )
+		params->Flags |= WINDOW_SNAP_ADJACENT;
+	if ( ( modifiers & MOD_CONTROL ) != 0 )
+		params->Flags |= WINDOW_SNAP_FINE_GRID;
+
+	params->GridDivisorX = cfg->GridX;
+	params->GridDivisorY = cfg->GridY;
 }
 
 BOOL HandleHotKey(
+	const AWHK_APP_STATE* state,
+	const AWHK_APP_CONFIG* cfg,
 	USHORT vKey,
 	USHORT modifiers )
 {
@@ -57,22 +102,14 @@ BOOL HandleHotKey(
 	}
 	if ( vKey == VK_F2 )
 	{
-	// TODO: reinstate this
-	//	return ShowControlPanel();
-		return TRUE;
+		return ShowControlPanel( state );
 	}
 
 	WINDOW_SNAP_PARAMS params;
-	// TODO: hook these up to some settings
-	params.Flags = WINDOW_SNAP_TO_OTHERS | WINDOW_SNAP_TO_GRID;
-	if ( ( modifiers & MOD_SHIFT ) == 0 )
-		params.Flags |= WINDOW_SNAP_ADJACENT;
-	if ( ( modifiers & MOD_CONTROL ) != 0 )
-		params.Flags |= WINDOW_SNAP_FINE_GRID;
-
-	// TODO: hook these up to some settings
-	params.GridDivisorX = 8;
-	params.GridDivisorY = 4;
+	ConfigureWindowSnapParams(
+		cfg,
+		modifiers,
+		&params );
 
 	return ForegroundWindowSnap( 
 		DirectionFromVKey( vKey ), // direction
@@ -80,12 +117,50 @@ BOOL HandleHotKey(
 		);
 }
 
-int MessageThread( HINSTANCE hInstance )
+void LoadConfiguration( AWHK_APP_CONFIG* cfg )
+{
+	// TODO
+}
+
+void AsyncControlPanelClosedCallback(
+	const AWHK_APP_STATE* pState,
+	int /* Reserved */ )
+{
+	::PostThreadMessage( 
+		pState->dwMainThreadID,
+		pState->ControlPanelClosedMsg,
+		0, 0 );
+}
+
+BOOL OpenSupportControlPanel( const AWHK_APP_STATE* pState )
+{
+	return ShowSettingsDialogAsync(
+		(ASYNC_FORM_CLOSED_PROC) AsyncControlPanelClosedCallback,
+		(LPVOID) pState );
+}
+
+int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 {
 	MSG msg;
 
 	while ( GetMessage( &msg, nullptr, 0, 0 ) )
 	{
+		if ( msg.message == appState->ControlPanelOpenMsg &&
+			 !appState->ControlPanelOpen )
+		{
+			appState->ControlPanelOpen = TRUE;
+			OpenSupportControlPanel( appState );
+			continue;
+		}
+
+		if ( msg.message == appState->ControlPanelClosedMsg )
+		{
+			// Reload the settings
+			LoadConfiguration( appCfg );
+			appState->ControlPanelOpen = FALSE;
+			continue;
+		}
+
 		switch ( msg.message )
 		{
 		case WM_QUIT:
@@ -95,7 +170,9 @@ int MessageThread( HINSTANCE hInstance )
 			break;
 		case WM_HOTKEY:
 			{
-				HandleHotKey( 
+				HandleHotKey(
+					appState,
+					appCfg,
 					HIWORD( msg.lParam ), 
 					LOWORD( msg.lParam ) );
 				break;
@@ -113,11 +190,7 @@ int MessageThread( HINSTANCE hInstance )
 	return 0;
 }
 
-int CALLBACK WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow )
+INT RegisterHotKeys()
 {
 	INT hotkeyCount = 0;
 
@@ -143,13 +216,39 @@ int CALLBACK WinMain(
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT | MOD_CONTROL, VK_DOWN );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT | MOD_CONTROL, VK_LEFT );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT | MOD_CONTROL, VK_RIGHT );
-	
-	int ret = MessageThread( hInstance );
 
+	return hotkeyCount;
+}
+
+void UnregisterHotkeys( INT hotkeyCount )
+{
 	while ( hotkeyCount )
 	{
 		::UnregisterHotKey( NULL, hotkeyCount-- );
 	}
+}
+
+int CALLBACK WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	int nCmdShow )
+{
+	AWHK_APP_STATE appState;
+	appState.hInstance = hInstance;
+	appState.dwMainThreadID = ::GetCurrentThreadId();
+	appState.ControlPanelOpenMsg = ::RegisterWindowMessage( L"AWHKControlPanelOpenMsg" );
+	appState.ControlPanelClosedMsg = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
+	appState.ControlPanelOpen = FALSE;
+
+	INT hotkeyCount = RegisterHotKeys();
+
+	AWHK_APP_CONFIG appCfg;
+	LoadConfiguration( &appCfg );
+
+	int ret = MessageLoop( &appState, &appCfg );
+
+	UnregisterHotkeys( hotkeyCount );
 
 	return ret;
 }

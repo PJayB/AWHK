@@ -1,3 +1,0 @@
-// SupportLibrary.h
-
-#pragma once

@@ -1,61 +1,23 @@
 #include "stdafx.h"
 #include "SupportModule.h"
 
-typedef void (* SUPPORTLIB_SHOW_DIALOG_PROC)();
+typedef void (* SUPPORTLIB_SHOW_DIALOG_PROC)(
+	ASYNC_FORM_CLOSED_PROC pfCallback,
+	LPVOID pUserData );
 
 BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars );
 
 
-class SupportModuleImpl
+BOOL ShowSettingsDialogAsync(
+		ASYNC_FORM_CLOSED_PROC pfCallback,
+		LPVOID pUserData )
 {
-public:
-
-	HMODULE hLib;
-
-	SupportModuleImpl()
-		: hLib(nullptr)
-	{
-		TCHAR strLibName[MAX_PATH];
-		if ( !GetSupportLibraryFilename( strLibName, MAX_PATH ) )
-			return;
-
-		// Load the library
-		hLib = ::LoadLibrary( strLibName );
-	}
-
-	~SupportModuleImpl()
-	{
-		if ( hLib )
-			::FreeLibrary( hLib );
-	}
-};
-
-SupportModule::SupportModule()
-	: pImpl( new SupportModuleImpl() )
-{
-
-}
-
-
-SupportModule::~SupportModule()
-{
-	delete pImpl;
-}
-
-BOOL SupportModule::ShowSettingsDialog()
-{
-	if ( !pImpl || !pImpl->hLib )
+	TCHAR strLibName[MAX_PATH];
+	if ( !GetSupportLibraryFilename( strLibName, MAX_PATH ) )
 		return FALSE;
 
-	SUPPORTLIB_SHOW_DIALOG_PROC pfShowSettingsDlg = (SUPPORTLIB_SHOW_DIALOG_PROC)
-		::GetProcAddress(
-			pImpl->hLib,
-			"ShowSettingsDialog" );
 
-	if ( !pfShowSettingsDlg )
-		return FALSE;
-
-	pfShowSettingsDlg();
+	// TODO
 
 	return TRUE;
 }
@@ -86,7 +48,7 @@ BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars )
 	SIZE_T nRemainingSize = nNumChars - ( strFilename - strModuleFile );
 
 	// Concatenate our DLL name
-	StringCbCopy( strFilename, nRemainingSize, L"SupportLibrary.dll" );
+	StringCbCopy( strFilename, nRemainingSize, L"AWHKConfig.exe" );
 
 	return TRUE;
 }

@@ -3,10 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWH", "AWH.vcxproj", "{6C76DD89-2541-48FB-B006-A6D01D17C458}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB} = {C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}
+		{6D9119AC-693C-4338-8000-BE2704FCC5F1} = {6D9119AC-693C-4338-8000-BE2704FCC5F1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SupportLibrary", "SupportLibrary\SupportLibrary.vcxproj", "{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWHKConfig", "AWHKConfig\AWHKConfig.vcxproj", "{6D9119AC-693C-4338-8000-BE2704FCC5F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,10 +18,10 @@ Global
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Debug|Win32.Build.0 = Debug|Win32
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Release|Win32.ActiveCfg = Release|Win32
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Release|Win32.Build.0 = Release|Win32
-		{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}.Debug|Win32.Build.0 = Debug|Win32
-		{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}.Release|Win32.ActiveCfg = Release|Win32
-		{C0F5EBF0-01E3-4982-A2A3-5882AA7537DB}.Release|Win32.Build.0 = Release|Win32
+		{6D9119AC-693C-4338-8000-BE2704FCC5F1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6D9119AC-693C-4338-8000-BE2704FCC5F1}.Debug|Win32.Build.0 = Debug|Win32
+		{6D9119AC-693C-4338-8000-BE2704FCC5F1}.Release|Win32.ActiveCfg = Release|Win32
+		{6D9119AC-693C-4338-8000-BE2704FCC5F1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
