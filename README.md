@@ -44,4 +44,6 @@ ToDo
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
 - Configuration panel
 - Auto-start-on-log-in functionality
+- Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
+- Make windows snap to other windows, not just percentages of the screen size
 
