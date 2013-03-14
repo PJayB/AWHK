@@ -6,6 +6,8 @@
 #include <vector>
 #include <sstream>
 
+#include "SupportModule.h"
+
 using namespace std;
 
 enum DIRECTION
@@ -425,38 +427,8 @@ LONG AlignAdjacentWindows(
 	return 0;
 }
 
-#if 0
-BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars )
+BOOL ShowWebHelp()
 {
-	SIZE_T nModuleFileLen = ::GetModuleFileName( 
-		nullptr, 
-		strModuleFile, 
-		nNumChars );
-	if ( ::GetLastError() == ERROR_INSUFFICIENT_BUFFER )
-		return FALSE;
-
-	// Find the last \\ .
-	LPWSTR strFilename;
-	for ( strFilename = strModuleFile + nModuleFileLen; strFilename >= strModuleFile; --strFilename )
-	{
-		if ( *strFilename == '\\' ) 
-		{
-			strFilename++;
-			break;
-		}
-	}
-
-	SIZE_T nRemainingSize = nNumChars - ( strFilename - strModuleFile );
-
-	// Concatenate our DLL name
-	StringCbCopy( strFilename, nRemainingSize, L"SupportLibrary.dll" );
-
-	return TRUE;
-}
-#endif
-
-BOOL HandleHelpKey()
-{ 
 	return (INT) ShellExecute(
 		nullptr,
 		L"open",
@@ -466,6 +438,27 @@ BOOL HandleHelpKey()
 		SW_SHOWNORMAL ) > 32;
 }
 
+BOOL ShowSupportLibHelp()
+{
+	SupportModule supportLib;
+
+	return supportLib.ShowHelpDialog();
+}
+
+BOOL ShowHelp()
+{ 
+	if ( !ShowSupportLibHelp() )
+		return ShowWebHelp();
+	return TRUE;
+}
+
+BOOL ShowControlPanel()
+{
+	SupportModule supportLib;
+
+	return supportLib.ShowSettingsDialog();
+}
+
 BOOL HandleHotKey(
 	USHORT vKey,
 	USHORT modifiers )
@@ -473,7 +466,11 @@ BOOL HandleHotKey(
 	// Deal with system keys
 	if ( vKey == VK_F1 )
 	{
-		return HandleHelpKey();
+		return ShowHelp();
+	}
+	if ( vKey == VK_F2 )
+	{
+		return ShowControlPanel();
 	}
 
 	// Get the window the user is focused on
@@ -562,11 +559,15 @@ int CALLBACK WinMain(
 	int nCmdShow )
 {
 	INT hotkeyCount = 0;
+
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_F1 );
+	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_F2 );
+
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_UP );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_DOWN );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_LEFT );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_RIGHT );
+
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT, VK_UP );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT, VK_DOWN );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT | MOD_SHIFT, VK_LEFT );
