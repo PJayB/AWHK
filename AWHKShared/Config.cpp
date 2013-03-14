@@ -3,7 +3,7 @@
 #include "RegistryKeys.h"
 
 AWHK_APP_CONFIG::AWHK_APP_CONFIG()
-	: AllowSnapToOthers( TRUE )
+	: AllowSnapToOthers( FALSE ) // TODO
 	, AllowModifyAdjacent( TRUE )
 	, GridX( 8 )
 	, GridY( 4 )

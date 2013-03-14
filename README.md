@@ -37,6 +37,7 @@ These are useful if you like using Win+Cursor, but wish you could:
 
 Other keys:
 - Alt+F1 loads this help page.
+- Alt+F2 loads the configuration panel.
 
 ToDo
 ----
@@ -44,7 +45,6 @@ ToDo
 - Add diagrams to this help for clarity
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
-- Configuration panel
 - Auto-start-on-log-in functionality
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Make windows snap to other windows, not just percentages of the screen size

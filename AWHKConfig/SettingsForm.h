@@ -119,6 +119,7 @@ namespace AWHKConfig {
 			// chkAllowSnap
 			// 
 			this->chkAllowSnap->AutoSize = true;
+			this->chkAllowSnap->Enabled = false;
 			this->chkAllowSnap->Location = System::Drawing::Point(12, 32);
 			this->chkAllowSnap->Name = L"chkAllowSnap";
 			this->chkAllowSnap->Size = System::Drawing::Size(188, 17);
