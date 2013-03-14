@@ -15,7 +15,7 @@ http://gibbering.net/AdvancedWindowHotkeys.zip (7KB)
 
 Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
 
-For questions, help or feedback, please email [awhtool@gibbering.net]. Feedback is greatly welcomed. 
+For questions, help or feedback, please email [awhktool@gibbering.net]. Feedback is greatly welcomed. 
 
 Usage
 -----
