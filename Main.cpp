@@ -220,9 +220,6 @@ int CALLBACK WinMain(
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_DOWN );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_LEFT );
 	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_RIGHT );
-	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_HOME );
-	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_END );
-	RegisterHotKey( NULL, ++hotkeyCount, MOD_ALT, VK_F1 );
 	
 	int ret = MessageThread( hInstance );
 
