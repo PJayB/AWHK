@@ -425,9 +425,45 @@ LONG AlignAdjacentWindows(
 	return 0;
 }
 
-BOOL HandleHelpKey()
+#if 0
+BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars )
 {
+	SIZE_T nModuleFileLen = ::GetModuleFileName( 
+		nullptr, 
+		strModuleFile, 
+		nNumChars );
+	if ( ::GetLastError() == ERROR_INSUFFICIENT_BUFFER )
+		return FALSE;
+
+	// Find the last \\ .
+	LPWSTR strFilename;
+	for ( strFilename = strModuleFile + nModuleFileLen; strFilename >= strModuleFile; --strFilename )
+	{
+		if ( *strFilename == '\\' ) 
+		{
+			strFilename++;
+			break;
+		}
+	}
+
+	SIZE_T nRemainingSize = nNumChars - ( strFilename - strModuleFile );
+
+	// Concatenate our DLL name
+	StringCbCopy( strFilename, nRemainingSize, L"SupportLibrary.dll" );
+
 	return TRUE;
+}
+#endif
+
+BOOL HandleHelpKey()
+{ 
+	return (INT) ShellExecute(
+		nullptr,
+		L"open",
+		L"https://github.com/PJayB/AdvancedWindowHotkeys/blob/master/README.md",
+		nullptr,
+		nullptr,
+		SW_SHOWNORMAL ) > 32;
 }
 
 BOOL HandleHotKey(
