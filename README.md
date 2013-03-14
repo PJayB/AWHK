@@ -3,6 +3,20 @@ AdvancedWindowHotkeys
 
 Augments the functionality of the [Windows key + cursor keys] keyboard shortcuts.
 
+Download & License
+------------------
+
+This application is free for use for any purpose, commercial or free. By downloading you agree that:
+- this program comes with no warranty, guaranteed or implied,
+- the author is not responsible for damage caused to equipment or data (which is highly unlikely),
+- the feedback email alias below is for mail relating to this application only and no other purpose.
+
+http://gibbering.net/AdvancedWindowHotkeys.zip (7KB)
+
+Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test.
+
+For questions, help or feedback, please email [awhtool@gibbering.net]. Feedback is greatly welcomed. 
+
 Usage
 -----
 
@@ -22,6 +36,7 @@ These are useful if you like using Win+Cursor, but wish you could:
 ToDo
 ----
 
+- Add diagrams to this help for clarity
 - Add help display hotkey (Alt+F1)
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
