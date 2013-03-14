@@ -438,20 +438,6 @@ BOOL ShowWebHelp()
 		SW_SHOWNORMAL ) > 32;
 }
 
-BOOL ShowSupportLibHelp()
-{
-	SupportModule supportLib;
-
-	return supportLib.ShowHelpDialog();
-}
-
-BOOL ShowHelp()
-{ 
-	if ( !ShowSupportLibHelp() )
-		return ShowWebHelp();
-	return TRUE;
-}
-
 BOOL ShowControlPanel()
 {
 	SupportModule supportLib;
@@ -466,11 +452,13 @@ BOOL HandleHotKey(
 	// Deal with system keys
 	if ( vKey == VK_F1 )
 	{
-		return ShowHelp();
+		return ShowWebHelp();
 	}
 	if ( vKey == VK_F2 )
 	{
-		return ShowControlPanel();
+	// TODO: reinstate this
+	//	return ShowControlPanel();
+		return TRUE;
 	}
 
 	// Get the window the user is focused on

@@ -8,7 +8,6 @@ public:
 	SupportModule();
 	~SupportModule();
 
-	BOOL ShowHelpDialog();
 	BOOL ShowSettingsDialog();
 
 private:

@@ -42,24 +42,6 @@ SupportModule::~SupportModule()
 	delete pImpl;
 }
 
-BOOL SupportModule::ShowHelpDialog()
-{
-	if ( !pImpl || !pImpl->hLib )
-		return FALSE;
-
-	SUPPORTLIB_SHOW_DIALOG_PROC pfShowHelpDlg = (SUPPORTLIB_SHOW_DIALOG_PROC)
-		::GetProcAddress(
-			pImpl->hLib,
-			"ShowHelpDialog" );
-
-	if ( !pfShowHelpDlg )
-		return FALSE;
-
-	pfShowHelpDlg();
-
-	return TRUE;
-}
-
 BOOL SupportModule::ShowSettingsDialog()
 {
 	if ( !pImpl || !pImpl->hLib )
