@@ -13,7 +13,7 @@ This application is provivded free for private or commercial use. By downloading
 
 http://gibbering.net/AdvancedWindowHotkeys.zip (35KB)
 
-Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
+Download, extract anywhere and run AWHK.exe. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
 
 For questions, help or feedback, please email [awhktool@gibbering.net]. Feedback is greatly welcomed. 
 
