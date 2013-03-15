@@ -4,11 +4,9 @@
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 {
 	HKEY hKey;
-	if ( ::RegOpenKeyEx(
+	if ( ::RegCreateKey(
 		HKEY_CURRENT_USER,
 		AWHK_REG_KEY,
-		0,
-		KEY_SET_VALUE,
 		&hKey ) != ERROR_SUCCESS )
 	{
 		return FALSE;
