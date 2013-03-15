@@ -72,6 +72,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="AutoLogin.cpp" />
     <ClCompile Include="SettingsForm.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -80,6 +81,7 @@
     <ClCompile Include="ConfigApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AutoLogin.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SettingsForm.h">
       <FileType>CppForm</FileType>

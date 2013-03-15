@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\AWHKShared\Config.h"
+#include "AutoLogin.h"
 
 namespace AWHKConfig {
 
@@ -55,6 +56,7 @@ namespace AWHKConfig {
 	private: System::Windows::Forms::Label^  label5;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
+	private: System::Windows::Forms::CheckBox^  chkRunLogin;
 
 
 
@@ -92,6 +94,7 @@ namespace AWHKConfig {
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->chkRunLogin = (gcnew System::Windows::Forms::CheckBox());
 			this->SuspendLayout();
 			// 
 			// okBtn
@@ -220,7 +223,7 @@ namespace AWHKConfig {
 			this->cmbMoveMod->Enabled = false;
 			this->cmbMoveMod->FormattingEnabled = true;
 			this->cmbMoveMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"Alt", L"Shift", L"Ctrl"});
-			this->cmbMoveMod->Location = System::Drawing::Point(12, 94);
+			this->cmbMoveMod->Location = System::Drawing::Point(12, 126);
 			this->cmbMoveMod->Name = L"cmbMoveMod";
 			this->cmbMoveMod->Size = System::Drawing::Size(93, 21);
 			this->cmbMoveMod->TabIndex = 3;
@@ -230,7 +233,7 @@ namespace AWHKConfig {
 			this->cmbFineMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cmbFineMod->FormattingEnabled = true;
 			this->cmbFineMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
-			this->cmbFineMod->Location = System::Drawing::Point(12, 121);
+			this->cmbFineMod->Location = System::Drawing::Point(12, 153);
 			this->cmbFineMod->Name = L"cmbFineMod";
 			this->cmbFineMod->Size = System::Drawing::Size(93, 21);
 			this->cmbFineMod->TabIndex = 3;
@@ -241,7 +244,7 @@ namespace AWHKConfig {
 			this->cmbSoloMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cmbSoloMod->FormattingEnabled = true;
 			this->cmbSoloMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
-			this->cmbSoloMod->Location = System::Drawing::Point(12, 148);
+			this->cmbSoloMod->Location = System::Drawing::Point(12, 180);
 			this->cmbSoloMod->Name = L"cmbSoloMod";
 			this->cmbSoloMod->Size = System::Drawing::Size(93, 21);
 			this->cmbSoloMod->TabIndex = 3;
@@ -250,7 +253,7 @@ namespace AWHKConfig {
 			// label5
 			// 
 			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(111, 97);
+			this->label5->Location = System::Drawing::Point(111, 129);
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(90, 13);
 			this->label5->TabIndex = 5;
@@ -259,7 +262,7 @@ namespace AWHKConfig {
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(111, 124);
+			this->label6->Location = System::Drawing::Point(111, 156);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(92, 13);
 			this->label6->TabIndex = 5;
@@ -268,11 +271,21 @@ namespace AWHKConfig {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(111, 151);
+			this->label7->Location = System::Drawing::Point(111, 183);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(114, 13);
 			this->label7->TabIndex = 5;
 			this->label7->Text = L"Single window modifier";
+			// 
+			// chkRunLogin
+			// 
+			this->chkRunLogin->AutoSize = true;
+			this->chkRunLogin->Location = System::Drawing::Point(12, 78);
+			this->chkRunLogin->Name = L"chkRunLogin";
+			this->chkRunLogin->Size = System::Drawing::Size(150, 17);
+			this->chkRunLogin->TabIndex = 6;
+			this->chkRunLogin->Text = L"Run when Windows starts";
+			this->chkRunLogin->UseVisualStyleBackColor = true;
 			// 
 			// SettingsForm
 			// 
@@ -281,6 +294,7 @@ namespace AWHKConfig {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->closeBtn;
 			this->ClientSize = System::Drawing::Size(594, 296);
+			this->Controls->Add(this->chkRunLogin);
 			this->Controls->Add(this->label7);
 			this->Controls->Add(this->label6);
 			this->Controls->Add(this->label5);
@@ -358,6 +372,8 @@ namespace AWHKConfig {
 
 				 SaveConfiguration( &cfg );
 
+				 SetAutoLoginEnabled( chkRunLogin->Checked );
+
 				 this->Close();
 			 }
 	private: System::Void closeBtn_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -407,6 +423,8 @@ namespace AWHKConfig {
 				 cmbMoveMod->Text = KeyModToString( cfg.MoveKeyMod, cmbMoveMod->Items[0]->ToString() );
 				 cmbSoloMod->Text = KeyModToString( cfg.SoloKeyMod, cmbSoloMod->Items[0]->ToString() );
 				 cmbFineMod->Text = KeyModToString( cfg.FineKeyMod, cmbFineMod->Items[0]->ToString() );
+
+				 chkRunLogin->Checked = ( IsAutoLoginEnabled() != FALSE );
 			 }
 	private: System::Void SettingsForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
 			 }

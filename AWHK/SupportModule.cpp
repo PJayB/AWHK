@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SupportModule.h"
 
-BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars );
+#include "..\AWHKShared\SupportFile.h"
 
 
 struct CONFIG_PROCESS_THREAD_DATA
@@ -35,7 +35,7 @@ BOOL ShowSettingsDialogAsync(
 		LPVOID pUserData )
 {
 	TCHAR strLibName[MAX_PATH];
-	if ( !GetSupportLibraryFilename( strLibName, MAX_PATH ) )
+	if ( !GetSupportFilePath( AWHK_CONFIG_PANEL_EXE, strLibName, MAX_PATH ) )
 		return FALSE;
 
 	CONFIG_PROCESS_THREAD_DATA* pShared = new CONFIG_PROCESS_THREAD_DATA;
@@ -74,35 +74,3 @@ BOOL ShowSettingsDialogAsync(
 
 	return TRUE;
 }
-
-
-
-
-BOOL GetSupportLibraryFilename( LPWSTR strModuleFile, SIZE_T nNumChars )
-{
-	SIZE_T nModuleFileLen = ::GetModuleFileName( 
-		nullptr, 
-		strModuleFile, 
-		nNumChars );
-	if ( ::GetLastError() == ERROR_INSUFFICIENT_BUFFER )
-		return FALSE;
-
-	// Find the last \\ .
-	LPWSTR strFilename;
-	for ( strFilename = strModuleFile + nModuleFileLen; strFilename >= strModuleFile; --strFilename )
-	{
-		if ( *strFilename == '\\' ) 
-		{
-			strFilename++;
-			break;
-		}
-	}
-
-	SIZE_T nRemainingSize = nNumChars - ( strFilename - strModuleFile );
-
-	// Concatenate our DLL name
-	StringCbCopy( strFilename, nRemainingSize, L"AWHKConfig.exe" );
-
-	return TRUE;
-}
-
