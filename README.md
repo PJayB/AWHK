@@ -44,9 +44,6 @@ Other keys:
 Bugs & ToDo
 -----------
 
-Known Issues:
-- "Move adjacent window" tickbox cannot be disabled
-
 ToDo:
 - Add diagrams to this help for clarity
 - Add quit hotkey (Alt+Esc maybe?)
