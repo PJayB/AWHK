@@ -41,9 +41,13 @@ Other keys:
 - Holding Ctrl in addition to Alt+Cursor will prevent adjacent windows from moving.
 - Holding Shift in addition to Alt+Cursor will give you a more fine-grained grid.
 
-ToDo
-----
+Bugs & ToDo
+-----------
 
+Known Issues:
+- "Move adjacent window" tickbox cannot be disabled
+
+ToDo:
 - Add diagrams to this help for clarity
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
