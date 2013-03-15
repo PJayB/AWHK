@@ -11,7 +11,7 @@ This application is provivded free for private or commercial use. By downloading
 - the author is not responsible for damage caused to equipment or data (which is highly unlikely),
 - the feedback email alias below is for mail relating to this application only and no other purpose.
 
-http://gibbering.net/AdvancedWindowHotkeys.zip (7KB)
+http://gibbering.net/AdvancedWindowHotkeys.zip (35KB)
 
 Download, extract anywhere and run. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
 
