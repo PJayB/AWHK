@@ -38,6 +38,8 @@ These are useful if you like using Win+Cursor, but wish you could:
 Other keys:
 - Alt+F1 loads this help page.
 - Alt+F2 loads the configuration panel.
+- Holding Ctrl in addition to Alt+Cursor will prevent adjacent windows from moving.
+- Holding Shift in addition to Alt+Cursor will give you a more fine-grained grid.
 
 ToDo
 ----
