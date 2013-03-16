@@ -9,6 +9,8 @@
 #include "SupportModule.h"
 #include "WindowSnap.h"
 #include "..\AWHKShared\Config.h"
+#include "..\AWHKShared\IPC.h"
+#include "..\AWHKShared\SupportFile.h"
 
 using namespace std;
 
@@ -16,8 +18,11 @@ struct AWHK_APP_STATE
 {
 	HINSTANCE		hInstance;
 	DWORD			dwMainThreadID;
-	UINT			ControlPanelOpenMsg;
-	UINT			ControlPanelClosedMsg;
+
+	UINT			MsgOpenControlPanel;
+	UINT			MsgControlPanelClosed;
+	UINT			MsgReloadConfig;
+
 	volatile BOOL	ControlPanelOpen;
 	INT				NumHotkeys;
 };
@@ -38,6 +43,37 @@ DIRECTION DirectionFromVKey(
 	return DIR_UNKNOWN;
 }
 
+BOOL IsAppAlreadyOpen()
+{
+	// TODO
+	return FALSE;
+}
+
+BOOL AppAlreadyOpenCheck()
+{
+	// Check if the app is already running
+	if ( IsAppAlreadyOpen() )
+	{
+#ifdef _DEBUG
+		if ( ::IsDebuggerPresent() )
+		{
+			// Kill the old app and allow this to run
+			//return FALSE;
+		}
+#endif
+
+		::MessageBox( 
+			nullptr,
+			AWHK_MAIN_EXE L" is already running.",
+			L"Advanced Windowing HotKeys",
+			MB_OK | MB_ICONSTOP );
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 BOOL ShowWebHelp()
 {
 	return (INT) ShellExecute(
@@ -53,7 +89,7 @@ BOOL ShowControlPanel( const AWHK_APP_STATE* pState )
 {
 	return ::PostThreadMessage(
 		pState->dwMainThreadID,
-		pState->ControlPanelOpenMsg,
+		pState->MsgOpenControlPanel,
 		0, 0 );
 }
 
@@ -114,7 +150,12 @@ void AsyncControlPanelClosedCallback(
 {
 	::PostThreadMessage( 
 		pState->dwMainThreadID,
-		pState->ControlPanelClosedMsg,
+		pState->MsgReloadConfig,
+		0, 0 );
+
+	::PostThreadMessage( 
+		pState->dwMainThreadID,
+		pState->MsgControlPanelClosed,
 		0, 0 );
 }
 
@@ -186,7 +227,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 	while ( GetMessage( &msg, nullptr, 0, 0 ) )
 	{
-		if ( msg.message == appState->ControlPanelOpenMsg &&
+		if ( msg.message == appState->MsgOpenControlPanel &&
 			 !appState->ControlPanelOpen )
 		{
 			appState->ControlPanelOpen = TRUE;
@@ -194,7 +235,14 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			continue;
 		}
 
-		if ( msg.message == appState->ControlPanelClosedMsg )
+		if ( msg.message == appState->MsgControlPanelClosed &&
+			 !appState->ControlPanelOpen )
+		{
+			appState->ControlPanelOpen = FALSE;
+			continue;
+		}
+
+		if ( msg.message == appState->MsgReloadConfig )
 		{
 			UnregisterHotkeys( appState->NumHotkeys );
 
@@ -241,11 +289,15 @@ int CALLBACK WinMain(
 	LPSTR lpCmdLine,
 	int nCmdShow )
 {
+	if ( AppAlreadyOpenCheck() )
+		return -1;
+
 	AWHK_APP_STATE appState;
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = ::GetCurrentThreadId();
-	appState.ControlPanelOpenMsg = ::RegisterWindowMessage( L"AWHKControlPanelOpenMsg" );
-	appState.ControlPanelClosedMsg = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
+	appState.MsgOpenControlPanel = ::RegisterWindowMessage( L"AWHKOpenControlPanelMsg" );
+	appState.MsgControlPanelClosed = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
+	appState.MsgReloadConfig = ::RegisterWindowMessage( L"AWHKReloadConfigMsg" );
 	appState.ControlPanelOpen = FALSE;
 	AWHK_APP_CONFIG appCfg;
 	LoadConfiguration( &appCfg );

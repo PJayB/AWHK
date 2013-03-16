@@ -45,6 +45,7 @@ Bugs & ToDo
 -----------
 
 ToDo:
+- "Apply" button in Configuration
 - Add diagrams to this help for clarity
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)

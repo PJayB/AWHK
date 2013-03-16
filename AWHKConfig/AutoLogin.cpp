@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "AutoLogin.h"
 #include "..\AWHKShared\SupportFile.h"
 

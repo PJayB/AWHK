@@ -4,4 +4,5 @@
 
 #pragma once
 
+#include "..\AWHKShared\stdafx.h"
 
