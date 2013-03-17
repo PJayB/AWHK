@@ -18,6 +18,7 @@ struct AWHK_APP_STATE
 {
 	HINSTANCE		hInstance;
 	DWORD			dwMainThreadID;
+	IPC				Comms;
 
 	UINT			MsgOpenControlPanel;
 	UINT			MsgControlPanelClosed;
@@ -45,8 +46,7 @@ DIRECTION DirectionFromVKey(
 
 BOOL IsAppAlreadyOpen()
 {
-	// TODO
-	return FALSE;
+	return IPCExists();
 }
 
 BOOL AppAlreadyOpenCheck()
@@ -72,6 +72,46 @@ BOOL AppAlreadyOpenCheck()
 	}
 
 	return FALSE;
+}
+
+INT IPCThread( AWHK_APP_STATE* appState )
+{
+	AWHK_IPC_MSG msg;
+	while ( ReadMessageIPC( &appState->Comms, &msg ) )
+	{
+		switch (msg)
+		{
+		case IPC_MSG_QUIT:
+			::PostThreadMessage(
+				appState->dwMainThreadID,
+				WM_QUIT,
+				0, 0 );
+			break;
+
+		case IPC_MSG_RELOAD_CONFIG:
+			::PostThreadMessage(
+				appState->dwMainThreadID,
+				appState->MsgReloadConfig,
+				0, 0 );
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return 0;
+}
+
+BOOL StartIPCThread( AWHK_APP_STATE* appState )
+{
+	return ::CreateThread( 
+		nullptr,
+		0,
+		(LPTHREAD_START_ROUTINE) IPCThread,
+		(LPVOID) appState,
+		0,
+		nullptr ) != nullptr;
 }
 
 BOOL ShowWebHelp()
@@ -295,10 +335,13 @@ int CALLBACK WinMain(
 	AWHK_APP_STATE appState;
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = ::GetCurrentThreadId();
+	appState.ControlPanelOpen = FALSE;
 	appState.MsgOpenControlPanel = ::RegisterWindowMessage( L"AWHKOpenControlPanelMsg" );
 	appState.MsgControlPanelClosed = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
 	appState.MsgReloadConfig = ::RegisterWindowMessage( L"AWHKReloadConfigMsg" );
-	appState.ControlPanelOpen = FALSE;
+
+	CreateIPC( &appState.Comms );
+
 	AWHK_APP_CONFIG appCfg;
 	LoadConfiguration( &appCfg );
 
@@ -306,9 +349,13 @@ int CALLBACK WinMain(
 		&appCfg,
 		&appState.NumHotkeys );
 
+	StartIPCThread( &appState );
+
 	int ret = MessageLoop( &appState, &appCfg );
 
 	UnregisterHotkeys( appState.NumHotkeys );
+
+	CloseIPC( &appState.Comms );
 
 	return ret;
 }
