@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\AWHKShared\Config.h"
+#include "..\AWHKShared\IPC.h"
 #include "AutoLogin.h"
 
 namespace AWHKConfig {
@@ -469,7 +470,23 @@ private: System::Void btnAccept_Click(System::Object^  sender, System::EventArgs
 
 			 SaveConfig();
 
-			 // TODO: IPC it!
+			 BOOL didItWork = FALSE;
+
+			 IPC ipc;
+			 if ( OpenIPC( &ipc ) )
+			 {
+				 didItWork = WriteMessageIPC( &ipc, IPC_MSG_RELOAD_CONFIG );
+			 }
+			  
+			 if ( !didItWork )
+			 {
+				 Windows::Forms::MessageBox::Show(
+					 this,
+					 "It appears AWHK is not running. Changes will be applied when the application is next run.",
+					 "Advanced Windows HotKeys",
+					 MessageBoxButtons::OK,
+					 MessageBoxIcon::Information );
+			 }
 		 }
 };
 }

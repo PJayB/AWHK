@@ -35,7 +35,16 @@ BOOL IPCExists()
 	return FALSE;
 }
 
-BOOL OpenIPC( IPC* ipc )
+BOOL MapIPC( IPC* ipc, DWORD dwAccess )
+{
+	return ( ipc->pMemory = (AWHK_IPC_DATA*) ::MapViewOfFile(
+		ipc->hFileMapping,
+		dwAccess,
+		0, 0,
+		sizeof( AWHK_IPC_DATA ) ) ) != NULL;
+}
+
+BOOL OpenIPCOrDie( IPC* ipc )
 {
 	::ZeroMemory( ipc, sizeof( IPC ) );
 
@@ -53,6 +62,21 @@ BOOL OpenIPC( IPC* ipc )
 		AWHK_IPC_FILE );
 	if ( !ipc->hFileMapping )
 	{
+		return FALSE;
+	}
+
+	if ( !MapIPC( ipc, FILE_MAP_READ ) )
+	{
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL OpenIPC( IPC* ipc )
+{
+	if ( !OpenIPCOrDie( ipc ) )
+	{
 		CloseIPC( ipc );
 		return FALSE;
 	}
@@ -60,7 +84,7 @@ BOOL OpenIPC( IPC* ipc )
 	return TRUE;
 }
 
-BOOL CreateIPC( IPC* ipc )
+BOOL CreateIPCOrDie( IPC* ipc )
 {
 	SECURITY_ATTRIBUTES sa;
 	sa.bInheritHandle = FALSE;
@@ -86,15 +110,31 @@ BOOL CreateIPC( IPC* ipc )
 		AWHK_IPC_FILE );
 	if ( !ipc->hFileMapping )
 	{
-		CloseIPC( ipc );
+		return FALSE;
+	}
+
+	if ( !MapIPC( ipc, FILE_MAP_READ ) )
+	{
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
+BOOL CreateIPC( IPC* ipc )
+{
+	if ( !CreateIPCOrDie( ipc ) )
+	{
+		CloseIPC( ipc );
+		return FALSE;
+	}
+	return TRUE;
+}
+
 void CloseIPC( IPC* ipc )
 {
+	if ( ipc->pMemory )
+		::UnmapViewOfFile( (LPVOID) ipc->pMemory );
 	if ( ipc->hSyncSem ) 
 		::CloseHandle( ipc->hSyncSem );
 	if ( ipc->hFileMapping )
@@ -109,19 +149,20 @@ BOOL IsValidIPC( const IPC* ipc )
 
 BOOL WriteMessageIPC( IPC* ipc, AWHK_IPC_MSG msg )
 {
-	AWHK_IPC_DATA data;
-	DWORD numBytes = 0;
-
-	data.cbSize = sizeof( data );
-	data.dwMessage = (DWORD) msg;
-
-	if ( !::WriteFile(
-		ipc->hFileMapping,
-		&data,
-		sizeof( data ),
-		&numBytes,
-		nullptr ) )
+	__try
 	{
+		ipc->pMemory->cbSize = sizeof( AWHK_IPC_DATA );
+		ipc->pMemory->dwMessage = msg;
+	}
+	__except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
+	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return FALSE;
+	}
+
+	if ( !::FlushViewOfFile( (LPCVOID) ipc->pMemory, sizeof( AWHK_IPC_DATA ) ) ) 
+	{
+		// TODO: reconsider this?
 		return FALSE;
 	}
 
@@ -135,32 +176,25 @@ BOOL WriteMessageIPC( IPC* ipc, AWHK_IPC_MSG msg )
 
 BOOL ReadMessageIPC( IPC* ipc, AWHK_IPC_MSG* msg )
 {
-	AWHK_IPC_DATA data;
-	DWORD bytesRead = 0;
-
 	// Block until there's data
 	::WaitForSingleObject(
 		ipc->hSyncSem,
 		INFINITE );
 
-	if ( !::ReadFile(
-		ipc->hFileMapping,
-		&data,
-		sizeof( data ),
-		&bytesRead,
-		nullptr ) )
+	__try
 	{
+		DWORD dwSize = ipc->pMemory->cbSize;
+		if ( dwSize != sizeof( AWHK_IPC_DATA ) )
+			return FALSE;
+
+		*msg = (AWHK_IPC_MSG) ipc->pMemory->dwMessage;
+	}
+	__except(::GetExceptionCode()==EXCEPTION_IN_PAGE_ERROR ?
+	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		// Failed to read from the view.
 		return FALSE;
 	}
-
-	if ( data.cbSize < sizeof( data ) ||
-		 bytesRead < sizeof( data ) ||
-		 data.dwMessage >= _MSG_MAX )
-	{
-		return FALSE;
-	}
-
-	*msg = (AWHK_IPC_MSG) data.dwMessage;
 
 	return TRUE;
 }

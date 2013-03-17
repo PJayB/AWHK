@@ -4,6 +4,9 @@ struct IPC
 {
 	HANDLE hFileMapping;
 	HANDLE hSyncSem;
+
+	volatile 
+	struct AWHK_IPC_DATA* pMemory;
 };
 
 BOOL IPCExists();
