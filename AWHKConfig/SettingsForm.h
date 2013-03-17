@@ -57,6 +57,8 @@ namespace AWHKConfig {
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
 	private: System::Windows::Forms::CheckBox^  chkRunLogin;
+	private: System::Windows::Forms::Button^  btnAccept;
+
 
 
 
@@ -95,6 +97,7 @@ namespace AWHKConfig {
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label7 = (gcnew System::Windows::Forms::Label());
 			this->chkRunLogin = (gcnew System::Windows::Forms::CheckBox());
+			this->btnAccept = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// okBtn
@@ -111,7 +114,7 @@ namespace AWHKConfig {
 			// closeBtn
 			// 
 			this->closeBtn->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			this->closeBtn->Location = System::Drawing::Point(416, 257);
+			this->closeBtn->Location = System::Drawing::Point(12, 257);
 			this->closeBtn->Name = L"closeBtn";
 			this->closeBtn->Size = System::Drawing::Size(80, 27);
 			this->closeBtn->TabIndex = 0;
@@ -287,6 +290,16 @@ namespace AWHKConfig {
 			this->chkRunLogin->Text = L"Run when Windows starts";
 			this->chkRunLogin->UseVisualStyleBackColor = true;
 			// 
+			// btnAccept
+			// 
+			this->btnAccept->Location = System::Drawing::Point(419, 257);
+			this->btnAccept->Name = L"btnAccept";
+			this->btnAccept->Size = System::Drawing::Size(80, 27);
+			this->btnAccept->TabIndex = 7;
+			this->btnAccept->Text = L"&Accept";
+			this->btnAccept->UseVisualStyleBackColor = true;
+			this->btnAccept->Click += gcnew System::EventHandler(this, &SettingsForm::btnAccept_Click);
+			// 
 			// SettingsForm
 			// 
 			this->AcceptButton = this->okBtn;
@@ -294,6 +307,7 @@ namespace AWHKConfig {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->closeBtn;
 			this->ClientSize = System::Drawing::Size(594, 296);
+			this->Controls->Add(this->btnAccept);
 			this->Controls->Add(this->chkRunLogin);
 			this->Controls->Add(this->label7);
 			this->Controls->Add(this->label6);
@@ -349,30 +363,36 @@ namespace AWHKConfig {
 				return 0;
 		}
 
+	private:
+
+		void SaveConfig()
+		{
+			//
+			// save the configuration
+			//
+			AWHK_APP_CONFIG cfg;
+
+			cfg.AllowSnapToOthers = chkAllowSnap->Checked;
+			cfg.AllowModifyAdjacent = chkAdjacency->Checked;
+
+			cfg.GridX = StringToDword( cmbGridX->Text );
+			cfg.GridY = StringToDword( cmbGridY->Text );
+			cfg.FineX = StringToDword( cmbFineX->Text );
+			cfg.FineY = StringToDword( cmbFineY->Text );
+
+			// TODO: validate these!
+			cfg.MoveKeyMod = StringToKeyMod( cmbMoveMod->Text );
+			cfg.SoloKeyMod = StringToKeyMod( cmbSoloMod->Text );
+			cfg.FineKeyMod = StringToKeyMod( cmbFineMod->Text );
+
+			SaveConfiguration( &cfg );
+
+			SetAutoLoginEnabled( chkRunLogin->Checked );
+		}
+
 	private: System::Void okBtn_Click(System::Object^  sender, System::EventArgs^  e) {
 
-
-				 //
-				 // save the configuration
-				 //
-				 AWHK_APP_CONFIG cfg;
-
-				 cfg.AllowSnapToOthers = chkAllowSnap->Checked;
-				 cfg.AllowModifyAdjacent = chkAdjacency->Checked;
-
-				 cfg.GridX = StringToDword( cmbGridX->Text );
-				 cfg.GridY = StringToDword( cmbGridY->Text );
-				 cfg.FineX = StringToDword( cmbFineX->Text );
-				 cfg.FineY = StringToDword( cmbFineY->Text );
-
-				 // TODO: validate these!
-				 cfg.MoveKeyMod = StringToKeyMod( cmbMoveMod->Text );
-				 cfg.SoloKeyMod = StringToKeyMod( cmbSoloMod->Text );
-				 cfg.FineKeyMod = StringToKeyMod( cmbFineMod->Text );
-
-				 SaveConfiguration( &cfg );
-
-				 SetAutoLoginEnabled( chkRunLogin->Checked );
+				 SaveConfig();
 
 				 this->Close();
 			 }
@@ -444,6 +464,12 @@ private: System::Void cmbSoloMod_SelectedIndexChanged(System::Object^  sender, S
 				 else
 					 cmbSoloMod->SelectedIndex = newIndex;
 			 }
+		 }
+private: System::Void btnAccept_Click(System::Object^  sender, System::EventArgs^  e) {
+
+			 SaveConfig();
+
+			 // TODO: IPC it!
 		 }
 };
 }
