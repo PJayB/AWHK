@@ -147,6 +147,7 @@ void ConfigureWindowSnapParams(
 	if ( ( modifiers & cfg->FineKeyMod ) == cfg->FineKeyMod )
 		params->Flags |= WINDOW_SNAP_FINE_GRID;
 
+	params->MaxEdgeSearchSize = cfg->MaxEdgeSearchSize * 2;
 	params->GridDivisorX = cfg->GridX;
 	params->GridDivisorY = cfg->GridY;
 	params->FineDivisorX = cfg->FineX;

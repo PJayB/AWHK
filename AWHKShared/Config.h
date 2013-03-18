@@ -6,6 +6,8 @@ struct AWHK_APP_CONFIG
 
 	BOOL			AllowSnapToOthers;
 
+	DWORD			MaxEdgeSearchSize;
+
 	DWORD			GridX;
 	DWORD			GridY;
 	DWORD			FineX;

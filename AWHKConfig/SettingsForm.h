@@ -137,6 +137,7 @@ namespace AWHKConfig {
 			this->btnAccept->TabIndex = 27;
 			this->btnAccept->Text = L"&Accept";
 			this->btnAccept->UseVisualStyleBackColor = true;
+			this->btnAccept->Click += gcnew System::EventHandler(this, &SettingsForm::btnAccept_Click);
 			// 
 			// chkRunLogin
 			// 
@@ -220,6 +221,7 @@ namespace AWHKConfig {
 			this->cmbNextMod->Name = L"cmbNextMod";
 			this->cmbNextMod->Size = System::Drawing::Size(93, 21);
 			this->cmbNextMod->TabIndex = 18;
+			this->cmbNextMod->SelectedValueChanged += gcnew System::EventHandler(this, &SettingsForm::cmbSoloMod_SelectedIndexChanged);
 			// 
 			// cmbFineMod
 			// 
@@ -230,6 +232,7 @@ namespace AWHKConfig {
 			this->cmbFineMod->Name = L"cmbFineMod";
 			this->cmbFineMod->Size = System::Drawing::Size(93, 21);
 			this->cmbFineMod->TabIndex = 17;
+			this->cmbFineMod->SelectedValueChanged += gcnew System::EventHandler(this, &SettingsForm::cmbSoloMod_SelectedIndexChanged);
 			// 
 			// cmbMoveMod
 			// 
@@ -286,7 +289,6 @@ namespace AWHKConfig {
 			// chkAllowSnap
 			// 
 			this->chkAllowSnap->AutoSize = true;
-			this->chkAllowSnap->Enabled = false;
 			this->chkAllowSnap->Location = System::Drawing::Point(12, 19);
 			this->chkAllowSnap->Name = L"chkAllowSnap";
 			this->chkAllowSnap->Size = System::Drawing::Size(188, 17);
@@ -303,6 +305,7 @@ namespace AWHKConfig {
 			this->closeBtn->TabIndex = 8;
 			this->closeBtn->Text = L"&Cancel";
 			this->closeBtn->UseVisualStyleBackColor = true;
+			this->closeBtn->Click += gcnew System::EventHandler(this, &SettingsForm::closeBtn_Click);
 			// 
 			// okBtn
 			// 
@@ -313,6 +316,7 @@ namespace AWHKConfig {
 			this->okBtn->TabIndex = 9;
 			this->okBtn->Text = L"&OK";
 			this->okBtn->UseVisualStyleBackColor = true;
+			this->okBtn->Click += gcnew System::EventHandler(this, &SettingsForm::okBtn_Click);
 			// 
 			// SettingsForm
 			// 

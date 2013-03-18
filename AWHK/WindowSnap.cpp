@@ -21,6 +21,7 @@ WINDOW_SNAP_PARAMS::WINDOW_SNAP_PARAMS()
 	: Flags( WINDOW_SNAP_DEFAULT )
 	, GridDivisorX( DEFAULT_GRID_X )
 	, GridDivisorY( DEFAULT_GRID_Y )
+	, MaxEdgeSearchSize( 128 )
 {
 }
 
@@ -138,6 +139,11 @@ public:
 	LONG IncrementY;
 	LONG SafeZoneX;
 	LONG SafeZoneY;
+
+	LONG* pHorizontalEdges;
+	DWORD dwNumHorizontalEdges;
+	LONG* pVerticalEdges;
+	DWORD dwNumVerticalEdges;
 };
 
 BOOL InitalizeWindowManipulation( 
@@ -184,6 +190,11 @@ BOOL InitalizeWindowManipulation(
 
 	// Copy the window rect
 	wmi->SrcWindowRect = wndi.rcWindow;
+
+	wmi->pHorizontalEdges = nullptr;
+	wmi->dwNumHorizontalEdges = 0;
+	wmi->pVerticalEdges = nullptr;
+	wmi->dwNumVerticalEdges = 0;
 
 	return TRUE;
 }
@@ -329,6 +340,10 @@ BOOL CALLBACK AlignAdjacentWindowsProc(
 	// Ignore the source window (already moved)
 	if ( hWnd == src->hWnd )
 		return TRUE;
+
+	if ( !::IsWindowVisible( hWnd ) ||
+		  ::IsIconic( hWnd ) )
+		return TRUE;
 	
 	WINDOWINFO wndi;
 	if ( !::GetWindowInfo( hWnd, &wndi ) )
@@ -406,12 +421,129 @@ LONG AlignAdjacentWindows(
 	return 0;
 }
 
+struct WINDOW_EDGE_SEARCH_PARAMS
+{
+	DWORD	dwMaxHorizontalEdges;
+	DWORD	dwMaxVerticalEdges;
+
+	LPLONG  pHorizontalEdges;
+	DWORD   dwNumHorizontalEdges;
+	LPLONG  pVerticalEdges;
+	DWORD   dwNumVerticalEdges;
+
+	RECT	ClipRect;
+};
+
+BOOL CALLBACK WindowEdgeSearchProc( 
+	HWND hWnd,
+	WINDOW_EDGE_SEARCH_PARAMS* params )
+{
+	if ( !::IsWindowVisible( hWnd ) ||
+		  ::IsIconic( hWnd ) )
+		return TRUE;
+	
+	WINDOWINFO wndi;
+	if ( !::GetWindowInfo( hWnd, &wndi ) )
+		return TRUE;
+
+	if ( wndi.rcWindow.right == wndi.rcWindow.left ||
+		 wndi.rcWindow.top == wndi.rcWindow.right )
+	{
+		 return TRUE;
+	}
+
+	if ( wndi.rcWindow.top >= params->ClipRect.top && 
+		 wndi.rcWindow.top <= params->ClipRect.bottom )
+	{
+		params->pHorizontalEdges[ params->dwNumHorizontalEdges++ ] = 
+			wndi.rcWindow.top;
+	}
+
+	if ( wndi.rcWindow.bottom <= params->ClipRect.bottom &&
+		 wndi.rcWindow.bottom >= params->ClipRect.top )
+	{
+		params->pHorizontalEdges[ params->dwNumHorizontalEdges++ ] = 
+			wndi.rcWindow.bottom;
+	}
+
+	if ( wndi.rcWindow.left >= params->ClipRect.left &&
+		 wndi.rcWindow.left <= params->ClipRect.right )
+	{
+		params->pVerticalEdges[ params->dwNumVerticalEdges++ ] = 
+			wndi.rcWindow.left;
+	}
+
+	if ( wndi.rcWindow.right >= params->ClipRect.left &&
+		 wndi.rcWindow.right <= params->ClipRect.right )
+	{
+		params->pVerticalEdges[ params->dwNumVerticalEdges++ ] = 
+			wndi.rcWindow.right;
+	}
+
+	return 
+		( params->dwNumHorizontalEdges != params->dwMaxHorizontalEdges ) &&
+		( params->dwNumVerticalEdges != params->dwMaxVerticalEdges );
+}
+
+int LongCmp( const void* a, const void* b )
+{
+	return *((LONG*) a) - *((LONG*) b);
+}
+
+DWORD CollapseSearchSpace( LONG* pArray, DWORD dwCount )
+{
+	if ( !dwCount )
+		return 0;
+
+	std::qsort( pArray, dwCount, sizeof( LONG ), LongCmp );
+
+	LONG* pCursor = pArray;
+	for ( DWORD i = 1; i < dwCount; ++i )
+	{
+		if ( pArray[ i ] == *pCursor )
+			continue;
+
+		*( ++pCursor ) = pArray[ i ];
+	}
+
+	return 1 + ( pCursor - pArray );
+}
+
+BOOL WindowEdgeSearch( WINDOW_EDGE_SEARCH_PARAMS* params )
+{
+	WINDOW_EDGE_SEARCH_PARAMS paramsCopy = *params;
+
+	// Make sure our maximums are divisible by 2
+	paramsCopy.dwMaxHorizontalEdges &= ~1UL;
+	paramsCopy.dwMaxVerticalEdges &= ~1UL;
+
+	if ( !::EnumWindows(
+		(WNDENUMPROC) WindowEdgeSearchProc,
+		(LPARAM) &paramsCopy ) )
+	{
+		return FALSE;
+	}
+
+	// Sort and collapse the search space
+	params->dwNumHorizontalEdges = CollapseSearchSpace( 
+		params->pHorizontalEdges,
+		paramsCopy.dwNumHorizontalEdges );
+	params->dwNumVerticalEdges = CollapseSearchSpace( 
+		params->pVerticalEdges,
+		paramsCopy.dwNumVerticalEdges );
+
+	return TRUE;
+}
+
 BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params )
 {
 	// Get the window the user is focused on
 	HWND hWnd = ::GetForegroundWindow();
 
-
+	if ( !::IsWindowVisible( hWnd ) ||
+		  ::IsIconic( hWnd ) )
+		return FALSE;
+	
 	WINDOW_MANIPULATION_INFO wmi;
 	if ( !InitalizeWindowManipulation( 
 		hWnd,
@@ -422,7 +554,28 @@ BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params
 	}
 
 	// TODO: build a list of edges to snap to
-	// TODO: integrate WINDOW_SNAP_ADJACENT
+	// TODO: integrate WINDOW_SNAP_TO_OTHERS
+	if ( ( params->Flags & WINDOW_SNAP_TO_OTHERS ) &&
+		 ( params->MaxEdgeSearchSize > 0 ) )
+	{
+		// Build the list of edges
+		wmi.pHorizontalEdges = new LONG[ params->MaxEdgeSearchSize ];
+		wmi.pVerticalEdges = new LONG[ params->MaxEdgeSearchSize ];
+
+		if ( wmi.pHorizontalEdges && wmi.pVerticalEdges )
+		{
+			WINDOW_EDGE_SEARCH_PARAMS wesp;
+			wesp.dwMaxHorizontalEdges = params->MaxEdgeSearchSize;
+			wesp.dwMaxVerticalEdges = params->MaxEdgeSearchSize;
+			wesp.dwNumHorizontalEdges = wmi.dwNumHorizontalEdges;
+			wesp.dwNumVerticalEdges = wmi.dwNumVerticalEdges;
+			wesp.pHorizontalEdges = wmi.pHorizontalEdges;
+			wesp.pVerticalEdges = wmi.pVerticalEdges;
+			wesp.ClipRect = wmi.MonitorRect;
+
+			WindowEdgeSearch( &wesp );
+		}
+	}
 		
 	// Manipulate the active window.
 	RECT newWindowRect = wmi.SrcWindowRect;
@@ -430,6 +583,10 @@ BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params
 		&wmi, 
 		direction, 
 		&newWindowRect );
+
+	// Delete the edge data (if any)
+	delete [] wmi.pHorizontalEdges;
+	delete [] wmi.pVerticalEdges;
 	
 	// If no changes were made, we're done.
 	if ( edgeChanges == 0 )

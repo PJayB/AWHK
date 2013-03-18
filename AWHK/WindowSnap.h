@@ -29,6 +29,10 @@ struct WINDOW_SNAP_PARAMS
 	DWORD GridDivisorY;
 	DWORD FineDivisorX;
 	DWORD FineDivisorY;
+
+	// Size is in max possible searchable /edges in each direction/
+	// (i.e. num windows * 2)
+	DWORD MaxEdgeSearchSize;
 };
 
 BOOL 

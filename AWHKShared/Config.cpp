@@ -3,7 +3,8 @@
 #include "RegistryKeys.h"
 
 AWHK_APP_CONFIG::AWHK_APP_CONFIG()
-	: AllowSnapToOthers( FALSE ) // TODO
+	: AllowSnapToOthers( TRUE )
+	, MaxEdgeSearchSize( 128 )
 	, GridX( 8 )
 	, GridY( 4 )
 	, FineX( 32 )
@@ -35,6 +36,7 @@ void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 {
 	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	, &cfg->AllowSnapToOthers );
+	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	, &cfg->MaxEdgeSearchSize );
 
 	LoadConfigGridValue	( AWHK_REG_GRID_X		, &cfg->GridX );
 	LoadConfigGridValue	( AWHK_REG_GRID_Y		, &cfg->GridY );
@@ -74,6 +76,7 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 {
 	StoreRegistryDword( AWHK_REG_ALLOW_SNAP		, cfg->AllowSnapToOthers );
+	StoreRegistryDword( AWHK_REG_EDGE_SEARCH	, cfg->MaxEdgeSearchSize );
 
 	StoreRegistryDword( AWHK_REG_GRID_X			, cfg->GridX );
 	StoreRegistryDword( AWHK_REG_GRID_Y			, cfg->GridY );

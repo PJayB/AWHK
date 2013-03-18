@@ -3,7 +3,7 @@
 #define AWHK_REG_KEY			L"Software\\AWHK"
 
 #define AWHK_REG_ALLOW_SNAP		L"AllowSnapToOthers"
-#define AWHK_REG_ADJACENCY		L"ModifyAdjacent"
+#define AWHK_REG_EDGE_SEARCH	L"MaxEdgeSearchSize"
 
 #define AWHK_REG_GRID_X			L"GridX"
 #define AWHK_REG_GRID_Y			L"GridY"
