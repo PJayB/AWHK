@@ -40,14 +40,10 @@ Other keys:
 - Alt+F2 loads the configuration panel.
 - Holding Shift in addition to Alt+Cursor will give you a more fine-grained grid.
 
-Bugs & ToDo
+ToDo
 -----------
 
-ToDo:
-- "Apply" button in Configuration
 - Add diagrams to this help for clarity
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
-- Make windows snap to other windows, not just percentages of the screen size
-- Multiple instances detection
