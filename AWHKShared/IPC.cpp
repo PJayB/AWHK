@@ -54,10 +54,12 @@ BOOL OpenIPCOrDie( IPC* ipc )
 		AWHK_IPC_SEM );
 	if ( !ipc->hSyncSem )
 		return FALSE;
+
+	DWORD dwAccess = FILE_MAP_WRITE | FILE_MAP_READ;
 	
 	// Just return it if it was already opened
 	ipc->hFileMapping = ::OpenFileMapping(
-		FILE_MAP_WRITE | FILE_MAP_READ,
+		dwAccess,
 		FALSE,
 		AWHK_IPC_FILE );
 	if ( !ipc->hFileMapping )
@@ -65,7 +67,7 @@ BOOL OpenIPCOrDie( IPC* ipc )
 		return FALSE;
 	}
 
-	if ( !MapIPC( ipc, FILE_MAP_READ ) )
+	if ( !MapIPC( ipc, dwAccess ) )
 	{
 		return FALSE;
 	}
@@ -113,7 +115,7 @@ BOOL CreateIPCOrDie( IPC* ipc )
 		return FALSE;
 	}
 
-	if ( !MapIPC( ipc, FILE_MAP_READ ) )
+	if ( !MapIPC( ipc, FILE_MAP_ALL_ACCESS ) )
 	{
 		return FALSE;
 	}

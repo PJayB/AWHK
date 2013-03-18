@@ -25,6 +25,7 @@ namespace AWHKConfig {
 		}
 
 	protected:
+
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -39,26 +40,47 @@ namespace AWHKConfig {
 	protected: 
 	private: System::Windows::Forms::Button^  closeBtn;
 	private: System::Windows::Forms::CheckBox^  chkAllowSnap;
+	private: System::Windows::Forms::CheckBox^  chkAdjacency;
 	private: System::Windows::Forms::ComboBox^  cmbGridX;
 	private: System::Windows::Forms::ComboBox^  cmbGridY;
-	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::Label^  label2;
-	private: System::Windows::Forms::CheckBox^  chkAdjacency;
 	private: System::Windows::Forms::ComboBox^  cmbFineX;
 	private: System::Windows::Forms::ComboBox^  cmbFineY;
-
-
-	private: System::Windows::Forms::Label^  label3;
-	private: System::Windows::Forms::Label^  label4;
 	private: System::Windows::Forms::ComboBox^  cmbMoveMod;
 	private: System::Windows::Forms::ComboBox^  cmbFineMod;
 	private: System::Windows::Forms::ComboBox^  cmbSoloMod;
-
+	private: System::Windows::Forms::Label^  label1;
+	private: System::Windows::Forms::Label^  label3;
+	private: System::Windows::Forms::Label^  label2;
+	private: System::Windows::Forms::Label^  label4;
 	private: System::Windows::Forms::Label^  label5;
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label7;
 	private: System::Windows::Forms::CheckBox^  chkRunLogin;
 	private: System::Windows::Forms::Button^  btnAccept;
+
+	protected: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -82,18 +104,18 @@ namespace AWHKConfig {
 			this->okBtn = (gcnew System::Windows::Forms::Button());
 			this->closeBtn = (gcnew System::Windows::Forms::Button());
 			this->chkAllowSnap = (gcnew System::Windows::Forms::CheckBox());
+			this->chkAdjacency = (gcnew System::Windows::Forms::CheckBox());
 			this->cmbGridX = (gcnew System::Windows::Forms::ComboBox());
 			this->cmbGridY = (gcnew System::Windows::Forms::ComboBox());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->chkAdjacency = (gcnew System::Windows::Forms::CheckBox());
 			this->cmbFineX = (gcnew System::Windows::Forms::ComboBox());
 			this->cmbFineY = (gcnew System::Windows::Forms::ComboBox());
-			this->label3 = (gcnew System::Windows::Forms::Label());
-			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->cmbMoveMod = (gcnew System::Windows::Forms::ComboBox());
 			this->cmbFineMod = (gcnew System::Windows::Forms::ComboBox());
 			this->cmbSoloMod = (gcnew System::Windows::Forms::ComboBox());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label7 = (gcnew System::Windows::Forms::Label());
@@ -134,6 +156,16 @@ namespace AWHKConfig {
 			this->chkAllowSnap->Text = L"Enable snapping to other windows";
 			this->chkAllowSnap->UseVisualStyleBackColor = true;
 			// 
+			// chkAdjacency
+			// 
+			this->chkAdjacency->AutoSize = true;
+			this->chkAdjacency->Location = System::Drawing::Point(12, 55);
+			this->chkAdjacency->Name = L"chkAdjacency";
+			this->chkAdjacency->Size = System::Drawing::Size(264, 17);
+			this->chkAdjacency->TabIndex = 2;
+			this->chkAdjacency->Text = L"Move windows adjacent to the foreground window";
+			this->chkAdjacency->UseVisualStyleBackColor = true;
+			// 
 			// cmbGridX
 			// 
 			this->cmbGridX->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
@@ -154,34 +186,6 @@ namespace AWHKConfig {
 			this->cmbGridY->Size = System::Drawing::Size(75, 21);
 			this->cmbGridY->TabIndex = 3;
 			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(416, 33);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(127, 13);
-			this->label1->TabIndex = 4;
-			this->label1->Text = L"snap columns per monitor";
-			// 
-			// label2
-			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(416, 60);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(110, 13);
-			this->label2->TabIndex = 4;
-			this->label2->Text = L"snap rows per monitor";
-			// 
-			// chkAdjacency
-			// 
-			this->chkAdjacency->AutoSize = true;
-			this->chkAdjacency->Location = System::Drawing::Point(12, 55);
-			this->chkAdjacency->Name = L"chkAdjacency";
-			this->chkAdjacency->Size = System::Drawing::Size(264, 17);
-			this->chkAdjacency->TabIndex = 2;
-			this->chkAdjacency->Text = L"Move windows adjacent to the foreground window";
-			this->chkAdjacency->UseVisualStyleBackColor = true;
-			// 
 			// cmbFineX
 			// 
 			this->cmbFineX->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
@@ -201,24 +205,6 @@ namespace AWHKConfig {
 			this->cmbFineY->Name = L"cmbFineY";
 			this->cmbFineY->Size = System::Drawing::Size(75, 21);
 			this->cmbFineY->TabIndex = 3;
-			// 
-			// label3
-			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(416, 97);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(147, 13);
-			this->label3->TabIndex = 4;
-			this->label3->Text = L"fine-snap columns per monitor";
-			// 
-			// label4
-			// 
-			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(416, 124);
-			this->label4->Name = L"label4";
-			this->label4->Size = System::Drawing::Size(130, 13);
-			this->label4->TabIndex = 4;
-			this->label4->Text = L"fine-snap rows per monitor";
 			// 
 			// cmbMoveMod
 			// 
@@ -253,6 +239,42 @@ namespace AWHKConfig {
 			this->cmbSoloMod->Size = System::Drawing::Size(93, 21);
 			this->cmbSoloMod->TabIndex = 3;
 			this->cmbSoloMod->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsForm::cmbSoloMod_SelectedIndexChanged);
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(416, 33);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(127, 13);
+			this->label1->TabIndex = 4;
+			this->label1->Text = L"snap columns per monitor";
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->Location = System::Drawing::Point(416, 97);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(147, 13);
+			this->label3->TabIndex = 4;
+			this->label3->Text = L"fine-snap columns per monitor";
+			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->Location = System::Drawing::Point(416, 60);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(110, 13);
+			this->label2->TabIndex = 4;
+			this->label2->Text = L"snap rows per monitor";
+			// 
+			// label4
+			// 
+			this->label4->AutoSize = true;
+			this->label4->Location = System::Drawing::Point(416, 124);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(130, 13);
+			this->label4->TabIndex = 4;
+			this->label4->Text = L"fine-snap rows per monitor";
 			// 
 			// label5
 			// 
