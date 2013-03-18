@@ -138,10 +138,13 @@ void ConfigureWindowSnapParams(
 	USHORT modifiers,
 	WINDOW_SNAP_PARAMS* params )
 {
-	params->Flags = WINDOW_SNAP_TO_GRID;
+	params->Flags = 0;
 
 	if ( cfg->AllowSnapToOthers )
-		params->Flags |= WINDOW_SNAP_TO_OTHERS;
+		params->Flags |= WINDOW_SNAP_TO_GRID | WINDOW_SNAP_TO_OTHERS;
+	else
+		params->Flags |= WINDOW_SNAP_TO_GRID;
+
 	if ( ( modifiers & cfg->NextKeyMod ) == cfg->NextKeyMod )
 		params->Flags |= WINDOW_MODIFY_ADJACENT;
 	if ( ( modifiers & cfg->FineKeyMod ) == cfg->FineKeyMod )

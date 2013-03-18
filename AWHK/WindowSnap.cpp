@@ -70,6 +70,88 @@ BOOL SetWindowRect( HWND hWnd, const RECT& r )
 		TRUE );
 }
 
+struct WINDOW_MANIPULATION_INFO
+{
+public:
+
+	HWND hWnd;
+	HMONITOR hMonitor;
+
+	RECT MonitorRect;
+	RECT SrcWindowRect;
+
+	DWORD Flags;
+	LONG IncrementX;
+	LONG IncrementY;
+	LONG SafeZoneX;
+	LONG SafeZoneY;
+};
+
+BOOL InitalizeWindowManipulation( 
+	HWND hWnd,
+	const WINDOW_SNAP_PARAMS* params,
+	WINDOW_MANIPULATION_INFO* wmi )
+{
+	ZeroMemory( wmi, sizeof( *wmi ) );
+
+	wmi->hWnd = hWnd;
+	wmi->Flags = params->Flags;
+
+	WINDOWINFO wndi;
+	if ( !::GetWindowInfo( hWnd, &wndi ) )
+		return FALSE;
+
+	// We should only really do this on resizable windows
+	// (although we can do it on non-resizable for lulz)
+	if ( !IsResizeCandidateStyle( wndi ) )
+		return FALSE;
+
+	wmi->hMonitor = ::MonitorFromWindow(
+		hWnd,
+		MONITOR_DEFAULTTONEAREST );
+
+	// Get the size of the display this window lives on
+	if ( !GetMonitorRect( wmi->hMonitor, &wmi->MonitorRect ) )
+		return FALSE;
+
+	// Set the safe zone
+	LONG gridX = max( 1, (LONG) params->GridDivisorX );
+	LONG gridY = max( 1, (LONG) params->GridDivisorY );
+	wmi->SafeZoneX = SafeZoneX( wmi->MonitorRect, gridX );
+	wmi->SafeZoneY = SafeZoneY( wmi->MonitorRect, gridY );
+
+	// Get the increment, which might be at a finer resolution
+	if ( ( params->Flags & WINDOW_SNAP_FINE_GRID ) != 0 )
+	{
+		gridX = max( 1, (LONG) params->FineDivisorX );
+		gridY = max( 1, (LONG) params->FineDivisorY );
+	}
+	wmi->IncrementX = SafeZoneX( wmi->MonitorRect, gridX );
+	wmi->IncrementY = SafeZoneY( wmi->MonitorRect, gridY );
+
+	// Copy the window rect
+	wmi->SrcWindowRect = wndi.rcWindow;
+
+	return TRUE;
+}
+
+DWORD DetectWindowChanges( const RECT& src, const RECT& dst )
+{
+	DWORD changes = 0;
+	if ( src.left != dst.left )	    { changes |= WINDOW_EDGE_LEFT; }
+	if ( src.right != dst.right )   { changes |= WINDOW_EDGE_RIGHT; }
+	if ( src.top != dst.top )	    { changes |= WINDOW_EDGE_TOP; }
+	if ( src.bottom != dst.bottom ) { changes |= WINDOW_EDGE_BOTTOM; }
+	return changes;
+}
+
+
+
+
+
+
+
+
 void RollWindowUp( const RECT* displayRect, RECT* wndRect, LONG increment, LONG safeZone )
 {
 	// If the window is at the top of the screen, roll it up.
@@ -124,90 +206,7 @@ void RollWindowRight( const RECT* displayRect, RECT* wndRect, LONG increment, LO
 	}
 }
 
-struct WINDOW_MANIPULATION_INFO
-{
-public:
 
-	HWND hWnd;
-	HMONITOR hMonitor;
-
-	RECT MonitorRect;
-	RECT SrcWindowRect;
-
-	DWORD Flags;
-	LONG IncrementX;
-	LONG IncrementY;
-	LONG SafeZoneX;
-	LONG SafeZoneY;
-
-	LONG* pHorizontalEdges;
-	DWORD dwNumHorizontalEdges;
-	LONG* pVerticalEdges;
-	DWORD dwNumVerticalEdges;
-};
-
-BOOL InitalizeWindowManipulation( 
-	HWND hWnd,
-	const WINDOW_SNAP_PARAMS* params,
-	WINDOW_MANIPULATION_INFO* wmi )
-{
-	ZeroMemory( wmi, sizeof( *wmi ) );
-
-	wmi->hWnd = hWnd;
-	wmi->Flags = params->Flags;
-
-	WINDOWINFO wndi;
-	if ( !::GetWindowInfo( hWnd, &wndi ) )
-		return FALSE;
-
-	// We should only really do this on resizable windows
-	// (although we can do it on non-resizable for lulz)
-	if ( !IsResizeCandidateStyle( wndi ) )
-		return FALSE;
-
-	wmi->hMonitor = ::MonitorFromWindow(
-		hWnd,
-		MONITOR_DEFAULTTONEAREST );
-
-	// Get the size of the display this window lives on
-	if ( !GetMonitorRect( wmi->hMonitor, &wmi->MonitorRect ) )
-		return FALSE;
-
-	// Set the safe zone
-	LONG gridX = max( 1, (LONG) params->GridDivisorX );
-	LONG gridY = max( 1, (LONG) params->GridDivisorY );
-	wmi->SafeZoneX = SafeZoneX( wmi->MonitorRect, gridX );
-	wmi->SafeZoneY = SafeZoneY( wmi->MonitorRect, gridY );
-
-	// Get the increment, which might be at a finer resolution
-	if ( ( params->Flags & WINDOW_SNAP_FINE_GRID ) != 0 )
-	{
-		gridX = max( 1, (LONG) params->FineDivisorX );
-		gridY = max( 1, (LONG) params->FineDivisorY );
-	}
-	wmi->IncrementX = SafeZoneX( wmi->MonitorRect, gridX );
-	wmi->IncrementY = SafeZoneY( wmi->MonitorRect, gridY );
-
-	// Copy the window rect
-	wmi->SrcWindowRect = wndi.rcWindow;
-
-	wmi->pHorizontalEdges = nullptr;
-	wmi->dwNumHorizontalEdges = 0;
-	wmi->pVerticalEdges = nullptr;
-	wmi->dwNumVerticalEdges = 0;
-
-	return TRUE;
-}
-
-DWORD DetectWindowChanges( const RECT& src, const RECT& dst )
-{
-	DWORD changes = 0;
-	if ( src.left != dst.left )	    { changes |= WINDOW_EDGE_LEFT; }
-	if ( src.right != dst.right )   { changes |= WINDOW_EDGE_RIGHT; }
-	if ( src.top != dst.top )	    { changes |= WINDOW_EDGE_TOP; }
-	if ( src.bottom != dst.bottom ) { changes |= WINDOW_EDGE_BOTTOM; }
-	return changes;
-}
 
 LONG ManipulateSingleWindow(
 	const WINDOW_MANIPULATION_INFO* wmi,
@@ -242,6 +241,232 @@ LONG ManipulateSingleWindow(
 
 	return DetectWindowChanges( wmi->SrcWindowRect, *outRect );
 }
+
+
+LONG FindPrevIncrement( LONG e, const LONG* edges, DWORD numEdges )
+{
+	LONG last = edges[0];
+	for ( DWORD i = 1; i < numEdges; ++i )
+	{
+		if ( edges[ i ] >= e  ) 
+			return last;
+		last = edges[ i ];
+	}
+	return last;
+}
+
+LONG FindNextIncrement( LONG e, const LONG* edges, DWORD numEdges )
+{
+	for ( DWORD i = 0; i < numEdges; ++i )
+	{
+		if ( edges[ i ] > e  ) 
+			return edges[ i ];
+	}
+	return edges[ numEdges - 1 ];
+}
+
+
+void SnapWindowUp( const RECT* displayRect, const LONG* edges, DWORD numEdges, RECT* wndRect, LONG safeZone )
+{
+	if ( !numEdges ) 
+		return;
+
+	// If the window is at the top of the screen, roll it up.
+	if ( wndRect->top <= displayRect->top )
+	{
+		wndRect->bottom = max( 
+			displayRect->top + safeZone, 
+			FindPrevIncrement( wndRect->bottom, edges, numEdges ) );
+	}
+	else
+	{
+		wndRect->top = max( 
+			displayRect->top, 
+			FindPrevIncrement( wndRect->top, edges, numEdges ) );
+	}
+}
+
+void SnapWindowDown( const RECT* displayRect, const LONG* edges, DWORD numEdges, RECT* wndRect, LONG safeZone )
+{
+	if ( !numEdges ) 
+		return;
+
+	// If the window is at the top of the screen, roll it up.
+	if ( wndRect->bottom >= displayRect->bottom )
+	{
+		wndRect->top = min( 
+			displayRect->bottom - safeZone, 
+			FindNextIncrement( wndRect->top, edges, numEdges ) );
+	}
+	else
+	{
+		wndRect->bottom = min( 
+			displayRect->bottom, 
+			FindNextIncrement( wndRect->bottom, edges, numEdges ) );
+	}
+}
+
+void SnapWindowLeft( const RECT* displayRect, const LONG* edges, DWORD numEdges, RECT* wndRect, LONG safeZone )
+{
+	if ( !numEdges ) 
+		return;
+
+	// If the window already hits the left edge, pull in the right
+	// edge:
+	if ( wndRect->left <= displayRect->left )
+	{
+		wndRect->right = max( 
+			displayRect->left + safeZone, 
+			FindPrevIncrement( wndRect->right, edges, numEdges ) );
+	}
+	else // push out the left edge
+	{
+		wndRect->left = max( 
+			displayRect->left, 
+			FindPrevIncrement( wndRect->left, edges, numEdges ) );
+	}
+}
+
+void SnapWindowRight( const RECT* displayRect, const LONG* edges, DWORD numEdges, RECT* wndRect, LONG safeZone )
+{
+	if ( !numEdges ) 
+		return;
+
+	// If the window already hits the right edge, pull in the left
+	// edge:
+	if ( wndRect->right >= displayRect->right )
+	{
+		wndRect->left = min( 
+			displayRect->right - safeZone, 
+			FindNextIncrement( wndRect->left, edges, numEdges ) );
+	}
+	else // push out the right edge
+	{
+		wndRect->right = min( 
+			displayRect->right, 
+			FindNextIncrement( wndRect->right, edges, numEdges ) );
+	}
+}
+
+struct WINDOW_EDGE_SNAP_INFO
+{
+	LONG* pHorizontalEdges;
+	DWORD dwNumHorizontalEdges;
+	LONG* pVerticalEdges;
+	DWORD dwNumVerticalEdges;
+};
+
+BOOL InitializeEdgeMode( 
+	const WINDOW_MANIPULATION_INFO* wmi, 
+	DWORD dwMaxEdgeSearchSize, 
+	BOOL bSnapToGrid,
+	WINDOW_EDGE_SNAP_INFO* esi )
+{
+	esi->pHorizontalEdges = nullptr;
+	esi->dwNumHorizontalEdges = 0;
+	esi->pVerticalEdges = nullptr;
+	esi->dwNumVerticalEdges = 0;
+
+	// Divide up the monitor rect into increments
+	LONG nHorizIncrements = 0;
+	LONG nVertIncrements = 0;
+	if ( bSnapToGrid )
+	{
+		nHorizIncrements = 1 + ( wmi->MonitorRect.right - wmi->MonitorRect.left ) / wmi->IncrementX;
+		nVertIncrements = 1 + ( wmi->MonitorRect.bottom - wmi->MonitorRect.top ) / wmi->IncrementY;
+	}
+
+	//
+	// Allocate space for the grid
+	//
+	esi->pHorizontalEdges = new LONG[ nHorizIncrements + dwMaxEdgeSearchSize ];
+	if ( !esi->pHorizontalEdges )
+		return FALSE;
+	
+	esi->pVerticalEdges = new LONG[ nVertIncrements + dwMaxEdgeSearchSize ];
+	if ( !esi->pVerticalEdges )
+	{
+		delete [] esi->pHorizontalEdges;
+		esi->pHorizontalEdges = nullptr;
+		return FALSE;
+	}
+
+	// Add the increments
+	if ( bSnapToGrid )
+	{
+		for ( LONG x = wmi->MonitorRect.left; x <= wmi->MonitorRect.right; x += wmi->IncrementX )
+			esi->pVerticalEdges[ esi->dwNumVerticalEdges++ ] = x;
+		for ( LONG y = wmi->MonitorRect.top; y <= wmi->MonitorRect.bottom; y += wmi->IncrementY )
+			esi->pHorizontalEdges[ esi->dwNumHorizontalEdges++ ] = y;
+	}
+
+	return TRUE;
+}
+
+
+LONG SnapWindowToNearestEdge( 
+	const WINDOW_MANIPULATION_INFO* wmi,
+	const WINDOW_EDGE_SNAP_INFO* esi,
+	DIRECTION direction,
+	RECT* outRect )
+{
+	switch ( direction )
+	{
+	case DIR_UP:
+		{
+			SnapWindowUp( 
+				&wmi->MonitorRect, 
+				esi->pHorizontalEdges, 
+				esi->dwNumHorizontalEdges, 
+				outRect,
+				wmi->SafeZoneY );
+		}
+		break;
+	case DIR_DOWN:
+		{
+			SnapWindowDown( 
+				&wmi->MonitorRect, 
+				esi->pHorizontalEdges, 
+				esi->dwNumHorizontalEdges, 
+				outRect, 
+				wmi->SafeZoneY );
+		}
+		break;
+	case DIR_LEFT:
+		{
+			SnapWindowLeft( 
+				&wmi->MonitorRect,
+				esi->pVerticalEdges, 
+				esi->dwNumVerticalEdges, 
+				outRect, 
+				wmi->SafeZoneX );
+		}
+		break;
+	case DIR_RIGHT:
+		{
+			SnapWindowRight( 
+				&wmi->MonitorRect, 
+				esi->pVerticalEdges, 
+				esi->dwNumVerticalEdges, 
+				outRect, 
+				wmi->SafeZoneX );
+		}
+		break;
+	default:
+		return FALSE;
+	}
+
+	return DetectWindowChanges( wmi->SrcWindowRect, *outRect );
+}
+
+
+
+
+
+
+
+
+
 
 struct WINDOW_ENUM_CB_INFO
 {
@@ -421,8 +646,21 @@ LONG AlignAdjacentWindows(
 	return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
 struct WINDOW_EDGE_SEARCH_PARAMS
 {
+	HWND	hIgnoreWnd;
+
 	DWORD	dwMaxHorizontalEdges;
 	DWORD	dwMaxVerticalEdges;
 
@@ -438,6 +676,9 @@ BOOL CALLBACK WindowEdgeSearchProc(
 	HWND hWnd,
 	WINDOW_EDGE_SEARCH_PARAMS* params )
 {
+	if ( hWnd == params->hIgnoreWnd )
+		return TRUE;
+
 	if ( !::IsWindowVisible( hWnd ) ||
 		  ::IsIconic( hWnd ) )
 		return TRUE;
@@ -445,6 +686,18 @@ BOOL CALLBACK WindowEdgeSearchProc(
 	WINDOWINFO wndi;
 	if ( !::GetWindowInfo( hWnd, &wndi ) )
 		return TRUE;
+
+	if ( ( wndi.dwStyle & WS_CHILD ) != 0 )
+	{
+		return TRUE;
+	}
+
+	if ( ( wndi.dwExStyle & WS_EX_NOACTIVATE ) != 0 ||
+		 ( wndi.dwExStyle & WS_EX_TOOLWINDOW ) != 0 ||
+		 ( wndi.dwExStyle & WS_EX_STATICEDGE ) != 0 )
+	{
+		return TRUE;
+	}
 
 	if ( wndi.rcWindow.right == wndi.rcWindow.left ||
 		 wndi.rcWindow.top == wndi.rcWindow.right )
@@ -553,40 +806,55 @@ BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params
 		return FALSE;
 	}
 
-	// TODO: build a list of edges to snap to
-	// TODO: integrate WINDOW_SNAP_TO_OTHERS
+	RECT newWindowRect = wmi.SrcWindowRect;
+	LONG edgeChanges = 0;
+
 	if ( ( params->Flags & WINDOW_SNAP_TO_OTHERS ) &&
 		 ( params->MaxEdgeSearchSize > 0 ) )
 	{
-		// Build the list of edges
-		wmi.pHorizontalEdges = new LONG[ params->MaxEdgeSearchSize ];
-		wmi.pVerticalEdges = new LONG[ params->MaxEdgeSearchSize ];
+		BOOL bSnapToGrid = ( params->Flags & WINDOW_SNAP_TO_GRID ) != 0;
 
-		if ( wmi.pHorizontalEdges && wmi.pVerticalEdges )
+		WINDOW_EDGE_SNAP_INFO esi;
+		if ( InitializeEdgeMode( 
+			&wmi, 
+			params->MaxEdgeSearchSize, 
+			bSnapToGrid,
+			&esi ) )
 		{
 			WINDOW_EDGE_SEARCH_PARAMS wesp;
+			wesp.hIgnoreWnd = wmi.hWnd;
 			wesp.dwMaxHorizontalEdges = params->MaxEdgeSearchSize;
 			wesp.dwMaxVerticalEdges = params->MaxEdgeSearchSize;
-			wesp.dwNumHorizontalEdges = wmi.dwNumHorizontalEdges;
-			wesp.dwNumVerticalEdges = wmi.dwNumVerticalEdges;
-			wesp.pHorizontalEdges = wmi.pHorizontalEdges;
-			wesp.pVerticalEdges = wmi.pVerticalEdges;
+			wesp.dwNumHorizontalEdges = esi.dwNumHorizontalEdges;
+			wesp.dwNumVerticalEdges = esi.dwNumVerticalEdges;
+			wesp.pHorizontalEdges = esi.pHorizontalEdges;
+			wesp.pVerticalEdges = esi.pVerticalEdges;
 			wesp.ClipRect = wmi.MonitorRect;
 
 			WindowEdgeSearch( &wesp );
-		}
-	}
-		
-	// Manipulate the active window.
-	RECT newWindowRect = wmi.SrcWindowRect;
-	LONG edgeChanges = ManipulateSingleWindow( 
-		&wmi, 
-		direction, 
-		&newWindowRect );
 
-	// Delete the edge data (if any)
-	delete [] wmi.pHorizontalEdges;
-	delete [] wmi.pVerticalEdges;
+			esi.dwNumHorizontalEdges = wesp.dwNumHorizontalEdges;
+			esi.dwNumVerticalEdges = wesp.dwNumVerticalEdges;
+		}
+
+		edgeChanges = SnapWindowToNearestEdge(
+			&wmi,
+			&esi,
+			direction,
+			&newWindowRect );
+
+		// Delete the edge data (if any)
+		delete [] esi.pHorizontalEdges;
+		delete [] esi.pVerticalEdges;
+	}
+	else
+	{
+		// Manipulate the active window.
+		edgeChanges = ManipulateSingleWindow( 
+			&wmi, 
+			direction, 
+			&newWindowRect );
+	}
 	
 	// If no changes were made, we're done.
 	if ( edgeChanges == 0 )
