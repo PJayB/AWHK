@@ -135,7 +135,7 @@ namespace AWHKConfig {
 			this->btnAccept->Name = L"btnAccept";
 			this->btnAccept->Size = System::Drawing::Size(80, 27);
 			this->btnAccept->TabIndex = 27;
-			this->btnAccept->Text = L"&Accept";
+			this->btnAccept->Text = L"&Apply";
 			this->btnAccept->UseVisualStyleBackColor = true;
 			this->btnAccept->Click += gcnew System::EventHandler(this, &SettingsForm::btnAccept_Click);
 			// 
