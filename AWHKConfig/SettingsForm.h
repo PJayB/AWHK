@@ -131,7 +131,7 @@ namespace AWHKConfig {
 			// 
 			// btnAccept
 			// 
-			this->btnAccept->Location = System::Drawing::Point(416, 225);
+			this->btnAccept->Location = System::Drawing::Point(408, 215);
 			this->btnAccept->Name = L"btnAccept";
 			this->btnAccept->Size = System::Drawing::Size(80, 27);
 			this->btnAccept->TabIndex = 27;
@@ -141,7 +141,7 @@ namespace AWHKConfig {
 			// chkRunLogin
 			// 
 			this->chkRunLogin->AutoSize = true;
-			this->chkRunLogin->Location = System::Drawing::Point(6, 42);
+			this->chkRunLogin->Location = System::Drawing::Point(12, 42);
 			this->chkRunLogin->Name = L"chkRunLogin";
 			this->chkRunLogin->Size = System::Drawing::Size(150, 17);
 			this->chkRunLogin->TabIndex = 26;
@@ -151,7 +151,7 @@ namespace AWHKConfig {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(105, 133);
+			this->label7->Location = System::Drawing::Point(114, 133);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(127, 13);
 			this->label7->TabIndex = 25;
@@ -160,7 +160,7 @@ namespace AWHKConfig {
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(105, 106);
+			this->label6->Location = System::Drawing::Point(114, 106);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(92, 13);
 			this->label6->TabIndex = 24;
@@ -169,7 +169,7 @@ namespace AWHKConfig {
 			// label5
 			// 
 			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(105, 79);
+			this->label5->Location = System::Drawing::Point(114, 79);
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(90, 13);
 			this->label5->TabIndex = 23;
@@ -216,7 +216,7 @@ namespace AWHKConfig {
 			this->cmbNextMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cmbNextMod->FormattingEnabled = true;
 			this->cmbNextMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
-			this->cmbNextMod->Location = System::Drawing::Point(6, 130);
+			this->cmbNextMod->Location = System::Drawing::Point(12, 130);
 			this->cmbNextMod->Name = L"cmbNextMod";
 			this->cmbNextMod->Size = System::Drawing::Size(93, 21);
 			this->cmbNextMod->TabIndex = 18;
@@ -226,7 +226,7 @@ namespace AWHKConfig {
 			this->cmbFineMod->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cmbFineMod->FormattingEnabled = true;
 			this->cmbFineMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"(disabled)", L"Shift", L"Ctrl"});
-			this->cmbFineMod->Location = System::Drawing::Point(6, 103);
+			this->cmbFineMod->Location = System::Drawing::Point(12, 103);
 			this->cmbFineMod->Name = L"cmbFineMod";
 			this->cmbFineMod->Size = System::Drawing::Size(93, 21);
 			this->cmbFineMod->TabIndex = 17;
@@ -238,7 +238,7 @@ namespace AWHKConfig {
 			this->cmbMoveMod->Enabled = false;
 			this->cmbMoveMod->FormattingEnabled = true;
 			this->cmbMoveMod->Items->AddRange(gcnew cli::array< System::Object^  >(3) {L"Alt", L"Shift", L"Ctrl"});
-			this->cmbMoveMod->Location = System::Drawing::Point(6, 76);
+			this->cmbMoveMod->Location = System::Drawing::Point(12, 76);
 			this->cmbMoveMod->Name = L"cmbMoveMod";
 			this->cmbMoveMod->Size = System::Drawing::Size(93, 21);
 			this->cmbMoveMod->TabIndex = 16;
@@ -287,7 +287,7 @@ namespace AWHKConfig {
 			// 
 			this->chkAllowSnap->AutoSize = true;
 			this->chkAllowSnap->Enabled = false;
-			this->chkAllowSnap->Location = System::Drawing::Point(6, 19);
+			this->chkAllowSnap->Location = System::Drawing::Point(12, 19);
 			this->chkAllowSnap->Name = L"chkAllowSnap";
 			this->chkAllowSnap->Size = System::Drawing::Size(188, 17);
 			this->chkAllowSnap->TabIndex = 10;
@@ -297,7 +297,7 @@ namespace AWHKConfig {
 			// closeBtn
 			// 
 			this->closeBtn->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			this->closeBtn->Location = System::Drawing::Point(6, 225);
+			this->closeBtn->Location = System::Drawing::Point(12, 215);
 			this->closeBtn->Name = L"closeBtn";
 			this->closeBtn->Size = System::Drawing::Size(80, 27);
 			this->closeBtn->TabIndex = 8;
@@ -307,7 +307,7 @@ namespace AWHKConfig {
 			// okBtn
 			// 
 			this->okBtn->DialogResult = System::Windows::Forms::DialogResult::OK;
-			this->okBtn->Location = System::Drawing::Point(502, 225);
+			this->okBtn->Location = System::Drawing::Point(494, 215);
 			this->okBtn->Name = L"okBtn";
 			this->okBtn->Size = System::Drawing::Size(80, 27);
 			this->okBtn->TabIndex = 9;
