@@ -47,3 +47,4 @@ ToDo
 - Add quit hotkey (Alt+Esc maybe?)
 - More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
+- Defer repaint to improve performance

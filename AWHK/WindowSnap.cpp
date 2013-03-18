@@ -788,6 +788,9 @@ BOOL WindowEdgeSearch( WINDOW_EDGE_SEARCH_PARAMS* params )
 	return TRUE;
 }
 
+
+
+
 BOOL ForegroundWindowSnap( DIRECTION direction, const WINDOW_SNAP_PARAMS* params )
 {
 	// Get the window the user is focused on
