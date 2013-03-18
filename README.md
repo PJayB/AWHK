@@ -6,7 +6,7 @@ Augments the functionality of the [Windows key + cursor keys] keyboard shortcuts
 Download & License
 ------------------
 
-This application is provivded free for private or commercial use. By downloading you agree that:
+This application is provided free for private or commercial use. By downloading you agree that:
 - this program comes with no warranty, guaranteed or implied,
 - the author is not responsible for damage caused to equipment or data (which is highly unlikely),
 - the feedback email alias below is for mail relating to this application only and no other purpose.
