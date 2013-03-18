@@ -21,7 +21,7 @@
 #define AWHK_REG_DOWN_KEY		L"DownKey"
 
 #define AWHK_REG_MOVE_KEY_MOD	L"MoveKeyMod"
-#define AWHK_REG_SOLO_KEY_MOD	L"SoloKeyMod"
+#define AWHK_REG_NEXT_KEY_MOD	L"NextKeyMod"
 #define AWHK_REG_FINE_KEY_MOD	L"FineKeyMod"
 
 

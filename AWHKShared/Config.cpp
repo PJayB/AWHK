@@ -4,7 +4,6 @@
 
 AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	: AllowSnapToOthers( FALSE ) // TODO
-	, AllowModifyAdjacent( TRUE )
 	, GridX( 8 )
 	, GridY( 4 )
 	, FineX( 32 )
@@ -18,7 +17,7 @@ AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	, UpKey( VK_UP )
 	, DownKey( VK_DOWN )
 	, MoveKeyMod( MOD_ALT )
-	, SoloKeyMod( MOD_CONTROL )
+	, NextKeyMod( MOD_CONTROL )
 	, FineKeyMod( MOD_SHIFT )
 {
 }
@@ -36,7 +35,6 @@ void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 {
 	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	, &cfg->AllowSnapToOthers );
-	LoadRegistryBool	( AWHK_REG_ADJACENCY	, &cfg->AllowModifyAdjacent );
 
 	LoadConfigGridValue	( AWHK_REG_GRID_X		, &cfg->GridX );
 	LoadConfigGridValue	( AWHK_REG_GRID_Y		, &cfg->GridY );
@@ -53,11 +51,11 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadRegistryVKey	( AWHK_REG_UP_KEY		, &cfg->UpKey );
 	LoadRegistryVKey	( AWHK_REG_DOWN_KEY		, &cfg->DownKey );
 
-	DWORD moveKeyMod = 0;
-	DWORD fineKeyMod = 0;
-	DWORD soloKeyMod = 0;
+	DWORD moveKeyMod = cfg->MoveKeyMod;
+	DWORD fineKeyMod = cfg->FineKeyMod;
+	DWORD nextKeyMod = cfg->NextKeyMod;
 	LoadRegistryKeyMod	( AWHK_REG_MOVE_KEY_MOD	, &moveKeyMod );
-	LoadRegistryKeyMod	( AWHK_REG_SOLO_KEY_MOD	, &soloKeyMod );
+	LoadRegistryKeyMod	( AWHK_REG_NEXT_KEY_MOD	, &nextKeyMod );
 	LoadRegistryKeyMod	( AWHK_REG_FINE_KEY_MOD	, &fineKeyMod );
 
 	// We MUST have a move key mod (otherwise what's the point?)
@@ -65,10 +63,10 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 		cfg->MoveKeyMod = moveKeyMod;
 
 	// The two other modifiers must be different
-	if ( fineKeyMod != moveKeyMod && fineKeyMod != soloKeyMod )
+	if ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod )
 		cfg->FineKeyMod = fineKeyMod;
-	if ( soloKeyMod != moveKeyMod && soloKeyMod != fineKeyMod )
-		cfg->SoloKeyMod = soloKeyMod;
+	if ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod )
+		cfg->NextKeyMod = nextKeyMod;
 
 	return TRUE;
 }
@@ -76,7 +74,6 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 {
 	StoreRegistryDword( AWHK_REG_ALLOW_SNAP		, cfg->AllowSnapToOthers );
-	StoreRegistryDword( AWHK_REG_ADJACENCY		, cfg->AllowModifyAdjacent );
 
 	StoreRegistryDword( AWHK_REG_GRID_X			, cfg->GridX );
 	StoreRegistryDword( AWHK_REG_GRID_Y			, cfg->GridY );
@@ -94,7 +91,7 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 	StoreRegistryDword( AWHK_REG_DOWN_KEY		, cfg->DownKey );
 
 	StoreRegistryDword( AWHK_REG_MOVE_KEY_MOD	, cfg->MoveKeyMod );
-	StoreRegistryDword( AWHK_REG_SOLO_KEY_MOD	, cfg->SoloKeyMod );
+	StoreRegistryDword( AWHK_REG_NEXT_KEY_MOD	, cfg->NextKeyMod );
 	StoreRegistryDword( AWHK_REG_FINE_KEY_MOD	, cfg->FineKeyMod );
 
 	return TRUE;

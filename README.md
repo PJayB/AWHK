@@ -28,17 +28,16 @@ In addition to the usual [Align Left], [Align Right], [Maximize], [Minimize] fun
 - Expands the window's left or right edges by 1/8th screen width (Alt+Left, Alt+Right),
 - Contracts the window's left or right edges by 1/8th screen width (Alt+Left, Alt+Right)
 
-Windows in the same column will react the same way. If you have two windows stacked on top of eachother, using Alt+Left will expand them both left, for example.
-
 These are useful if you like using Win+Cursor, but wish you could:
 
 - Make windows take up anything other than exactly half of your screen,
 - Put two or more windows on each half, vertically.
 
+Windows in the same column or row will react the same way if you old Ctrl. For example, if you have two windows stacked on top of eachother, using Alt+Ctrl+Left will expand them both left.
+
 Other keys:
 - Alt+F1 loads this help page.
 - Alt+F2 loads the configuration panel.
-- Holding Ctrl in addition to Alt+Cursor will prevent adjacent windows from moving.
 - Holding Shift in addition to Alt+Cursor will give you a more fine-grained grid.
 
 Bugs & ToDo

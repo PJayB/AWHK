@@ -142,10 +142,8 @@ void ConfigureWindowSnapParams(
 
 	if ( cfg->AllowSnapToOthers )
 		params->Flags |= WINDOW_SNAP_TO_OTHERS;
-	if ( cfg->AllowModifyAdjacent )
+	if ( ( modifiers & cfg->NextKeyMod ) == cfg->NextKeyMod )
 		params->Flags |= WINDOW_MODIFY_ADJACENT;
-	if ( ( modifiers & cfg->SoloKeyMod ) == cfg->SoloKeyMod )
-		params->Flags |= WINDOW_SNAP_ADJACENT;
 	if ( ( modifiers & cfg->FineKeyMod ) == cfg->FineKeyMod )
 		params->Flags |= WINDOW_SNAP_FINE_GRID;
 
@@ -215,8 +213,8 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 
 	DWORD moveKeyMod = cfg->MoveKeyMod;
 	DWORD fineKeyMod = cfg->MoveKeyMod | cfg->FineKeyMod;
-	DWORD soloKeyMod = cfg->MoveKeyMod | cfg->SoloKeyMod;
-	DWORD allKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->SoloKeyMod;
+	DWORD soloKeyMod = cfg->MoveKeyMod | cfg->NextKeyMod;
+	DWORD allKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->NextKeyMod;
 
 	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->LeftKey );
 	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->RightKey );
@@ -231,7 +229,7 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->DownKey );
 	}
 
-	if ( cfg->SoloKeyMod )
+	if ( cfg->NextKeyMod )
 	{
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->LeftKey );
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->RightKey );
@@ -239,7 +237,7 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->DownKey );
 	}
 
-	if ( cfg->FineKeyMod | cfg->SoloKeyMod )
+	if ( cfg->FineKeyMod | cfg->NextKeyMod )
 	{
 		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->LeftKey );
 		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->RightKey );

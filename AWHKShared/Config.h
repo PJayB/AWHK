@@ -5,7 +5,6 @@ struct AWHK_APP_CONFIG
 	AWHK_APP_CONFIG();
 
 	BOOL			AllowSnapToOthers;
-	BOOL			AllowModifyAdjacent;
 
 	DWORD			GridX;
 	DWORD			GridY;
@@ -23,7 +22,7 @@ struct AWHK_APP_CONFIG
 	DWORD			DownKey;
 
 	DWORD			MoveKeyMod;
-	DWORD			SoloKeyMod;
+	DWORD			NextKeyMod;
 	DWORD			FineKeyMod;
 };
 
