@@ -4,8 +4,5 @@ Release
 *.sdf
 *.user
 ipch
-WindowEnum.v11.suo
-AWH.v11.suo
-AdvancedWindowsHotkeys.zip
-AWHK.v11.suo
-AdvancedWindowHotkeys.zip
+*.suo
+AdvancedWindowHotKeys.zip
