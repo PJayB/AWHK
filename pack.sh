@@ -6,7 +6,7 @@ cd tmp
 cp ../Release/*.exe .
 cp ../README.md README.txt
 
-zip -9 ../AdvancedWindowHotkeys.zip *
+zip -9 ../AdvancedWindowHotKeys.zip *
 
 cd ..
 rm -rf tmp
