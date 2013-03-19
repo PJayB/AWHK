@@ -3,15 +3,15 @@ AdvancedWindowHotkeys
 
 Augments the functionality of the [Windows key + cursor keys] keyboard shortcuts.
 
-Download & License
-------------------
+Binary
+------
 
 This application is provided free for private or commercial use. By downloading you agree that:
 - this program comes with no warranty, guaranteed or implied,
 - the author is not responsible for damage caused to equipment or data (which is highly unlikely),
 - the feedback email alias below is for mail relating to this application only and no other purpose.
 
-http://gibbering.net/AdvancedWindowHotkeys.zip (35KB)
+http://gibbering.net/AWHK/AdvancedWindowHotKeys.zip
 
 Download, extract anywhere and run AWHK.exe. The app is invisible, so use Alt + any cursor key on your browser window to test. This application will *not* start automatically each time you log in.
 
