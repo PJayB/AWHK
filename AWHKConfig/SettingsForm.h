@@ -61,6 +61,8 @@ namespace AWHKConfig {
 	private: System::Windows::Forms::CheckBox^  chkAllowSnap;
 	private: System::Windows::Forms::Button^  closeBtn;
 	private: System::Windows::Forms::Button^  okBtn;
+	private: System::Windows::Forms::Button^  quitBtn;
+
 
 	private:
 
@@ -97,6 +99,7 @@ namespace AWHKConfig {
 			this->chkAllowSnap = (gcnew System::Windows::Forms::CheckBox());
 			this->closeBtn = (gcnew System::Windows::Forms::Button());
 			this->okBtn = (gcnew System::Windows::Forms::Button());
+			this->quitBtn = (gcnew System::Windows::Forms::Button());
 			this->controlContainer->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -121,6 +124,7 @@ namespace AWHKConfig {
 			this->controlContainer->Controls->Add(this->cmbGridY);
 			this->controlContainer->Controls->Add(this->cmbGridX);
 			this->controlContainer->Controls->Add(this->chkAllowSnap);
+			this->controlContainer->Controls->Add(this->quitBtn);
 			this->controlContainer->Controls->Add(this->closeBtn);
 			this->controlContainer->Controls->Add(this->okBtn);
 			this->controlContainer->Location = System::Drawing::Point(12, 12);
@@ -318,6 +322,17 @@ namespace AWHKConfig {
 			this->okBtn->UseVisualStyleBackColor = true;
 			this->okBtn->Click += gcnew System::EventHandler(this, &SettingsForm::okBtn_Click);
 			// 
+			// quitBtn
+			// 
+			this->quitBtn->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+			this->quitBtn->Location = System::Drawing::Point(145, 215);
+			this->quitBtn->Name = L"quitBtn";
+			this->quitBtn->Size = System::Drawing::Size(80, 27);
+			this->quitBtn->TabIndex = 8;
+			this->quitBtn->Text = L"&Quit";
+			this->quitBtn->UseVisualStyleBackColor = true;
+			this->quitBtn->Click += gcnew System::EventHandler(this, &SettingsForm::quitBtn_Click);
+			// 
 			// SettingsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -479,17 +494,46 @@ private: System::Void btnAccept_Click(System::Object^  sender, System::EventArgs
 			  
 			 if ( !didItWork )
 			 {
-				 Windows::Forms::MessageBox::Show(
+				 MessageBox::Show(
 					 this,
 					 "It appears AWHK is not running. Changes will be applied when the application is next run.",
 					 "Advanced Windows HotKeys",
 					 MessageBoxButtons::OK,
 					 MessageBoxIcon::Information );
 			 }
+
+			 CloseIPC( &ipc );
 		 }
 private: System::Void SettingsForm_Resize(System::Object^  sender, System::EventArgs^  e) {
 			 controlContainer->Left = (this->ClientSize.Width  - controlContainer->Width) / 2;
 			 controlContainer->Top  = (this->ClientSize.Height - controlContainer->Height) / 2;
+		 }
+private: System::Void quitBtn_Click(System::Object^  sender, System::EventArgs^  e) {
+
+			 IPC ipc;
+			 if ( !OpenIPC( &ipc ) )
+			 {
+				 MessageBox::Show(
+					 this,
+					 "It appears AWHK is not running.",
+					 "Advanced Windows HotKeys",
+					 MessageBoxButtons::OK,
+					 MessageBoxIcon::Information );
+				 return;
+			 }
+			  
+			 if ( MessageBox::Show(
+				 this,
+				 "Are you sure you want to unload AWHK?",
+				 "Quit Prompt",
+				 MessageBoxButtons::YesNo,
+				 MessageBoxIcon::Question ) != Windows::Forms::DialogResult::Yes )
+			 {
+				 return;
+			 }
+
+			 WriteMessageIPC( &ipc, IPC_MSG_QUIT );
+			 CloseIPC( &ipc );
 		 }
 };
 }
