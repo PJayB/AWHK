@@ -119,7 +119,7 @@ BOOL ShowWebHelp()
 	return (INT) ShellExecute(
 		nullptr,
 		L"open",
-		L"https://github.com/PJayB/AdvancedWindowHotkeys/blob/master/README.md",
+		L"http://gibbering.net/AWHK/",
 		nullptr,
 		nullptr,
 		SW_SHOWNORMAL ) > 32;
