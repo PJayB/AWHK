@@ -1,23 +1,29 @@
 <html>
     <head>
         <title>AWHK</title>
+		<link rel="stylesheet" type="text/css" href="Help/style.css" />
     </head>
     <body>
         <a id="top" />
         <h1 id="title">
-            Advanced Window HotKeys - Help
+            Advanced Window HotKeys
         </h1>
         <p>
-            This program extends the functionality of the Windows 7 [Win][Arrow 
-            Keys] hotkeys, allowing you more control over your window layout.
+            This program extends the functionality of the Windows 7 <b>[Win][Arrow 
+            Keys]</b> hotkeys, allowing you more control over your window layout.
         </p>
         <a id="install" />
         <h2>
-            Installation
+            Download &amp; Installation
         </h2>
         <p>
+            <a href="AdvancedWindowHotKeys.zip">
+                <img id="download" src="Help/zip.png" title="Download" />Download AdvancedWindowHotKeys.zip
+            </a>
+        </p>
+        <p>
             To install <em>AWHK</em>, extract the archive to any location and run 
-            <em>AWHK.exe</em>.
+            <em>AWHK.exe</em>. Test by pressing <b>[Alt][F2]</b>.
         </p>
         <a id="basics" />
         <h2>
@@ -28,7 +34,7 @@
             <img src="Help/arrows.png" title="Arrow Keys" />
         </div>
         <p>
-            By default, [Alt][Arrow Keys] will expand the window in the 
+            By default, <b>[Alt][Arrow Keys]</b> will expand the window in the 
             specified direction. By default, the window expands:
         </p>
         <ul>
@@ -40,10 +46,10 @@
             You can change these settings in the <a href="#config">
             Configuration Panel</a>. The window will never expand over monitor's
             border. To move a window over the edge of on monitor to another, use
-            [Win][Arrow Keys].
+            <b>[Win][Arrow Keys]</b>.
         </p>
         <div class="diagram">
-            <table class="diagram">
+            <table>
                 <tr>
                     <td>
                         <img src="Help/expand_left_snap.png" title="Snap to other windows" />
@@ -74,7 +80,7 @@
         </div>
         <p>
             You can make smaller increments to the grid-based movement by using
-            [Shift][Alt][Arrow Keys].
+            <b>[Shift][Alt][Arrow Keys]</b>.
         </p>
         <a id="adjacency" />
         <h2>
@@ -87,12 +93,12 @@
         </div>
         <p>
             Take the case where you have a nice setup going, but one half of the 
-            monitor isn't quite wide enough. Using [Alt][Arrow Keys] on the blue
+            monitor isn't quite wide enough. Using <b>[Alt][Arrow Keys]</b> on the blue
             window below will cause the window to overlap the brown, and the
             pink would no longer be aligned.
         </p>
         <p>
-            Instead, use [Ctrl][Alt][Arrow Keys] to keep them all in sync:
+            Instead, use <b>[Ctrl][Alt][Arrow Keys]</b> to keep them all in sync:
         </p>
         <div class="diagram">
             <table class="diagram">
@@ -106,7 +112,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        Using [Ctrl][Alt][Arrow Keys] allows you to adjust the
+                        Using <b>[Ctrl][Alt][Arrow Keys]</b> allows you to adjust the
                         size of a window while preserving your window layout.
                     </td>
                 </tr>
@@ -129,8 +135,8 @@
             Future versions will apply settings as you change them for instant preview, and will allow
             more advanced configuration such as rebinding all keys. 
         </p>
-        <table class="altShaded">
-            <tr>
+        <table id="configtable">
+            <tr class="r0">
                 <td>
                     <h3>Enable Snapping to Other Windows</h3>
                     <p>
@@ -140,7 +146,7 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r1">
                 <td>
                     <h3>Run When Windows Starts</h3>
                     <p>
@@ -153,15 +159,15 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r0">
                 <td>
                     <h3>Base Key Modifier</h3>
                     <p>
-                        This option is currently not modifiable and defaults to <b>Alt</b>.
+                        This option is currently not modifiable and defaults to <b>[Alt]</b>.
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r1">
                 <td>
                     <h3>Fine-Snap Modifier</h3>
                     <p>
@@ -171,7 +177,7 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r0">
                 <td>
                     <h3>Adjacent Window Modifier</h3>
                     <p>
@@ -179,7 +185,7 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r1">
                 <td>
                     <h3>Grid Snap Configuration</h3>
                     <p>
@@ -188,7 +194,7 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r0">
                 <td>
                     <h3>Quit</h3>
                     <p>
@@ -196,7 +202,7 @@
                     </p>
                 </td>
             </tr>
-            <tr>
+            <tr class="r1">
                 <td>
                     <h3>Apply, OK and Cancel</h3>
                     <p>
