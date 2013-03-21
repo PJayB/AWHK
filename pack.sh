@@ -4,7 +4,7 @@ mkdir tmp
 cd tmp
 
 cp ../Release/*.exe .
-cp ../index.html .
+cp ../index.html ReadMe.html
 cp -R ../Help .
 
 zip -9 ../AdvancedWindowHotKeys.zip *
