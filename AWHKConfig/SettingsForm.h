@@ -544,8 +544,8 @@ namespace AWHKConfig {
 			this->Controls->Add(this->controlContainer);
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^  >(resources->GetObject(L"$this.Icon")));
 			this->MaximizeBox = false;
-			this->MaximumSize = System::Drawing::Size(474, 469);
 			this->MinimizeBox = false;
+			this->MinimumSize = System::Drawing::Size(474, 469);
 			this->Name = L"SettingsForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Advanced Window Hotkeys - Settings";
