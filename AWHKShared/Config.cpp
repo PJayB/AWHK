@@ -65,9 +65,9 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 		cfg->MoveKeyMod = moveKeyMod;
 
 	// The two other modifiers must be different
-	if ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod )
+	if ( !fineKeyMod || ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod ) )
 		cfg->FineKeyMod = fineKeyMod;
-	if ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod )
+	if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
 		cfg->NextKeyMod = nextKeyMod;
 
 	return TRUE;
@@ -96,6 +96,6 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 	StoreRegistryDword( AWHK_REG_MOVE_KEY_MOD	, cfg->MoveKeyMod );
 	StoreRegistryDword( AWHK_REG_NEXT_KEY_MOD	, cfg->NextKeyMod );
 	StoreRegistryDword( AWHK_REG_FINE_KEY_MOD	, cfg->FineKeyMod );
-
+	
 	return TRUE;
 }

@@ -77,7 +77,7 @@ BOOL LoadRegistryVKey( LPCWSTR strName, DWORD* pOut )
 		return FALSE;
 
 	*pOut = dwValue;
-
+	
 	return TRUE;
 }
 
@@ -92,12 +92,18 @@ BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
 	}
 
 	if ( dwValue == 0 )
+	{
+		*pOut = 0;
 		return TRUE;
+	}
 
 	// Sanity check the key
-	if ( dwValue != MOD_SHIFT &&
-		 dwValue != MOD_CONTROL &&
-		 dwValue != MOD_ALT )
+	//if ( dwValue != MOD_SHIFT &&
+	//	 dwValue != MOD_CONTROL &&
+	//	 dwValue != MOD_ALT )
+	//	return FALSE;
+	DWORD dwAllKeys = MOD_ALT | MOD_CONTROL | MOD_SHIFT | MOD_WIN;
+	if ( dwValue > dwAllKeys )
 		return FALSE;
 
 	*pOut = dwValue;
