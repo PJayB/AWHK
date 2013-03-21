@@ -3,6 +3,7 @@
         <title>AWHK</title>
     </head>
     <body>
+        <a id="top" />
         <h1 id="title">
             Advanced Window HotKeys - Help
         </h1>
@@ -10,6 +11,15 @@
             This program extends the functionality of the Windows 7 [Win][Arrow 
             Keys] hotkeys, allowing you more control over your window layout.
         </p>
+        <a id="install" />
+        <h2>
+            Installation
+        </h2>
+        <p>
+            To install <em>AWHK</em>, extract the archive to any location and run 
+            <em>AWHK.exe</em>.
+        </p>
+        <a id="basics" />
         <h2>
             Basics
         </h2>
@@ -53,6 +63,7 @@
                 </tr>
             </table>
         </div>
+        <a id="fine" />
         <h2>
             Finer Control
         </h2>
@@ -65,6 +76,7 @@
             You can make smaller increments to the grid-based movement by using
             [Shift][Alt][Arrow Keys].
         </p>
+        <a id="adjacency" />
         <h2>
             Keeping Other Windows In-Line
         </h2>
@@ -110,23 +122,106 @@
         </div>
         <p>
             The configuration panel allows you to adjust some of the keys and behaviour of <em>AWHK</em>.
-            The window is resizable so you can also use this to test your configuration once you hit <b>Apply</b>. 
+            The window is resizable so you can also use this to test your configuration once you hit 
+            <b>Apply</b>. 
         </p>
-        <ul>
-            <li>Enable Snapping to Other Windows</li>
-            <li>Run When Windows Starts</li>
-            <li>Base Key Modifier</li>
-            <li>Fine-Snap Modifier</li>
-            <li>Adjacent Window Modifier</li>
-            <li>Snap Column Configuration</li>
-            <li>Quit</li>
-            <li>Apply</li>
-            <li>Cancel</li>
-            <li>OK</li>
-        </ul>
         <p>
             Future versions will apply settings as you change them for instant preview, and will allow
             more advanced configuration such as rebinding all keys. 
+        </p>
+        <table class="altShaded">
+            <tr>
+                <td>
+                    <h3>Enable Snapping to Other Windows</h3>
+                    <p>
+                        Unticking this will mean that the foreground window will only ever align to grid
+                        edges and not snap to other windows. This may be useful for users who generally
+                        have a lot of windows open.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Run When Windows Starts</h3>
+                    <p>
+                        Ticking this will run <em>AWHK</em> from it's current location whenyou log in to
+                        Windows.
+                    </p>
+                    <p class="warning">
+                        NOTE: If you ever move <em>AWHK</em>, you should untick, <b>Apply</b>, and
+                        re-tick this option to reset the Registry option.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Base Key Modifier</h3>
+                    <p>
+                        This option is currently not modifiable and defaults to <b>Alt</b>.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Fine-Snap Modifier</h3>
+                    <p>
+                        Holding this key, as well as the <b>Base Key Modifier</b>, will use the 
+                        <b>Fine-Snap Grid Settings</b> instead. This will give you <a href="#fine">
+                        finer resolution when grid-snapping</a>.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Adjacent Window Modifier</h3>
+                    <p>
+                        Holding this key will activate <a href="#adjacency">adjacent window modification</a>.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Grid Snap Configuration</h3>
+                    <p>
+                        Here you can adjust how many grid lines you would like for each screen axis
+                        for both regular and fine-resolution grids.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Quit</h3>
+                    <p>
+                        This quits <em>AWHK</em> and the control panel.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Apply, OK and Cancel</h3>
+                    <p>
+                        <b>Cancel</b> closes the configuration panel without saving any changes.<br />
+                        <b>Apply</b> applies changes immediately, without closing the configuration panel.<br />
+                        <b>OK</b> applies changes and closes the configuration panel.
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <h2>
+            Future
+        </h2>
+        <p>
+            Future versions of <em>AWHK</em> may include:
+        </p>
+        <ul>
+            <li>An install &amp; uninstall feature.</li>
+            <li>The ability to remap all keys.</li>
+            <li>A <em>Move Window</em> function for moving windows as well as 
+                expanding/contracting them.</li>
+        </ul>
+        <p>
+            If you urgently wish to see these or any other features, please email 
+            <a href="mailto:awhktool@gibbering.net">awhktool@gibbering.net</a>.
         </p>
     </body>
 </html>
