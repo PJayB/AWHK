@@ -18,8 +18,7 @@ For questions, help or feedback, please email [awhktool@gibbering.net]. Feedback
 ToDo
 -----------
 
-- Add diagrams to this help for clarity
-- Add quit hotkey (Alt+Esc maybe?)
-- More consistency (doesn't work for some windows, e.g. Task Manager, Spotify)
+- Installer/uninstaller
+- More consistency (doesn't work for some windows, e.g. Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
-- Defer repaint to improve performance
+- Defer repaint to improve performance?
