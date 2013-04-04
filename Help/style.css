@@ -17,6 +17,11 @@ h2 {
     padding-top: 25px;
 }
 
+h3 {
+    font-size: 12px;
+
+}
+
 .diagram {
     /* background: #a9a7a7; */
     padding: 5px;
@@ -37,9 +42,11 @@ table.h3 {
     font-size: 14pt;
 }
 
-#download {
-   padding-right: 7px;
-   margin-top: 2px;
+.download {
+    padding-left: 15px;
+    padding-right: 7px;
+    top: 4px;
+    position: relative;
 }
 
 #configtable {
