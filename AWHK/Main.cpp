@@ -181,8 +181,19 @@ BOOL HandleHotKey(
 		mods,
 		&params );
 
+	// Which set of arrow keys are we using?
+	DIRECTION arrowKeys = DirectionFromVKey( &cfg->ResizeKeys, vKey );
+	if ( arrowKeys == DIR_UNKNOWN )
+	{
+		arrowKeys = DirectionFromVKey( &cfg->MoveKeys, vKey );
+		if ( arrowKeys == DIR_UNKNOWN )
+			return FALSE;
+
+		params.Flags |= WINDOW_MOVE_ONLY;
+	}
+
 	return ForegroundWindowSnap( 
-		DirectionFromVKey( &cfg->ResizeKeys, vKey ), // direction
+		arrowKeys, // direction
 		&params // single window only?
 		);
 }
@@ -249,6 +260,11 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.RightKey );
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.UpKey );
 		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.DownKey );
+
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->MoveKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->MoveKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->MoveKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->MoveKeys.DownKey );
 	}
 
 	if ( cfg->FineKeyMod | cfg->NextKeyMod )
@@ -257,6 +273,11 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.RightKey );
 		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.UpKey );
 		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.DownKey );
+
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->MoveKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->MoveKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->MoveKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->MoveKeys.DownKey );
 	}
 
 	if ( pHotkeyCount )

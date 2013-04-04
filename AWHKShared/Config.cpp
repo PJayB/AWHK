@@ -22,10 +22,10 @@ AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	ResizeKeys.UpKey = VK_UP;
 	ResizeKeys.DownKey = VK_DOWN;
 
-	MoveKeys.LeftKey = 'a';
-	MoveKeys.RightKey = 'd';
-	MoveKeys.UpKey = 'w';
-	MoveKeys.DownKey = 's';
+	MoveKeys.LeftKey = 'A';
+	MoveKeys.RightKey = 'D';
+	MoveKeys.UpKey = 'W';
+	MoveKeys.DownKey = 'S';
 }
 
 void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
