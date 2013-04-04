@@ -383,7 +383,7 @@ LPCWSTR GetVKeyString( DWORD keyMod )
 	KEYMOD(F1);
 	KEYMOD(F2);
 	default: 
-		return L"<unknown>";
+		return nullptr;
 	}
 #undef KEYMOD
 };
@@ -399,6 +399,8 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 		LPWSTR strCursor = strKeysFailed;
 		LPCWSTR strEnd = strKeysFailed + sizeof(strKeysFailed) / sizeof(*strKeysFailed);
 
+		WCHAR strTmp[2];
+
 		for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
 		{
 			const AWHK_HOTKEY_SET* pKeySet = &pKeys->KeySets[k];
@@ -408,6 +410,17 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 				{
 					DWORD dwVKey = HIWORD( pKeySet->pdwRegisteredKeys[i] );
 					DWORD dwMod = LOWORD( pKeySet->pdwRegisteredKeys[i] );
+
+					LPCWSTR strVKey = GetVKeyString( dwVKey );
+					if ( !strVKey )
+					{
+						swprintf_s(
+							strTmp,
+							sizeof( strTmp ) / sizeof( *strTmp ),
+							L"%c",
+							dwVKey );
+						strVKey = strTmp;
+					}
 
 					strCursor += swprintf_s(
 						strCursor, 
@@ -419,7 +432,7 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 						GetKeyModString( dwMod & MOD_SHIFT ),
 						GetKeyModString( dwMod & MOD_CONTROL ),
 						GetKeyModString( dwMod & MOD_WIN ),
-						GetVKeyString( dwVKey ) );
+						strVKey );
 				}
 			}
 		}
