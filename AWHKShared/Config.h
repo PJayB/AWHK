@@ -1,31 +1,37 @@
 #pragma once
 
+struct AWHK_CURSOR_KEYS
+{
+	DWORD				LeftKey;
+	DWORD				RightKey;
+	DWORD				UpKey;
+	DWORD				DownKey;
+};
+
 struct AWHK_APP_CONFIG
 {
 	AWHK_APP_CONFIG();
 
-	BOOL			AllowSnapToOthers;
+	BOOL				AllowSnapToOthers;
 
-	DWORD			MaxEdgeSearchSize;
+	DWORD				MaxEdgeSearchSize;
 
-	DWORD			GridX;
-	DWORD			GridY;
-	DWORD			FineX;
-	DWORD			FineY;
+	DWORD				GridX;
+	DWORD				GridY;
+	DWORD				FineX;
+	DWORD				FineY;
 
-	DWORD			HelpKey;
-	DWORD			HelpKeyMod;
-	DWORD			ConfigKey;
-	DWORD			ConfigKeyMod;
+	DWORD				HelpKey;
+	DWORD				HelpKeyMod;
+	DWORD				ConfigKey;
+	DWORD				ConfigKeyMod;
 
-	DWORD			LeftKey;
-	DWORD			RightKey;
-	DWORD			UpKey;
-	DWORD			DownKey;
+	AWHK_CURSOR_KEYS	ResizeKeys;
+	AWHK_CURSOR_KEYS	MoveKeys;
 
-	DWORD			MoveKeyMod;
-	DWORD			NextKeyMod;
-	DWORD			FineKeyMod;
+	DWORD				MoveKeyMod;
+	DWORD				NextKeyMod;
+	DWORD				FineKeyMod;
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );

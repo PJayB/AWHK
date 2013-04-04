@@ -29,7 +29,7 @@ struct AWHK_APP_STATE
 };
 
 DIRECTION DirectionFromVKey( 
-	const AWHK_APP_CONFIG* cfg, 
+	const AWHK_CURSOR_KEYS* cfg, 
 	USHORT vKey )
 {
 	if ( vKey == cfg->LeftKey ) 
@@ -182,7 +182,7 @@ BOOL HandleHotKey(
 		&params );
 
 	return ForegroundWindowSnap( 
-		DirectionFromVKey( cfg, vKey ), // direction
+		DirectionFromVKey( &cfg->ResizeKeys, vKey ), // direction
 		&params // single window only?
 		);
 }
@@ -220,33 +220,43 @@ INT RegisterHotKeys( const AWHK_APP_CONFIG* cfg, INT* pHotkeyCount )
 	DWORD soloKeyMod = cfg->MoveKeyMod | cfg->NextKeyMod;
 	DWORD allKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->NextKeyMod;
 
-	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->LeftKey );
-	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->RightKey );
-	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->UpKey );
-	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->DownKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->ResizeKeys.LeftKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->ResizeKeys.RightKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->ResizeKeys.UpKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->ResizeKeys.DownKey );
+
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->MoveKeys.LeftKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->MoveKeys.RightKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->MoveKeys.UpKey );
+	RegisterHotKey( NULL, ++hotkeyCount, moveKeyMod, cfg->MoveKeys.DownKey );
 
 	if ( cfg->FineKeyMod )
 	{
-		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->LeftKey );
-		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->RightKey );
-		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->UpKey );
-		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->DownKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->ResizeKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->ResizeKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->ResizeKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->ResizeKeys.DownKey );
+
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->MoveKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->MoveKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->MoveKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, fineKeyMod, cfg->MoveKeys.DownKey );
 	}
 
 	if ( cfg->NextKeyMod )
 	{
-		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->LeftKey );
-		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->RightKey );
-		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->UpKey );
-		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->DownKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, soloKeyMod, cfg->ResizeKeys.DownKey );
 	}
 
 	if ( cfg->FineKeyMod | cfg->NextKeyMod )
 	{
-		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->LeftKey );
-		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->RightKey );
-		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->UpKey );
-		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->DownKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.LeftKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.RightKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.UpKey );
+		RegisterHotKey( NULL, ++hotkeyCount, allKeyMods, cfg->ResizeKeys.DownKey );
 	}
 
 	if ( pHotkeyCount )

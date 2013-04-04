@@ -13,14 +13,19 @@ AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	, HelpKeyMod( MOD_ALT )
 	, ConfigKey( VK_F2 )
 	, ConfigKeyMod( MOD_ALT )
-	, LeftKey( VK_LEFT )
-	, RightKey( VK_RIGHT )
-	, UpKey( VK_UP )
-	, DownKey( VK_DOWN )
 	, MoveKeyMod( MOD_ALT )
 	, NextKeyMod( MOD_CONTROL )
 	, FineKeyMod( MOD_SHIFT )
 {
+	ResizeKeys.LeftKey = VK_LEFT;
+	ResizeKeys.RightKey = VK_RIGHT;
+	ResizeKeys.UpKey = VK_UP;
+	ResizeKeys.DownKey = VK_DOWN;
+
+	MoveKeys.LeftKey = 'a';
+	MoveKeys.RightKey = 'd';
+	MoveKeys.UpKey = 'w';
+	MoveKeys.DownKey = 's';
 }
 
 void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
@@ -48,10 +53,15 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadRegistryVKey	( AWKH_REG_CFG_KEY		, &cfg->ConfigKey );
 	LoadRegistryKeyMod	( AWKH_REG_CFG_KEY_MOD	, &cfg->ConfigKeyMod );
 
-	LoadRegistryVKey	( AWHK_REG_LEFT_KEY		, &cfg->LeftKey );
-	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY	, &cfg->RightKey );
-	LoadRegistryVKey	( AWHK_REG_UP_KEY		, &cfg->UpKey );
-	LoadRegistryVKey	( AWHK_REG_DOWN_KEY		, &cfg->DownKey );
+	LoadRegistryVKey	( AWHK_REG_LEFT_KEY		, &cfg->ResizeKeys.LeftKey );
+	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY	, &cfg->ResizeKeys.RightKey );
+	LoadRegistryVKey	( AWHK_REG_UP_KEY		, &cfg->ResizeKeys.UpKey );
+	LoadRegistryVKey	( AWHK_REG_DOWN_KEY		, &cfg->ResizeKeys.DownKey );
+
+	LoadRegistryVKey	( AWHK_REG_LEFT_KEY_2	, &cfg->MoveKeys.LeftKey );
+	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY_2	, &cfg->MoveKeys.RightKey );
+	LoadRegistryVKey	( AWHK_REG_UP_KEY_2		, &cfg->MoveKeys.UpKey );
+	LoadRegistryVKey	( AWHK_REG_DOWN_KEY_2	, &cfg->MoveKeys.DownKey );
 
 	DWORD moveKeyMod = cfg->MoveKeyMod;
 	DWORD fineKeyMod = cfg->FineKeyMod;
@@ -88,10 +98,15 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 	StoreRegistryDword( AWKH_REG_CFG_KEY		, cfg->ConfigKey );
 	StoreRegistryDword( AWKH_REG_CFG_KEY_MOD	, cfg->ConfigKeyMod );
 
-	StoreRegistryDword( AWHK_REG_LEFT_KEY		, cfg->LeftKey );
-	StoreRegistryDword( AWHK_REG_RIGHT_KEY		, cfg->RightKey );
-	StoreRegistryDword( AWHK_REG_UP_KEY			, cfg->UpKey );
-	StoreRegistryDword( AWHK_REG_DOWN_KEY		, cfg->DownKey );
+	StoreRegistryDword( AWHK_REG_LEFT_KEY		, cfg->ResizeKeys.LeftKey );
+	StoreRegistryDword( AWHK_REG_RIGHT_KEY		, cfg->ResizeKeys.RightKey );
+	StoreRegistryDword( AWHK_REG_UP_KEY			, cfg->ResizeKeys.UpKey );
+	StoreRegistryDword( AWHK_REG_DOWN_KEY		, cfg->ResizeKeys.DownKey );
+
+	StoreRegistryDword( AWHK_REG_LEFT_KEY_2		, cfg->MoveKeys.LeftKey );
+	StoreRegistryDword( AWHK_REG_RIGHT_KEY_2	, cfg->MoveKeys.RightKey );
+	StoreRegistryDword( AWHK_REG_UP_KEY_2		, cfg->MoveKeys.UpKey );
+	StoreRegistryDword( AWHK_REG_DOWN_KEY_2		, cfg->MoveKeys.DownKey );
 
 	StoreRegistryDword( AWHK_REG_MOVE_KEY_MOD	, cfg->MoveKeyMod );
 	StoreRegistryDword( AWHK_REG_NEXT_KEY_MOD	, cfg->NextKeyMod );

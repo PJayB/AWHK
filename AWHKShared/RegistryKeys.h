@@ -20,6 +20,11 @@
 #define AWHK_REG_UP_KEY			L"UpKey"
 #define AWHK_REG_DOWN_KEY		L"DownKey"
 
+#define AWHK_REG_LEFT_KEY_2		L"MoveLeftKey"
+#define AWHK_REG_RIGHT_KEY_2	L"MoveRightKey"
+#define AWHK_REG_UP_KEY_2		L"MoveUpKey"
+#define AWHK_REG_DOWN_KEY_2		L"MoveDownKey"
+
 #define AWHK_REG_MOVE_KEY_MOD	L"MoveKeyMod"
 #define AWHK_REG_NEXT_KEY_MOD	L"NextKeyMod"
 #define AWHK_REG_FINE_KEY_MOD	L"FineKeyMod"
