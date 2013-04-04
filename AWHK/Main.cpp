@@ -278,41 +278,35 @@ BOOL RegisterHotKeys(
 	DWORD dwSoloKeyMod = cfg->MoveKeyMod | cfg->NextKeyMod;
 	DWORD dwAllKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->NextKeyMod;
 
-	DWORD pArrowKeys[] = 
-	{
-		cfg->LeftKey, 
-		cfg->RightKey,
-		cfg->UpKey,
-		cfg->DownKey 
-	};
+	const AWHK_CURSOR_KEYS* pArrowKeys = &cfg->ResizeKeys;
 	
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys[0] );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys[1] );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys[2] );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys[3] );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->LeftKey );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->RightKey );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->UpKey );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->DownKey );
 
 	if ( cfg->FineKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys[0] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys[1] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys[2] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys[3] );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->LeftKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->RightKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->UpKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->DownKey );
 	}
 
 	if ( cfg->NextKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys[0] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys[1] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys[2] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys[3] );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->LeftKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->RightKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->UpKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->DownKey );
 	}
 
 	if ( cfg->FineKeyMod | cfg->NextKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys[0] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys[1] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys[2] );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys[3] );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->LeftKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->RightKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->UpKey );
+		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->DownKey );
 	}
 
 	pKeys->dwKeyBits = dwKeyBits;
