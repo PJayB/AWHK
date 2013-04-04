@@ -21,6 +21,7 @@
 
 #include "..\AWHKShared\Config.h"
 #include "..\AWHKShared\IPC.h"
+#include "..\AWHKShared\SupportFile.h"
 #include "AutoLogin.h"
 
 namespace AWHKConfig {
@@ -792,9 +793,47 @@ namespace AWHKConfig {
 		}
 	}
 
+    BOOL RunAWHK()
+    {
+        WCHAR strExe[MAX_PATH];
+		if ( !GetSupportFilePath( AWHK_MAIN_EXE, strExe, MAX_PATH ) )
+            return FALSE;
+
+        PROCESS_INFORMATION pi;
+        ZeroMemory( &pi, sizeof( pi ) );
+	                    
+        STARTUPINFO startInfo;
+	    ZeroMemory( &startInfo, sizeof( startInfo ) );
+	    startInfo.cb = sizeof( startInfo );
+
+        // Start the process
+        return ::CreateProcess(
+	        nullptr,
+	        strExe,
+	        nullptr,
+	        nullptr,
+	        FALSE,
+	        0,
+	        nullptr,
+	        nullptr,
+	        &startInfo,
+	        &pi );
+    }
+
 	private: System::Void SettingsForm_Load(System::Object^  sender, System::EventArgs^  e) {
 
-				 //
+                 // Try and run the app
+				 IPC ipc;
+				 if ( !OpenIPC( &ipc ) )
+				 {
+                     RunAWHK();
+				 }
+                 else 
+                 {
+                     CloseIPC( &ipc );
+                 }
+
+                 //
 				 // load the configuration
 				 //
 				 AWHK_APP_CONFIG cfg;
