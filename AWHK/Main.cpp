@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <sstream>
+#include <assert.h>
 
 #include "SupportModule.h"
 #include "WindowSnap.h"
@@ -33,11 +34,23 @@
 
 using namespace std;
 
-struct AWHK_HOTKEYS
+struct AWHK_HOTKEY_SET
 {
 	DWORD			dwKeyBits;
 	LONG			HotKeyCount;
 	DWORD			pdwRegisteredKeys[32];
+};
+
+union AWHK_HOTKEYS
+{
+	struct 
+	{
+		AWHK_HOTKEY_SET ResizeKeys;
+		AWHK_HOTKEY_SET MoveKeys;
+		AWHK_HOTKEY_SET	ExtraKeys;
+	};
+
+	AWHK_HOTKEY_SET	KeySets[3];
 };
 
 struct AWHK_APP_STATE
@@ -247,6 +260,9 @@ BOOL OpenSupportControlPanel( const AWHK_APP_STATE* pState )
 
 DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, DWORD keyMod, DWORD vKey )
 {
+	assert( hotkeyCount > 0 );
+	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
+
 	pKeys[hotkeyCount - 1] = MAKELONG( keyMod, vKey );
 	if ( ::RegisterHotKey( NULL, hotkeyCount, keyMod, vKey ) )
 		return 1 << (hotkeyCount - 1);
@@ -256,30 +272,19 @@ DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, DWORD keyMod, DWORD 
 	}
 }
 
-BOOL RegisterHotKeys( 
-	const AWHK_APP_CONFIG* cfg, 
-	AWHK_HOTKEYS* pKeys )
+BOOL RegisterArrowKeys( 
+	const AWHK_APP_CONFIG* cfg,
+	const AWHK_CURSOR_KEYS* pArrowKeys,
+	AWHK_HOTKEY_SET* pKeys )
 {
 	DWORD dwKeyBits = 0;
 	LONG hotKeyCount = 0;
-
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->HelpKeyMod, cfg->HelpKey );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->ConfigKeyMod, cfg->ConfigKey );
-
-	if ( !cfg->MoveKeyMod )
-	{
-		pKeys->dwKeyBits = dwKeyBits;
-		pKeys->HotKeyCount = hotKeyCount;
-		return TRUE;
-	}
 
 	DWORD dwMoveKeyMod = cfg->MoveKeyMod;
 	DWORD dwFineKeyMod = cfg->MoveKeyMod | cfg->FineKeyMod;
 	DWORD dwSoloKeyMod = cfg->MoveKeyMod | cfg->NextKeyMod;
 	DWORD dwAllKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->NextKeyMod;
 
-	const AWHK_CURSOR_KEYS* pArrowKeys = &cfg->ResizeKeys;
-	
 	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->LeftKey );
 	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->RightKey );
 	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->UpKey );
@@ -313,6 +318,41 @@ BOOL RegisterHotKeys(
 	pKeys->HotKeyCount = hotKeyCount;
 
 	return dwKeyBits == ( ( 1UL << hotKeyCount ) - 1 );
+}
+
+BOOL RegisterExtraHotKeys( 
+	const AWHK_APP_CONFIG* cfg, 
+	AWHK_HOTKEY_SET* pKeys )
+{
+	DWORD dwKeyBits = 0;
+	LONG hotKeyCount = 0;
+
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->HelpKeyMod, cfg->HelpKey );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->ConfigKeyMod, cfg->ConfigKey );
+
+	pKeys->dwKeyBits = dwKeyBits;
+	pKeys->HotKeyCount = hotKeyCount;
+
+	return dwKeyBits == ( ( 1UL << hotKeyCount ) - 1 );
+}
+
+BOOL RegisterHotKeys( 
+	const AWHK_APP_CONFIG* cfg, 
+	AWHK_HOTKEYS* pKeys )
+{
+	if ( !RegisterExtraHotKeys( cfg, &pKeys->ExtraKeys ) )
+		return FALSE;
+
+	if ( !cfg->MoveKeyMod )
+		return TRUE;
+
+	if ( !RegisterArrowKeys( cfg, &cfg->ResizeKeys, &pKeys->ResizeKeys ) )
+		return FALSE;
+	
+	if ( !RegisterArrowKeys( cfg, &cfg->MoveKeys, &pKeys->MoveKeys ) )
+		return FALSE;
+
+	return TRUE;
 }
 
 LPCWSTR GetKeyModString( DWORD keyMod )
@@ -350,29 +390,37 @@ LPCWSTR GetVKeyString( DWORD keyMod )
 
 BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 {
+	static_assert( sizeof( pKeys->KeySets ) > sizeof( AWHK_HOTKEY_SET ), "You messed up, bro." );
+	static_assert( ( sizeof( pKeys->KeySets ) % sizeof( AWHK_HOTKEY_SET ) ) == 0, "You messed up, bro." );
+
 	if ( !RegisterHotKeys( cfg, pKeys ) )
 	{
 		WCHAR strKeysFailed[1024] = {0};
 		LPWSTR strCursor = strKeysFailed;
 		LPCWSTR strEnd = strKeysFailed + sizeof(strKeysFailed) / sizeof(*strKeysFailed);
-		for ( LONG i = 0; i < pKeys->HotKeyCount; ++i )
-		{
-			if ( ( pKeys->dwKeyBits & ( 1 << i ) ) == 0 )
-			{
-				DWORD dwVKey = HIWORD( pKeys->pdwRegisteredKeys[i] );
-				DWORD dwMod = LOWORD( pKeys->pdwRegisteredKeys[i] );
 
-				strCursor += swprintf_s(
-					strCursor, 
-					strEnd - strCursor,
-					L"%04X %04X:\t%s\t%s\t%s\t%s\t%s\n",
-					dwMod, 
-					dwVKey,
-					GetKeyModString( dwMod & MOD_ALT ),
-					GetKeyModString( dwMod & MOD_SHIFT ),
-					GetKeyModString( dwMod & MOD_CONTROL ),
-					GetKeyModString( dwMod & MOD_WIN ),
-					GetVKeyString( dwVKey ) );
+		for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
+		{
+			const AWHK_HOTKEY_SET* pKeySet = &pKeys->KeySets[k];
+			for ( LONG i = 0; i < pKeySet->HotKeyCount; ++i )
+			{
+				if ( ( pKeySet->dwKeyBits & ( 1 << i ) ) == 0 )
+				{
+					DWORD dwVKey = HIWORD( pKeySet->pdwRegisteredKeys[i] );
+					DWORD dwMod = LOWORD( pKeySet->pdwRegisteredKeys[i] );
+
+					strCursor += swprintf_s(
+						strCursor, 
+						strEnd - strCursor,
+						L"%04X %04X:\t%s\t%s\t%s\t%s\t%s\n",
+						dwMod, 
+						dwVKey,
+						GetKeyModString( dwMod & MOD_ALT ),
+						GetKeyModString( dwMod & MOD_SHIFT ),
+						GetKeyModString( dwMod & MOD_CONTROL ),
+						GetKeyModString( dwMod & MOD_WIN ),
+						GetVKeyString( dwVKey ) );
+				}
 			}
 		}
 
@@ -382,10 +430,14 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 			sizeof( strMsg ) / sizeof( WCHAR ),
 			L"Some keys failed to register. Please check the following keys in the settings:\n\n"
 			L"%s\n\n"
-			L"(Debugging stuff: Count: %d, dwKeyBits: 0x%08X)",
+			L"(Debugging stuff: Count: %d %d %d, dwKeyBits: 0x%08X 0x%08X 0x%08X)",
 			strKeysFailed,
-			pKeys->HotKeyCount,
-			pKeys->dwKeyBits );
+			pKeys->ExtraKeys.HotKeyCount,
+			pKeys->ExtraKeys.dwKeyBits,
+			pKeys->ResizeKeys.HotKeyCount,
+			pKeys->ResizeKeys.dwKeyBits,
+			pKeys->MoveKeys.HotKeyCount,
+			pKeys->MoveKeys.dwKeyBits );
 
 		::MessageBox( NULL, 
 			strMsg,
@@ -400,10 +452,13 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 
 void UnregisterHotkeys( AWHK_HOTKEYS* pKeys )
 {
-	for ( LONG i = 0; i < pKeys->HotKeyCount; ++i )
+	for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
 	{
-		if ( pKeys->dwKeyBits & ( 1 << i ) )
-			::UnregisterHotKey( NULL, i + 1 );
+		for ( LONG i = 0; i < pKeys->KeySets[k].HotKeyCount; ++i )
+		{
+			if ( pKeys->KeySets[k].dwKeyBits & ( 1 << i ) )
+				::UnregisterHotKey( NULL, i + 1 );
+		}
 	}
 }
 
