@@ -56,12 +56,18 @@ CAWHKConfigAppDlg::CAWHKConfigAppDlg(CWnd* pParent /*=NULL*/)
 void CAWHKConfigAppDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_TABS, m_Tabs);
 }
 
 BEGIN_MESSAGE_MAP(CAWHKConfigAppDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_COMMAND(ID_HELP_ABOUT,OnHelpAbout)
+	ON_COMMAND(ID_HELP_ONLINEHELP,OnHelpOnlineHelp)
+	ON_COMMAND(ID_APPLICATION_UNLOADAWHK,OnApplicationUnloadAWHK)
+	ON_BN_CLICKED(IDOK, &CAWHKConfigAppDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDCANCEL, &CAWHKConfigAppDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -98,12 +104,40 @@ BOOL CAWHKConfigAppDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
+
+	{
+		TCITEM tab;
+		ZeroMemory( &tab, sizeof( tab ) );
+		tab.mask = TCIF_TEXT;
+		tab.pszText = L"General";
+		tab.cchTextMax = wcslen( tab.pszText );
+		m_Tabs.InsertItem( 0, &tab );
+	}
+
+	{
+		TCITEM tab;
+		ZeroMemory( &tab, sizeof( tab ) );
+		tab.mask = TCIF_TEXT;
+		tab.pszText = L"HotKeys";
+		tab.cchTextMax = wcslen( tab.pszText );
+		m_Tabs.InsertItem( 1, &tab );
+	}
+	
+	{
+		TCITEM tab;
+		ZeroMemory( &tab, sizeof( tab ) );
+		tab.mask = TCIF_TEXT;
+		tab.pszText = L"Grid";
+		tab.cchTextMax = wcslen( tab.pszText );
+		m_Tabs.InsertItem( 2, &tab );
+	}
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CAWHKConfigAppDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	if ( (nID & 0xFFF0) == IDM_ABOUTBOX )
 	{
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
@@ -113,6 +147,23 @@ void CAWHKConfigAppDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
+
+void CAWHKConfigAppDlg::OnHelpAbout()
+{
+	CAboutDlg dlgAbout;
+	dlgAbout.DoModal();
+}
+
+void CAWHKConfigAppDlg::OnHelpOnlineHelp()
+{
+	// TODO
+}
+
+void CAWHKConfigAppDlg::OnApplicationUnloadAWHK()
+{
+	// TODO
+}
+
 
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
@@ -150,3 +201,17 @@ HCURSOR CAWHKConfigAppDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CAWHKConfigAppDlg::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+	CDialogEx::OnOK();
+}
+
+
+void CAWHKConfigAppDlg::OnBnClickedCancel()
+{
+	// TODO: Add your control notification handler code here
+	CDialogEx::OnCancel();
+}
