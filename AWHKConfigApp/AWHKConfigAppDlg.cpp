@@ -56,7 +56,6 @@ CAWHKConfigAppDlg::CAWHKConfigAppDlg(CWnd* pParent /*=NULL*/)
 void CAWHKConfigAppDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_TABS, m_Tabs);
 }
 
 BEGIN_MESSAGE_MAP(CAWHKConfigAppDlg, CDialogEx)
@@ -68,6 +67,7 @@ BEGIN_MESSAGE_MAP(CAWHKConfigAppDlg, CDialogEx)
 	ON_COMMAND(ID_APPLICATION_UNLOADAWHK,OnApplicationUnloadAWHK)
 	ON_BN_CLICKED(IDOK, &CAWHKConfigAppDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CAWHKConfigAppDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDAPPLY, &CAWHKConfigAppDlg::OnBnClickedApply)
 END_MESSAGE_MAP()
 
 
@@ -104,33 +104,6 @@ BOOL CAWHKConfigAppDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-
-	{
-		TCITEM tab;
-		ZeroMemory( &tab, sizeof( tab ) );
-		tab.mask = TCIF_TEXT;
-		tab.pszText = L"General";
-		tab.cchTextMax = wcslen( tab.pszText );
-		m_Tabs.InsertItem( 0, &tab );
-	}
-
-	{
-		TCITEM tab;
-		ZeroMemory( &tab, sizeof( tab ) );
-		tab.mask = TCIF_TEXT;
-		tab.pszText = L"HotKeys";
-		tab.cchTextMax = wcslen( tab.pszText );
-		m_Tabs.InsertItem( 1, &tab );
-	}
-	
-	{
-		TCITEM tab;
-		ZeroMemory( &tab, sizeof( tab ) );
-		tab.mask = TCIF_TEXT;
-		tab.pszText = L"Grid";
-		tab.cchTextMax = wcslen( tab.pszText );
-		m_Tabs.InsertItem( 2, &tab );
-	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -214,4 +187,10 @@ void CAWHKConfigAppDlg::OnBnClickedCancel()
 {
 	// TODO: Add your control notification handler code here
 	CDialogEx::OnCancel();
+}
+
+
+void CAWHKConfigAppDlg::OnBnClickedApply()
+{
+	// TODO: Add your control notification handler code here
 }
