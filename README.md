@@ -11,9 +11,9 @@ This application is provided free for private or commercial use. By downloading 
 - the author is not responsible for damage caused to equipment or data (which is highly unlikely),
 - the feedback email alias below is for mail relating to this application only and no other purpose.
 
-See http://gibbering.net/AWHK/ for docs and download.
+See http://repo.pjblewis.com/AWHK/ for docs and download.
 
-For questions, help or feedback, please email [awhktool@gibbering.net]. Feedback is greatly welcomed. 
+For questions, help or feedback, please email [awhktool@pjblewis.com]. Feedback is greatly welcomed. 
 
 ToDo
 -----------
