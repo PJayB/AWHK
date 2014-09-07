@@ -1,6 +1,7 @@
 ﻿<Window x:Class="AWHKConfigApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:CustomControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
         Title="Advanced Windows Hotkeys" 
         Height="420" Width="590" 
         MinHeight="420" MinWidth="590"
@@ -16,11 +17,9 @@
                     </Grid.RowDefinitions>
                     <TabControl Grid.Row="1" BorderThickness="0,1,0,0">
                         <TabItem Header="General" Background="{x:Null}" BorderBrush="{x:Null}" Margin="1,-2,-2,0">
-   
+                            <CustomControls:HotKeyBox VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="32"/>
                         </TabItem>
-                        <TabItem Header="Key Bindings" Background="{x:Null}" BorderBrush="{x:Null}">
-                            <Grid />
-                        </TabItem>
+                        <TabItem Header="Key Bindings" Background="{x:Null}" BorderBrush="{x:Null}"/>
                     </TabControl>
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
