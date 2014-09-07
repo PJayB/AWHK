@@ -1,0 +1,68 @@
+﻿<Window x:Class="AWHKConfigApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Advanced Windows Hotkeys" 
+        Height="420" Width="590" 
+        MinHeight="420" MinWidth="590"
+        Icon="app.ico" WindowStartupLocation="CenterScreen">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid x:Name="ConfigPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="530" Height="350">
+            <Border BorderBrush="Black" BorderThickness="1" Margin="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TabControl Grid.Row="1" BorderThickness="0,1,0,0">
+                        <TabItem Header="General" Background="{x:Null}" BorderBrush="{x:Null}" Margin="1,-2,-2,0">
+   
+                        </TabItem>
+                        <TabItem Header="Key Bindings" Background="{x:Null}" BorderBrush="{x:Null}">
+                            <Grid />
+                        </TabItem>
+                    </TabControl>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="app.ico" Stretch="None" />
+                        <TextBlock Grid.Column="1" Text="Advanced Windows Hotkeys" VerticalAlignment="Center" Margin="12,0,0,0" FontSize="22" />
+                    </Grid>
+                    <!--buttons outside of the tab control-->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                    <Button x:Name="btnUnload" Grid.Row="2" Grid.Column="0"
+                            Margin="12"
+                            Click="btnUnload_Click"
+                            Content="Unload" 
+                            />
+                        <Button x:Name="btnOkay" Grid.Row="2" Grid.Column="2"
+                            Margin="12"
+                                Click="btnOkay_Click"
+                            Content="OK" 
+                            />
+                        <Button x:Name="btnApply" Grid.Row="2" Grid.Column="3"
+                            Margin="12"
+                            Click="btnApply_Click"
+                            Content="Apply" 
+                            />
+                        <Button x:Name="btnCancel" Grid.Row="2" Grid.Column="4"
+                            Margin="12"
+                            IsCancel="True"
+                            Click="btnCancel_Click" 
+                            Content="Cancel" 
+                            />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
