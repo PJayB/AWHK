@@ -40,8 +40,10 @@ namespace AWHKConfigApp
         private void btnUnload_Click(object sender, RoutedEventArgs e)
         {
             // todo
-            //unload the awhk service (_svcController.Unload())
-                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
+            // unload the awhk service (_svcController.Unload())
+                // you need to catch a AWHKConfigShared.ServiceNotRunningException 
+                // if you catch one, print a message saying "Already unloaded" 
+            // otherwise print a message saying "It has been unloaded"
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
@@ -59,7 +61,8 @@ namespace AWHKConfigApp
             //todo
             //1. save the configuration (_config.Save())
             //2. tell awhk to reload its settings (_svcController.ReloadConfiguration())
-                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
+                // you need to catch a AWHKConfigShared.ServiceNotRunningException
+                // If you catch one on those, print a message
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
