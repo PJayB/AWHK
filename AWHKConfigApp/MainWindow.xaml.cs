@@ -28,6 +28,29 @@ namespace AWHKConfigApp
             InitializeComponent();
         }
 
+        private void SaveSettings()
+        {
+            // TODO: copy in the UI selections into _config.
+
+            // Save the settings:
+            try
+            {
+                _config.Save();
+                _svcController.ReloadConfiguration();
+            }
+            catch (AWHKConfigShared.ConfigurationIoException)
+            {
+                // Failed to save settings.
+                MessageBox.Show(
+                    "Failed to save the settings. Ensure you have privileges to alter the Registry.",
+                    "AWHK", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+            catch (AWHKConfigShared.ServiceNotRunningException)
+            {
+                // Service not running.
+            }
+        }
+
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
             _svcController = new AWHKConfigShared.ServiceController();
@@ -43,6 +66,9 @@ namespace AWHKConfigApp
                 // May not be set up yet.
             }
 
+            // TODO: Update UI based on _config settings.
+
+            // Disable the Unload button if the service isn't running
             btnUnload.IsEnabled = _svcController.IsLoaded;
         }
 
@@ -62,21 +88,13 @@ namespace AWHKConfigApp
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
-            //todo
-            //1. save the configuration (_config.Save())
-            //2. tell awhk to reload its settings (_svcController.ReloadConfiguration())
-                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
-            //3. close the application
+            SaveSettings();
             this.Close();
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
-            //todo
-            //1. save the configuration (_config.Save())
-            //2. tell awhk to reload its settings (_svcController.ReloadConfiguration())
-                // you need to catch a AWHKConfigShared.ServiceNotRunningException
-                // If you catch one on those, print a message
+            SaveSettings();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -110,6 +128,8 @@ namespace AWHKConfigApp
 
         private void Window_GotFocus_1(object sender, RoutedEventArgs e)
         {
+            // Update the status of the service each time we get focus (just in case
+            // the user starts or stops it while we're loaded)
             btnUnload.IsEnabled = _svcController.IsLoaded;
         }
 
