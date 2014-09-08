@@ -22,6 +22,7 @@ namespace AWHKConfigApp
     {
         private AWHKConfigShared.Configuration _config;
         private AWHKConfigShared.ServiceController _svcController;
+        private MoveKeysPage moveKeysPage;
 
         public MainWindow()
         {
@@ -31,6 +32,8 @@ namespace AWHKConfigApp
         private void SaveSettings()
         {
             // TODO: copy in the UI selections into _config.
+            _config.AutoLogin = chkRunOnStartup.IsChecked.Value;
+            _config.AllowSnapToOthers = moveKeysPage.EnableSnap;
 
             // Save the settings:
             try
@@ -56,6 +59,9 @@ namespace AWHKConfigApp
             _svcController = new AWHKConfigShared.ServiceController();
             _config = new AWHKConfigShared.Configuration();
 
+            // Grab the page references
+            moveKeysPage = pgMoveKeys.Content as MoveKeysPage;
+
             // Load the configuration from the registry
             try
             {
@@ -67,6 +73,8 @@ namespace AWHKConfigApp
             }
 
             // TODO: Update UI based on _config settings.
+            chkRunOnStartup.IsChecked = _config.AutoLogin;
+            moveKeysPage.EnableSnap = _config.AllowSnapToOthers;
 
             // Disable the Unload button if the service isn't running
             btnUnload.IsEnabled = _svcController.IsLoaded;
@@ -74,16 +82,21 @@ namespace AWHKConfigApp
 
         private void btnUnload_Click(object sender, RoutedEventArgs e)
         {
-            // todo
-            // throw up a "Are you sure?" box:
-            // if yes:
-                // unload the awhk service (_svcController.Unload())
-                    // you need to catch a AWHKConfigShared.ServiceNotRunningException 
-                    // if you catch one, print a message saying "Already unloaded" 
-                // otherwise print a message saying "It has been unloaded"
-                    // and disable the button
-            // if no:
-                // do nothing
+            if (MessageBox.Show("Are you sure you want to unload Advanced Windows Hotkeys?",
+                "Confirm",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    _svcController.Unload();
+                }
+                catch (AWHKConfigShared.ServiceNotRunningException)
+                {
+                }
+
+                btnUnload.IsEnabled = false;
+            }
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)

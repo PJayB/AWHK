@@ -123,6 +123,8 @@ namespace AWHKConfigShared {
 
     void Configuration::Load()
     {
+        AutoLogin = (::IsAutoLoginEnabled() != FALSE);
+
         AWHK_APP_CONFIG cfg;
         if (LoadConfiguration(&cfg))
         {
@@ -132,18 +134,16 @@ namespace AWHKConfigShared {
         {
             throw gcnew ConfigurationIoException();
         }
-
-        AutoLogin = (::IsAutoLoginEnabled() != FALSE);
     }
 
     void Configuration::Save()
     {
+        ::SetAutoLoginEnabled(AutoLogin);
+
         AWHK_APP_CONFIG cfg;
         ClrConfigToNative(this, &cfg);
         if (!SaveConfiguration(&cfg))
             throw gcnew ConfigurationIoException();
-
-        ::SetAutoLoginEnabled(AutoLogin);
     }
 
     void ServiceController::ReloadConfiguration()

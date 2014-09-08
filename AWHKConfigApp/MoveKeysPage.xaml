@@ -1,0 +1,90 @@
+﻿<Page x:Class="AWHKConfigApp.MoveKeysPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
+      mc:Ignorable="d" 
+      d:DesignHeight="310" d:DesignWidth="512"
+	  Title="MoveKeysPage">
+    <Page.Resources>
+        <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="Margin" Value="0,0,0,7"/>
+        </Style>
+    </Page.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Style="{DynamicResource SeparatorMargin}" Header="Snap Controls">
+            <Grid Margin="7">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}"/>
+                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable fine snap modifier key" Style="{DynamicResource SeparatorMargin}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine snap modifier" Margin="0,0,12,0"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" Width="100" Style="{DynamicResource SeparatorMargin}" HorizontalAlignment="Left"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Style="{DynamicResource SeparatorMargin}" Header="Resize Keys">
+            <Grid Margin="7">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableResizeKeys" Content="Enable resize keys" Style="{DynamicResource SeparatorMargin}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Resize Left Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Left"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="Resize Right Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Right"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="Resize Up Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Up"/>
+                <TextBlock Grid.Column="0" Grid.Row="4" Text="Resize Down Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Down"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="2" Style="{DynamicResource SeparatorMargin}" Header="Move Keys">
+            <Grid Margin="7">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableMoveKeys" Content="Enable movement keys" Style="{DynamicResource SeparatorMargin}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="Move Left Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="A"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="Move Right Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="D"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="Move Up Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="W"/>
+                <TextBlock Grid.Column="0" Grid.Row="4" Text="Move Down Key" Margin="0,0,12,0"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="S"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Page>
