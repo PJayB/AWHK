@@ -19,7 +19,7 @@
 
 #pragma once
 
-#define AWHK_REG_KEY			L"Software\\AWHK"
+#define AWHK_REG_KEY			L"Software\\AWHK\\1.5"
 
 #define AWHK_REG_ALLOW_SNAP		L"AllowSnapToOthers"
 #define AWHK_REG_EDGE_SEARCH	L"MaxEdgeSearchSize"

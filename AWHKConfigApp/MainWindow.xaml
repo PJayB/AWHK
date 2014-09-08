@@ -5,7 +5,7 @@
         Title="Advanced Windows Hotkeys" 
         Height="420" Width="590" 
         MinHeight="420" MinWidth="590"
-        Icon="app.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1">
+        Icon="app.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1" GotFocus="Window_GotFocus_1">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid x:Name="ConfigPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="530" Height="350">
             <Border BorderBrush="Black" BorderThickness="1" Margin="0">
@@ -41,7 +41,7 @@
                     <Button x:Name="btnUnload" Grid.Row="2" Grid.Column="0"
                             Margin="12"
                             Click="btnUnload_Click"
-                            Content="Unload" 
+                            Content="Unload" IsEnabled="False" 
                             />
                         <Button x:Name="btnOkay" Grid.Row="2" Grid.Column="2"
                             Margin="12"

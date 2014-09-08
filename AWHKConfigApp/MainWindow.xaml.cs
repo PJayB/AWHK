@@ -34,7 +34,16 @@ namespace AWHKConfigApp
             _config = new AWHKConfigShared.Configuration();
 
             // Load the configuration from the registry
-            _config.Load();
+            try
+            {
+                _config.Load();
+            }
+            catch (AWHKConfigShared.ConfigurationIoException)
+            {
+                // May not be set up yet.
+            }
+
+            btnUnload.IsEnabled = _svcController.IsLoaded;
         }
 
         private void btnUnload_Click(object sender, RoutedEventArgs e)
@@ -44,6 +53,7 @@ namespace AWHKConfigApp
                 // you need to catch a AWHKConfigShared.ServiceNotRunningException 
                 // if you catch one, print a message saying "Already unloaded" 
             // otherwise print a message saying "It has been unloaded"
+                // and disable the button
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
@@ -92,6 +102,11 @@ namespace AWHKConfigApp
             {
                 // We can ignore this.
             }
+        }
+
+        private void Window_GotFocus_1(object sender, RoutedEventArgs e)
+        {
+            btnUnload.IsEnabled = _svcController.IsLoaded;
         }
 
     }

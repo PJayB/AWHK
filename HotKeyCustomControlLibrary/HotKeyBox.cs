@@ -21,6 +21,24 @@ namespace HotKeyCustomControlLibrary
         private bool hasFocus;
         private Key? previewTrigger;
 
+        public bool? AllowShift
+        {
+            get { return base.GetValue(AllowShiftProperty) as bool?; }
+            set { base.SetValue(AllowShiftProperty, value); }
+        }
+
+        public bool? AllowControl
+        {
+            get { return base.GetValue(AllowControlProperty) as bool?; }
+            set { base.SetValue(AllowControlProperty, value); }
+        }
+
+        public bool? AllowAlt
+        {
+            get { return base.GetValue(AllowAltProperty) as bool?; }
+            set { base.SetValue(AllowAltProperty, value); }
+        }
+
         public Key? Trigger
         {
             get { return base.GetValue(TriggerProperty) as Key?; }
@@ -64,6 +82,12 @@ namespace HotKeyCustomControlLibrary
             DependencyProperty.Register("HasControl", typeof(bool?), typeof(HotKeyBox));
         public static readonly DependencyProperty HasAltProperty =
             DependencyProperty.Register("HasAlt", typeof(bool?), typeof(HotKeyBox));
+        public static readonly DependencyProperty AllowShiftProperty =
+            DependencyProperty.Register("AllowShift", typeof(bool?), typeof(HotKeyBox));
+        public static readonly DependencyProperty AllowControlProperty =
+            DependencyProperty.Register("AllowControl", typeof(bool?), typeof(HotKeyBox));
+        public static readonly DependencyProperty AllowAltProperty =
+            DependencyProperty.Register("AllowAlt", typeof(bool?), typeof(HotKeyBox));
 
         static HotKeyBox()
         {
@@ -131,9 +155,17 @@ namespace HotKeyCustomControlLibrary
 
         private void CommitHotKey(Key k)
         {
-            HasShift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-            HasControl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-            HasAlt = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+            HasShift = null;
+            HasControl = null;
+            HasAlt = null;
+            
+            if (ShiftIsAllowed()) 
+                HasShift = IsShiftKeyDown();
+            if (ControlIsAllowed()) 
+                HasControl = IsControlKeyDown();
+            if (AltIsAllowed()) 
+                HasAlt = IsAltKeyDown();
+
             Trigger = k;
         }
 
@@ -170,6 +202,21 @@ namespace HotKeyCustomControlLibrary
             UpdateDisplay();
         }
 
+        private bool ShiftIsAllowed() 
+        {
+            return !AllowShift.HasValue || (AllowShift.HasValue && AllowShift.Value);
+        }
+
+        private bool ControlIsAllowed()
+        {
+            return !AllowControl.HasValue || (AllowControl.HasValue && AllowControl.Value);
+        }
+
+        private bool AltIsAllowed()
+        {
+            return !AllowAlt.HasValue || (AllowAlt.HasValue && AllowAlt.Value);
+        }
+
         private void UpdateDisplayWithStoredValues()
         {
             if (Trigger == null)
@@ -190,9 +237,9 @@ namespace HotKeyCustomControlLibrary
         private void UpdateDisplayWithPreviewValues()
         {
             StringBuilder sb = new StringBuilder();
-            if (IsShiftKeyDown()) sb.Append("Shift + ");
-            if (IsControlKeyDown()) sb.Append("Ctrl + ");
-            if (IsAltKeyDown()) sb.Append("Alt + ");
+            if (IsShiftKeyDown() && ShiftIsAllowed()) sb.Append("Shift + ");
+            if (IsControlKeyDown() && ControlIsAllowed()) sb.Append("Ctrl + ");
+            if (IsAltKeyDown() && AltIsAllowed()) sb.Append("Alt + ");
             if (Trigger.HasValue) sb.Append(Trigger.Value.ToString());
             displayBox.Text = sb.ToString();
         }

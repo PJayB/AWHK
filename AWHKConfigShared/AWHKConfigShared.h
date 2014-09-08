@@ -27,25 +27,37 @@ namespace AWHKConfigShared {
     {
     };
 
-    public ref struct KeyBinding
+    public ref class ConfigurationIoException : public Exception
     {
-        bool ModAlt;
-        bool ModControl;
-        bool ModShift;
+    };
+
+    public value struct ModifierSet
+    {
+        bool Win;
+        bool Alt;
+        bool Control;
+        bool Shift;
+    };
+
+    public value struct KeyBinding
+    {
+        ModifierSet Mods;
         UInt32 Key;
     };
 
-    public ref struct CursorKeys
+    public value struct CursorKeys
     {
-        KeyBinding^ Left;
-        KeyBinding^ Right;
-        KeyBinding^ Up;
-        KeyBinding^ Down;
+        UInt32 Left;
+        UInt32 Right;
+        UInt32 Up;
+        UInt32 Down;
     };
 
 	public ref class Configuration
 	{
     public:
+
+        Configuration();
     
 		void Load();
         void Save();
@@ -56,24 +68,19 @@ namespace AWHKConfigShared {
         property int GridY;
         property int FineX;
         property int FineY;
-        property KeyBinding^ HelpKey;
-        property KeyBinding^ ConfigKey;
-        property CursorKeys^ ResizeKeys;
-        property CursorKeys^ MoveKeys;
+        property KeyBinding HelpKey;
+        property KeyBinding ConfigKey;
+        property CursorKeys ResizeKeys;
+        property CursorKeys MoveKeys;
+        property ModifierSet MoveKeyMod;
+        property ModifierSet NextKeyMod;
+        property ModifierSet FineKeyMod;
+        property bool AutoLogin;
 	};
     
     public ref class ServiceController
     {
     public:
-
-        property bool AutoLogin {
-            bool get() {
-                return internalIsAutoLoginEnabled();
-            }
-            void set(bool v) {
-                internalSetAutoLoginEnabled(v);
-            }
-        }
 
         property bool IsLoaded { 
             bool get() { 
@@ -89,7 +96,5 @@ namespace AWHKConfigShared {
     private:
 
         bool internalIsLoaded();
-        bool internalIsAutoLoginEnabled();
-        void internalSetAutoLoginEnabled(bool v);
     };
 }
