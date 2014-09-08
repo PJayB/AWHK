@@ -51,6 +51,11 @@ namespace HotKeyCustomControlLibrary
             private set;
         }
 
+        public int VirtualKey
+        {
+            get { return Trigger.HasValue ? KeyInterop.VirtualKeyFromKey(Trigger.Value) : 0; }
+        }
+
         public static readonly DependencyProperty TriggerProperty =
             DependencyProperty.Register("Trigger", typeof(Key?), typeof(HotKeyBox));
         public static readonly DependencyProperty HasShiftProperty =

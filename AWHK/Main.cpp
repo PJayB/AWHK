@@ -62,6 +62,8 @@ struct AWHK_APP_STATE
 	UINT			MsgOpenControlPanel;
 	UINT			MsgControlPanelClosed;
 	UINT			MsgReloadConfig;
+    UINT            MsgSuspend;
+    UINT            MsgResume;
 
 	volatile BOOL	ControlPanelOpen;
 	AWHK_HOTKEYS	HotKeys;
@@ -132,6 +134,20 @@ INT IPCThread( AWHK_APP_STATE* appState )
 				appState->dwMainThreadID,
 				appState->MsgReloadConfig,
 				0, 0 );
+			break;
+
+        case IPC_MSG_SUSPEND:
+            ::PostThreadMessage(
+                appState->dwMainThreadID,
+                appState->MsgSuspend,
+                0, 0 );
+			break;
+
+        case IPC_MSG_RESUME:
+            ::PostThreadMessage(
+                appState->dwMainThreadID,
+                appState->MsgResume,
+                0, 0 );
 			break;
 
 		default:
@@ -510,6 +526,22 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			continue;
 		}
 
+        // The control panel can suspend and resume the functionality without quitting the application
+        if ( msg.message == appState->MsgSuspend )
+        {
+            UnregisterHotkeys( &appState->HotKeys );
+            continue;
+        }
+        if ( msg.message == appState->MsgResume )
+        {
+            // Silent reload here.
+			RegisterHotKeys( 
+				appCfg,
+				&appState->HotKeys );
+
+            continue;
+        }
+
 		switch ( msg.message )
 		{
 		case WM_QUIT:
@@ -555,6 +587,8 @@ int CALLBACK WinMain(
 	appState.MsgOpenControlPanel = ::RegisterWindowMessage( L"AWHKOpenControlPanelMsg" );
 	appState.MsgControlPanelClosed = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
 	appState.MsgReloadConfig = ::RegisterWindowMessage( L"AWHKReloadConfigMsg" );
+	appState.MsgSuspend = ::RegisterWindowMessage( L"AWHKSuspendMsg" );
+	appState.MsgResume = ::RegisterWindowMessage( L"AWHKResumeMsg" );
 
 	CreateIPC( &appState.Comms );
 

@@ -14,7 +14,19 @@
 
 namespace AWHKConfigShared {
 
+    Configuration^ Configuration::Load()
+    {
+        Configuration^ c = gcnew Configuration();
 
+        // TODO
+
+        return c;
+    }
+
+    void Configuration::Save()
+    {
+        // TODO
+    }
 
     void ServiceController::ReloadConfiguration()
     {
@@ -37,6 +49,30 @@ namespace AWHKConfigShared {
         }
 
         WriteMessageIPC( &ipc, IPC_MSG_RELOAD_CONFIG );
+        CloseIPC( &ipc );
+    }
+
+    void ServiceController::Suspend()
+    {
+        IPC ipc;
+        if ( !OpenIPC( &ipc ) )
+        {
+            throw gcnew ServiceNotRunningException();
+        }
+
+        WriteMessageIPC( &ipc, IPC_MSG_SUSPEND );
+        CloseIPC( &ipc );
+    }
+
+    void ServiceController::Resume()
+    {
+        IPC ipc;
+        if ( !OpenIPC( &ipc ) )
+        {
+            throw gcnew ServiceNotRunningException();
+        }
+
+        WriteMessageIPC( &ipc, IPC_MSG_RESUME );
         CloseIPC( &ipc );
     }
 

@@ -27,7 +27,7 @@ namespace AWHKConfigApp
 
         private void btnUnload_Click(object sender, RoutedEventArgs e)
         {
-            //todo 
+            // todo
             //unload the hawk service
         }
 
@@ -50,50 +50,24 @@ namespace AWHKConfigApp
             this.Close();
         }
 
-        // from: http://stackoverflow.com/questions/2136431/how-do-i-read-custom-keyboard-shortcut-from-user-in-wpf
-        private static void HotKeyTextBoxPreviewKeyDown(TextBox textBox, KeyEventArgs e)
+        private void HotKeyBox_LostFocus_1(object sender, RoutedEventArgs e)
         {
-            if (textBox == null)
-                return;
-
-            // The text box grabs all input.
-            e.Handled = true;
-
-            // Fetch the actual shortcut key.
-            Key key = e.Key == Key.System ? e.SystemKey : e.Key;
-
-            // Ignore key down events on modifier keys
-            // TODO: do we really want to do this?
-            if ( key == Key.LeftShift || key == Key.RightCtrl
-                || key == Key.LeftCtrl || key == Key.RightCtrl
-                || key == Key.LeftAlt || key == Key.RightAlt
-                || key == Key.LWin || key == Key.RWin)
+            AWHKConfigShared.ServiceController svcController = new AWHKConfigShared.ServiceController();
+            if (svcController.IsLoaded)
             {
-                return;
+                svcController.Resume();
             }
-
-            // Build the shortcut key name.
-            StringBuilder shortcutText = new StringBuilder();
-            if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
-            {
-                shortcutText.Append("Ctrl+");
-            }
-            if ((Keyboard.Modifiers & ModifierKeys.Shift) != 0)
-            {
-                shortcutText.Append("Shift+");
-            }
-            if ((Keyboard.Modifiers & ModifierKeys.Alt) != 0)
-            {
-                shortcutText.Append("Alt+");
-            }
-            shortcutText.Append(key.ToString());
-
-            textBox.Text = shortcutText.ToString();
         }
 
-        private void TextBox_PreviewKeyDown_1(object sender, KeyEventArgs e)
+        private void HotKeyBox_GotFocus_1(object sender, RoutedEventArgs e)
         {
-            HotKeyTextBoxPreviewKeyDown(sender as TextBox, e);
+            AWHKConfigShared.ServiceController svcController = new AWHKConfigShared.ServiceController();
+            if (svcController.IsLoaded)
+            {
+                svcController.Suspend();
+            }
         }
+
+
     }
 }

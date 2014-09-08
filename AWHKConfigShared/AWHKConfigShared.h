@@ -27,21 +27,40 @@ namespace AWHKConfigShared {
     {
     };
 
-	//public ref class Configuration
-	//{
-    //public:
-    //
-	//	static Configuration^ Load();
-    //    void Save();
-    //
-    //    property bool AllowSnapToOthers;
-    //    property int MaxEdgeSearchSize;
-    //    property int GridX;
-    //    property int GridY;
-    //    property int FineX;
-    //    property int FineY;
-    //
-	//};
+    public ref struct KeyBinding
+    {
+        bool ModAlt;
+        bool ModControl;
+        bool ModShift;
+        UInt32 Key;
+    };
+
+    public ref struct CursorKeys
+    {
+        KeyBinding^ Left;
+        KeyBinding^ Right;
+        KeyBinding^ Up;
+        KeyBinding^ Down;
+    };
+
+	public ref class Configuration
+	{
+    public:
+    
+		static Configuration^ Load();
+        void Save();
+    
+        property bool AllowSnapToOthers;
+        property int MaxEdgeSearchSize;
+        property int GridX;
+        property int GridY;
+        property int FineX;
+        property int FineY;
+        property KeyBinding^ HelpKey;
+        property KeyBinding^ ConfigKey;
+        property CursorKeys^ ResizeKeys;
+        property CursorKeys^ MoveKeys;
+	};
     
     public ref class ServiceController
     {
@@ -62,6 +81,8 @@ namespace AWHKConfigShared {
             } 
         };
 
+        void Suspend();
+        void Resume();
         void ReloadConfiguration();
         void Unload();
 
