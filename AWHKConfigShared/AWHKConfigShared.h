@@ -47,7 +47,7 @@ namespace AWHKConfigShared {
 	{
     public:
     
-		static Configuration^ Load();
+		void Load();
         void Save();
     
         property bool AllowSnapToOthers;

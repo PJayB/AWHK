@@ -14,13 +14,9 @@
 
 namespace AWHKConfigShared {
 
-    Configuration^ Configuration::Load()
+    void Configuration::Load()
     {
-        Configuration^ c = gcnew Configuration();
-
         // TODO
-
-        return c;
     }
 
     void Configuration::Save()

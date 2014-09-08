@@ -5,7 +5,7 @@
         Title="Advanced Windows Hotkeys" 
         Height="420" Width="590" 
         MinHeight="420" MinWidth="590"
-        Icon="app.ico" WindowStartupLocation="CenterScreen">
+        Icon="app.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid x:Name="ConfigPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="530" Height="350">
             <Border BorderBrush="Black" BorderThickness="1" Margin="0">

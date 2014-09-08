@@ -20,29 +20,46 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private AWHKConfigShared.Configuration _config;
+        private AWHKConfigShared.ServiceController _svcController;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        private void Window_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            _svcController = new AWHKConfigShared.ServiceController();
+            _config = new AWHKConfigShared.Configuration();
+
+            // Load the configuration from the registry
+            _config.Load();
+        }
+
         private void btnUnload_Click(object sender, RoutedEventArgs e)
         {
             // todo
-            //unload the hawk service
+            //unload the awhk service (_svcController.Unload())
+                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
             //todo
-            //save the configuration
-            //close the application
+            //1. save the configuration (_config.Save())
+            //2. tell awhk to reload its settings (_svcController.ReloadConfiguration())
+                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
+            //3. close the application
             this.Close();
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
             //todo
-            //save the configuration
+            //1. save the configuration (_config.Save())
+            //2. tell awhk to reload its settings (_svcController.ReloadConfiguration())
+                // you need to catch a AWHKConfigShared.ServiceNotRunningException but you can ignore it
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -52,22 +69,27 @@ namespace AWHKConfigApp
 
         private void HotKeyBox_LostFocus_1(object sender, RoutedEventArgs e)
         {
-            AWHKConfigShared.ServiceController svcController = new AWHKConfigShared.ServiceController();
-            if (svcController.IsLoaded)
+            try
             {
-                svcController.Resume();
+                _svcController.Resume();
+            }
+            catch (AWHKConfigShared.ServiceNotRunningException)
+            {
+                // We can ignore this.
             }
         }
 
         private void HotKeyBox_GotFocus_1(object sender, RoutedEventArgs e)
         {
-            AWHKConfigShared.ServiceController svcController = new AWHKConfigShared.ServiceController();
-            if (svcController.IsLoaded)
+            try
             {
-                svcController.Suspend();
+                _svcController.Suspend();
+            }
+            catch (AWHKConfigShared.ServiceNotRunningException)
+            {
+                // We can ignore this.
             }
         }
-
 
     }
 }
