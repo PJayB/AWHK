@@ -49,11 +49,15 @@ namespace AWHKConfigApp
         private void btnUnload_Click(object sender, RoutedEventArgs e)
         {
             // todo
-            // unload the awhk service (_svcController.Unload())
-                // you need to catch a AWHKConfigShared.ServiceNotRunningException 
-                // if you catch one, print a message saying "Already unloaded" 
-            // otherwise print a message saying "It has been unloaded"
-                // and disable the button
+            // throw up a "Are you sure?" box:
+            // if yes:
+                // unload the awhk service (_svcController.Unload())
+                    // you need to catch a AWHKConfigShared.ServiceNotRunningException 
+                    // if you catch one, print a message saying "Already unloaded" 
+                // otherwise print a message saying "It has been unloaded"
+                    // and disable the button
+            // if no:
+                // do nothing
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)

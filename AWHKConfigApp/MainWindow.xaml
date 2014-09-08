@@ -17,7 +17,7 @@
                     </Grid.RowDefinitions>
                     <TabControl Grid.Row="1" BorderThickness="0,1,0,0">
                         <TabItem Header="General" Background="{x:Null}" BorderBrush="{x:Null}" Margin="1,-2,-2,0">
-                            <CustomControls:HotKeyBox VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="32" LostFocus="HotKeyBox_LostFocus_1" GotFocus="HotKeyBox_GotFocus_1"/>
+                            <CustomControls:HotKeyBox VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="32" LostFocus="HotKeyBox_LostFocus_1" GotFocus="HotKeyBox_GotFocus_1" AllowAlt="False" AllowControl="False" AllowShift="False"/>
                         </TabItem>
                         <TabItem Header="Key Bindings" Background="{x:Null}" BorderBrush="{x:Null}"/>
                     </TabControl>
