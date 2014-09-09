@@ -128,11 +128,6 @@ namespace AWHKConfigApp
                 new FrameworkPropertyMetadata(new ObservableCollection<int>()));
         public static readonly DependencyProperty RowsProperty = RowsPropertyKey.DependencyProperty;
 
-        //public static readonly DependencyProperty ColsProperty =
-        //    DependencyProperty.Register("Cols", typeof(ObservableCollection<int>), typeof(GridSetupControl));
-        //public static readonly DependencyProperty RowsProperty =
-        //    DependencyProperty.Register("Rows", typeof(ObservableCollection<int>), typeof(GridSetupControl));
-
         public static readonly DependencyProperty NumColsProperty =
             DependencyProperty.Register("NumCols", typeof(int?), typeof(GridSetupControl));
         public static readonly DependencyProperty NumRowsProperty =
