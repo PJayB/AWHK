@@ -58,6 +58,12 @@ namespace AWHKConfigApp
 
         public GridView()
         {
+            this.IsEnabledChanged += GridView_IsEnabledChanged;
+        }
+
+        void GridView_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            InvalidateVisual();
         }
 
         protected override void OnRender(DrawingContext dc)
@@ -99,18 +105,28 @@ namespace AWHKConfigApp
             // Draw horizontal lines
             if (NumRows.HasValue && NumRows.Value > 1)
             {
-                for (int i = 1; i < NumRows; ++i)
+                for (int i = 1; i < NumRows.Value; ++i)
                 {
                     double y = drawRect.Y + i * drawRect.Height / NumRows.Value;
                     dc.DrawLine(
                         gridLinePen,
-                        new Point(0, y),
-                        new Point(drawRect.Width, y));
+                        new Point(drawRect.Left, y),
+                        new Point(drawRect.Right, y));
                 }
             }
 
             // Draw vertical lines
-
+            if (NumCols.HasValue && NumCols.Value > 1)
+            {
+                for (int i = 1; i < NumCols.Value; ++i)
+                {
+                    double x = drawRect.X + i * drawRect.Width / NumCols.Value;
+                    dc.DrawLine(
+                        gridLinePen,
+                        new Point(x, drawRect.Top),
+                        new Point(x, drawRect.Bottom));
+                }
+            }
 
             dc.DrawRectangle(null, borderPen, drawRect);
         }
