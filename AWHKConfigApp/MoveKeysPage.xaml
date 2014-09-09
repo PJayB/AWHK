@@ -35,8 +35,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableSnap, ElementName=page, Mode=TwoWay}"/>
-                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Snap modifier key" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowFineSnap, ElementName=page, Mode=TwoWay}" Unchecked="chkAllowFine_CheckedChanged" Checked="chkAllowFine_CheckedChanged"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine Snap Modifier" Margin="0,0,12,0"/>
+                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid Snap modifier key" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowFineSnap, ElementName=page, Mode=TwoWay}" Unchecked="chkAllowFine_CheckedChanged" Checked="chkAllowFine_CheckedChanged"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine Grid Snap Modifier" Margin="0,0,12,0"/>
                 <ComboBox 
                     Grid.Row="2" Grid.Column="1"
                     Width="100" 
@@ -46,7 +46,7 @@
                     SelectedItem="{Binding FineSnapModifier, ElementName=page, Mode=TwoWay}"
                     />
                 <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping">What does snapping do?</Hyperlink></TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap">What is Fine Snap?</Hyperlink></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap">What is Fine Grid Snap?</Hyperlink></TextBlock>
                 <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="why_are_fine_snap_modifiers_missing">Why are there modifiers missing?</Hyperlink></TextBlock>
             </Grid>
         </GroupBox>
