@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:CustomControls="clr-namespace:AWHKConfigApp"
       xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="512"
@@ -35,7 +36,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableSnap, ElementName=page, Mode=TwoWay}"/>
-                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid Snap modifier key" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowFineSnap, ElementName=page, Mode=TwoWay}" Unchecked="chkAllowFine_CheckedChanged" Checked="chkAllowFine_CheckedChanged"/>
+                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid Snap modifier key" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowFineSnap, ElementName=page, Mode=TwoWay}"/>
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine Grid Snap Modifier" Margin="0,0,12,0"/>
                 <ComboBox 
                     Grid.Row="2" Grid.Column="1"
@@ -44,13 +45,24 @@
                     x:Name="cmbFineSnapModifier"
                     ItemsSource="{Binding ModifierKeyValues}"
                     SelectedItem="{Binding FineSnapModifier, ElementName=page, Mode=TwoWay}"
+                    IsEnabled="{Binding Path=IsChecked,ElementName=chkAllowFine}"
                     />
                 <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping">What does snapping do?</Hyperlink></TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap">What is Fine Grid Snap?</Hyperlink></TextBlock>
                 <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="why_are_fine_snap_modifiers_missing">Why are there modifiers missing?</Hyperlink></TextBlock>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="1" Style="{DynamicResource SeparatorMargin}" Header="Resize Keys">
+        <GroupBox Grid.Row="1" Style="{DynamicResource SeparatorMargin}" Header="Grid Controls">
+            <Grid Margin="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CustomControls:GridSetupControl Grid.Column="0" x:Name="gridCoarse" NumCols="8" NumRows="4" Height="200"/>
+                <CustomControls:GridSetupControl Grid.Column="1" x:Name="gridFine" IsEnabled="{Binding IsChecked, ElementName=chkAllowFine}" NumCols="32" NumRows="16"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="2" Style="{DynamicResource SeparatorMargin}" Header="Resize Keys">
             <Grid Margin="7">
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -75,7 +87,7 @@
                 <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Down" HotKeyCommitted="HotKeyCommitted"/>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="2" Style="{DynamicResource SeparatorMargin}" Header="Move Keys">
+        <GroupBox Grid.Row="3" Style="{DynamicResource SeparatorMargin}" Header="Move Keys">
             <Grid Margin="7">
                 <Grid.RowDefinitions>
                     <RowDefinition />

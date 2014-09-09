@@ -1,0 +1,48 @@
+﻿<UserControl x:Name="userControl" x:Class="AWHKConfigApp.GridSetupControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:EmbeddedControls="clr-namespace:AWHKConfigApp" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="WindowFrameEnabledPropBrush" Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+        <SolidColorBrush x:Key="WindowFrameDisabledPropBrush" Color="{DynamicResource {x:Static SystemColors.InactiveCaptionColorKey}}"/>
+        <Style x:Key="WindowProp" TargetType="{x:Type EmbeddedControls:GridView}">
+            <Setter Property="Margin" Value="7"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource WindowFrameEnabledPropBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="true">
+                    <Setter Property="BorderBrush" Value="{DynamicResource WindowFrameEnabledPropBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="BorderBrush" Value="{DynamicResource WindowFrameDisabledPropBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <EmbeddedControls:GridView
+            x:Name="border" 
+            Grid.Column="0" 
+            Style="{DynamicResource WindowProp}" 
+            />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox Grid.Column="1" x:Name="cmbNumCols" ItemsSource="{Binding Cols}" SelectedItem="{Binding NumCols}"/>
+            <TextBlock Grid.Column="2" Text=" x "/>
+            <ComboBox Grid.Column="3" x:Name="cmbNumRows" ItemsSource="{Binding Rows}" SelectedItem="{Binding NumRows}"/>
+        </Grid>
+    </Grid>
+</UserControl>

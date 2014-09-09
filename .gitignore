@@ -11,3 +11,5 @@ AWHKSetupAndDeploy/AWHKSetupAndDeploy
 pack.sh
 pack-awhk.sh
 Thumbs.db
+UpgradeLog.xml
+*.psess
