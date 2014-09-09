@@ -25,21 +25,9 @@ namespace AWHKConfigApp
             InitializeComponent();
         }
 
-        public bool? EnableSnap;
-        public bool? AllowFineSnap;
         public ModifierKeys? FineSnapModifier;
-
-        public bool AllowResizeKeys
-        {
-            get { return chkEnableResizeKeys.IsChecked.Value; }
-            set { chkEnableResizeKeys.IsChecked = value; }
-        }
-
-        public bool AllowMoveKeys
-        {
-            get { return chkEnableMoveKeys.IsChecked.Value; }
-            set { chkEnableMoveKeys.IsChecked = value; }
-        }
+        public bool? AllowResizeKeys;
+        public bool? AllowMoveKeys;
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
@@ -54,7 +42,7 @@ namespace AWHKConfigApp
             // Compile a new list of possibles
             ModifierKeys unavailableKeys = ModifierKeys.None;
 
-            if (AllowResizeKeys)
+            if (AllowResizeKeys.GetValueOrDefault())
             {
                 unavailableKeys |= hkResizeLeft.Modifiers;
                 unavailableKeys |= hkResizeRight.Modifiers;
@@ -62,7 +50,7 @@ namespace AWHKConfigApp
                 unavailableKeys |= hkResizeUp.Modifiers;
             }
 
-            if (AllowMoveKeys)
+            if (AllowMoveKeys.GetValueOrDefault())
             {
                 unavailableKeys |= hkMoveLeft.Modifiers;
                 unavailableKeys |= hkMoveRight.Modifiers;
@@ -91,9 +79,6 @@ namespace AWHKConfigApp
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             FilterFineSnapModifierKeys();
-            
-            // Resize the grids
-            GridSetupControl coarseGrid = this.gridCoarse as GridSetupControl;
         }
 
         private void HotKeyCommitted(object sender, RoutedEventArgs e)

@@ -76,6 +76,9 @@
     <Compile Include="GridSetupControl.xaml.cs">
       <DependentUpon>GridSetupControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GridSetupPage.xaml.cs">
+      <DependentUpon>GridSetupPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MediaPage.xaml.cs">
       <DependentUpon>MediaPage.xaml</DependentUpon>
     </Compile>
@@ -84,6 +87,10 @@
       <DependentUpon>SessionsPage.xaml</DependentUpon>
     </Compile>
     <Page Include="GridSetupControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GridSetupPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -23,6 +23,7 @@ namespace AWHKConfigApp
         private AWHKConfigShared.Configuration _config;
         private AWHKConfigShared.ServiceController _svcController;
         private MoveKeysPage moveKeysPage;
+        private GridSetupPage gridPage;
 
         public MainWindow()
         {
@@ -33,7 +34,11 @@ namespace AWHKConfigApp
         {
             // TODO: copy in the UI selections into _config.
             _config.AutoLogin = chkRunOnStartup.IsChecked.Value;
-            _config.AllowSnapToOthers = moveKeysPage.EnableSnap.GetValueOrDefault();
+            _config.AllowSnapToOthers = gridPage.EnableWindowSnap.GetValueOrDefault();
+            _config.GridX = gridPage.CoarseGridCols.GetValueOrDefault();
+            _config.GridY = gridPage.CoarseGridRows.GetValueOrDefault();
+            _config.FineX = gridPage.FineGridCols.GetValueOrDefault();
+            _config.FineY = gridPage.FineGridRows.GetValueOrDefault();
 
             // Save the settings:
             try
@@ -61,6 +66,7 @@ namespace AWHKConfigApp
 
             // Grab the page references
             moveKeysPage = pgMoveKeys.Content as MoveKeysPage;
+            gridPage = pgGridSetup.Content as GridSetupPage;
 
             // Load the configuration from the registry
             try
@@ -74,7 +80,11 @@ namespace AWHKConfigApp
 
             // TODO: Update UI based on _config settings.
             chkRunOnStartup.IsChecked = _config.AutoLogin;
-            moveKeysPage.EnableSnap = _config.AllowSnapToOthers;
+            gridPage.EnableWindowSnap = _config.AllowSnapToOthers;
+            gridPage.CoarseGridCols = _config.GridX;
+            gridPage.CoarseGridRows = _config.GridY;
+            gridPage.FineGridCols = _config.FineX;
+            gridPage.FineGridRows = _config.FineY;
 
             // Disable the Unload button if the service isn't running
             btnUnload.IsEnabled = _svcController.IsLoaded;
