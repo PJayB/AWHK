@@ -10,7 +10,7 @@
         <SolidColorBrush x:Key="WindowFrameEnabledPropBrush" Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
         <SolidColorBrush x:Key="WindowFrameDisabledPropBrush" Color="{DynamicResource {x:Static SystemColors.InactiveCaptionColorKey}}"/>
         <Style x:Key="WindowProp" TargetType="{x:Type EmbeddedControls:GridView}">
-            <Setter Property="Margin" Value="7"/>
+            <Setter Property="Margin" Value="0,0,0,7"/>
             <Setter Property="BorderBrush" Value="{DynamicResource WindowFrameEnabledPropBrush}"/>
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="true">
@@ -31,8 +31,8 @@
             x:Name="border" 
             Grid.Column="0" 
             Style="{DynamicResource WindowProp}" 
-            NumCols="{Binding NumCols}"
-            NumRows="{Binding NumRows}"
+            NumCols="{Binding NumCols, ElementName=userControl}"
+            NumRows="{Binding NumRows, ElementName=userControl}"
             />
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -42,9 +42,15 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="1" x:Name="cmbNumCols" ItemsSource="{Binding Cols, ElementName=userControl}" SelectedItem="{Binding NumCols, ElementName=userControl, Mode=TwoWay}"/>
+            <ComboBox Grid.Column="1" 
+                      x:Name="cmbNumCols" 
+                      ItemsSource="{Binding Cols, ElementName=userControl}" 
+                      SelectedItem="{Binding NumCols, ElementName=userControl}"/>
             <TextBlock Grid.Column="2" Text=" x "/>
-            <ComboBox Grid.Column="3" x:Name="cmbNumRows" ItemsSource="{Binding Rows, ElementName=userControl}" SelectedItem="{Binding NumRows, ElementName=userControl, Mode=TwoWay}"/>
+            <ComboBox Grid.Column="3" 
+                      x:Name="cmbNumRows" 
+                      ItemsSource="{Binding Rows, ElementName=userControl}" 
+                      SelectedItem="{Binding NumRows, ElementName=userControl}"/>
         </Grid>
     </Grid>
 </UserControl>

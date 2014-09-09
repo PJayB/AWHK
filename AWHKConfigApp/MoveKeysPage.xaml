@@ -7,7 +7,7 @@
       xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
       xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="page" x:Class="AWHKConfigApp.MoveKeysPage"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="512"
+      d:DesignHeight="1000" d:DesignWidth="512"
 	  Title="MoveKeysPage" Loaded="Page_Loaded">
     <Page.Resources>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
@@ -59,7 +59,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CustomControls:GridSetupControl Grid.Column="0" x:Name="gridCoarse" NumCols="8" NumRows="4" Height="200">
+                <CustomControls:GridSetupControl Grid.Column="0" Margin="0,0,7,0" x:Name="gridCoarse" NumCols="8" NumRows="4" Height="200">
                     <CustomControls:GridSetupControl.Cols>
                         <System:Int32>3</System:Int32>
                         <System:Int32>4</System:Int32>
@@ -74,7 +74,7 @@
                         <System:Int32>16</System:Int32>
                     </CustomControls:GridSetupControl.Rows>
                 </CustomControls:GridSetupControl>
-                <CustomControls:GridSetupControl Grid.Column="1" x:Name="gridFine" IsEnabled="{Binding IsChecked, ElementName=chkAllowFine}" NumCols="32" NumRows="16">
+                <CustomControls:GridSetupControl Grid.Column="1" Margin="7,0,0,0" x:Name="gridFine" IsEnabled="{Binding IsChecked, ElementName=chkAllowFine}" NumCols="32" NumRows="16">
                     <CustomControls:GridSetupControl.Cols>
                         <System:Int32>8</System:Int32>
                         <System:Int32>16</System:Int32>

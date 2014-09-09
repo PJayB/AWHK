@@ -18,24 +18,37 @@ namespace AWHKConfigApp
 {
     public class GridView : Control
     {
+        public Brush DisabledOverlayBrush
+        {
+            get { return base.GetValue(DisabledOverlayBrushProperty) as Brush; }
+            set { base.SetValue(DisabledOverlayBrushProperty, value); InvalidateVisual(); }
+        }
+
         public BitmapSource BackgroundImage
         {
             get { return base.GetValue(BackgroundImageProperty) as BitmapSource; }
-            set { base.SetValue(BackgroundImageProperty, value); }
+            set { base.SetValue(BackgroundImageProperty, value); InvalidateVisual(); }
         }
 
         public int? NumCols
         {
             get { return base.GetValue(NumColsProperty) as int?; }
-            set { base.SetValue(NumColsProperty, value); }
+            set { base.SetValue(NumColsProperty, value); InvalidateVisual(); }
         }
 
         public int? NumRows
         {
             get { return base.GetValue(NumRowsProperty) as int?; }
-            set { base.SetValue(NumRowsProperty, value); }
+            set { base.SetValue(NumRowsProperty, value); InvalidateVisual(); }
         }
 
+        public static readonly DependencyProperty DisabledOverlayBrushProperty =
+            DependencyProperty.Register("DisabledOverlayBrush", typeof(Brush), typeof(GridView),
+                new FrameworkPropertyMetadata(new SolidColorBrush(
+                    new Color() { R = 192, G = 192, B = 192, A = 128 }
+                    )
+                )
+            );
         public static readonly DependencyProperty BackgroundImageProperty =
             DependencyProperty.Register("BackgroundImage", typeof(BitmapSource), typeof(GridView));
         public static readonly DependencyProperty NumColsProperty =
@@ -75,9 +88,29 @@ namespace AWHKConfigApp
                 }
 
                 dc.DrawImage(BackgroundImage, drawRect);
+
+                // Draw a translucent rect over it if it's disabled
+                if (!IsEnabled)
+                {
+                    dc.DrawRectangle(DisabledOverlayBrush, null, drawRect);
+                }
             }
 
-            // TODO: Draw grid
+            // Draw horizontal lines
+            if (NumRows.HasValue && NumRows.Value > 1)
+            {
+                for (int i = 1; i < NumRows; ++i)
+                {
+                    double y = drawRect.Y + i * drawRect.Height / NumRows.Value;
+                    dc.DrawLine(
+                        gridLinePen,
+                        new Point(0, y),
+                        new Point(drawRect.Width, y));
+                }
+            }
+
+            // Draw vertical lines
+
 
             dc.DrawRectangle(null, borderPen, drawRect);
         }
