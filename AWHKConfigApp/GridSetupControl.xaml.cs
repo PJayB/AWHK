@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,8 +24,24 @@ namespace AWHKConfigApp
             set { base.SetValue(BackgroundImageProperty, value); }
         }
 
+        public int? NumCols
+        {
+            get { return base.GetValue(NumColsProperty) as int?; }
+            set { base.SetValue(NumColsProperty, value); }
+        }
+
+        public int? NumRows
+        {
+            get { return base.GetValue(NumRowsProperty) as int?; }
+            set { base.SetValue(NumRowsProperty, value); }
+        }
+
         public static readonly DependencyProperty BackgroundImageProperty =
-            DependencyProperty.Register("BackgroundImage", typeof(BitmapSource), typeof(GridSetupControl));
+            DependencyProperty.Register("BackgroundImage", typeof(BitmapSource), typeof(GridView));
+        public static readonly DependencyProperty NumColsProperty =
+            DependencyProperty.Register("NumCols", typeof(int?), typeof(GridView));
+        public static readonly DependencyProperty NumRowsProperty =
+            DependencyProperty.Register("NumRows", typeof(int?), typeof(GridView));
 
         public GridView()
         {
@@ -60,6 +77,8 @@ namespace AWHKConfigApp
                 dc.DrawImage(BackgroundImage, drawRect);
             }
 
+            // TODO: Draw grid
+
             dc.DrawRectangle(null, borderPen, drawRect);
         }
     }
@@ -69,15 +88,15 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class GridSetupControl : UserControl
     {
-        public List<int> Cols
+        public ObservableCollection<int> Cols
         {
-            get { return base.GetValue(ColsProperty) as List<int>; }
+            get { return base.GetValue(ColsProperty) as ObservableCollection<int>; }
             set { base.SetValue(ColsProperty, value); }
         }
 
-        public List<int> Rows
+        public ObservableCollection<int> Rows
         {
-            get { return base.GetValue(RowsProperty) as List<int>; }
+            get { return base.GetValue(RowsProperty) as ObservableCollection<int>; }
             set { base.SetValue(RowsProperty, value); }
         }
 
@@ -93,10 +112,27 @@ namespace AWHKConfigApp
             set { base.SetValue(NumRowsProperty, value); }
         }
 
-        public static readonly DependencyProperty ColsProperty =
-            DependencyProperty.Register("Cols", typeof(List<int>), typeof(GridSetupControl));
-        public static readonly DependencyProperty RowsProperty =
-            DependencyProperty.Register("Rows", typeof(List<int>), typeof(GridSetupControl));
+        private static readonly DependencyPropertyKey ColsPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                "Cols",
+                typeof(ObservableCollection<int>), 
+                typeof(GridSetupControl),
+                new FrameworkPropertyMetadata(new ObservableCollection<int>()));
+        public static readonly DependencyProperty ColsProperty = ColsPropertyKey.DependencyProperty;
+        
+        private static readonly DependencyPropertyKey RowsPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                "Rows",
+                typeof(ObservableCollection<int>), 
+                typeof(GridSetupControl),
+                new FrameworkPropertyMetadata(new ObservableCollection<int>()));
+        public static readonly DependencyProperty RowsProperty = RowsPropertyKey.DependencyProperty;
+
+        //public static readonly DependencyProperty ColsProperty =
+        //    DependencyProperty.Register("Cols", typeof(ObservableCollection<int>), typeof(GridSetupControl));
+        //public static readonly DependencyProperty RowsProperty =
+        //    DependencyProperty.Register("Rows", typeof(ObservableCollection<int>), typeof(GridSetupControl));
+
         public static readonly DependencyProperty NumColsProperty =
             DependencyProperty.Register("NumCols", typeof(int?), typeof(GridSetupControl));
         public static readonly DependencyProperty NumRowsProperty =
@@ -105,6 +141,10 @@ namespace AWHKConfigApp
         public GridSetupControl()
         {
             InitializeComponent();
+
+            SetValue(ColsPropertyKey, new ObservableCollection<int>());
+            SetValue(RowsPropertyKey, new ObservableCollection<int>()); 
+
             border.BackgroundImage = new ScreenGrabber().Capture();
         }
     }
