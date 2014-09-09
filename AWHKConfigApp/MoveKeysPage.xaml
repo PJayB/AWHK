@@ -1,12 +1,12 @@
-﻿<Page x:Class="AWHKConfigApp.MoveKeysPage"
+﻿<Page x:Name="page" x:Class="AWHKConfigApp.MoveKeysPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
       mc:Ignorable="d" 
-      d:DesignHeight="310" d:DesignWidth="512"
-	  Title="MoveKeysPage">
+      d:DesignHeight="600" d:DesignWidth="512"
+	  Title="MoveKeysPage" Loaded="Page_Loaded">
     <Page.Resources>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
@@ -27,15 +27,27 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}"/>
-                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable fine snap modifier key" Style="{DynamicResource SeparatorMargin}"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine snap modifier" Margin="0,0,12,0"/>
-                <ComboBox Grid.Row="2" Grid.Column="1" Width="100" Style="{DynamicResource SeparatorMargin}" HorizontalAlignment="Left"/>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableSnap, ElementName=page, Mode=TwoWay}"/>
+                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Snap modifier key" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowFineSnap, ElementName=page, Mode=TwoWay}" Unchecked="chkAllowFine_CheckedChanged" Checked="chkAllowFine_CheckedChanged"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine Snap Modifier" Margin="0,0,12,0"/>
+                <ComboBox 
+                    Grid.Row="2" Grid.Column="1"
+                    Width="100" 
+                    HorizontalAlignment="Left"
+                    x:Name="cmbFineSnapModifier"
+                    ItemsSource="{Binding ModifierKeyValues}"
+                    SelectedItem="{Binding FineSnapModifier, ElementName=page, Mode=TwoWay}"
+                    />
+                <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping">What does snapping do?</Hyperlink></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap">What is Fine Snap?</Hyperlink></TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="why_are_fine_snap_modifiers_missing">Why are there modifiers missing?</Hyperlink></TextBlock>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1" Style="{DynamicResource SeparatorMargin}" Header="Resize Keys">
@@ -51,15 +63,16 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableResizeKeys" Content="Enable resize keys" Style="{DynamicResource SeparatorMargin}"/>
+                <CheckBox Grid.Row="0" Grid.Column="0" x:Name="chkEnableResizeKeys" Content="Enable Resize keys" Style="{DynamicResource SeparatorMargin}" Checked="chkEnableResizeKeys_CheckedChanged" Unchecked="chkEnableResizeKeys_CheckedChanged"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_are_resize_keys">What are Resize keys?</Hyperlink></TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Resize Left Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Left"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Left" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Resize Right Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Right"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Right" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Resize Up Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Up"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Up" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Resize Down Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Down"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Down" HotKeyCommitted="HotKeyCommitted"/>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="2" Style="{DynamicResource SeparatorMargin}" Header="Move Keys">
@@ -75,15 +88,16 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableMoveKeys" Content="Enable movement keys" Style="{DynamicResource SeparatorMargin}"/>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableMoveKeys" Content="Enable Move keys" Style="{DynamicResource SeparatorMargin}" Checked="chkEnableMoveKeys_CheckedChanged" Unchecked="chkEnableMoveKeys_CheckedChanged"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_are_move_keys">What are Move keys?</Hyperlink></TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Move Left Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="A"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="A" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Move Right Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="D"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="D" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Move Up Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="W"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="W" HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Move Down Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="S"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="S" HotKeyCommitted="HotKeyCommitted"/>
             </Grid>
         </GroupBox>
     </Grid>

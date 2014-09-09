@@ -33,7 +33,7 @@ namespace AWHKConfigApp
         {
             // TODO: copy in the UI selections into _config.
             _config.AutoLogin = chkRunOnStartup.IsChecked.Value;
-            _config.AllowSnapToOthers = moveKeysPage.EnableSnap;
+            _config.AllowSnapToOthers = moveKeysPage.EnableSnap.GetValueOrDefault();
 
             // Save the settings:
             try
