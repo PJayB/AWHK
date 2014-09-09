@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:EmbeddedControls="clr-namespace:AWHKConfigApp" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
@@ -31,8 +32,8 @@
             x:Name="border" 
             Grid.Column="0" 
             Style="{DynamicResource WindowProp}" 
-            NumCols="{Binding NumCols, ElementName=userControl}"
-            NumRows="{Binding NumRows, ElementName=userControl}"
+            NumCols="{Binding Path=NumCols, ElementName=userControl}"
+            NumRows="{Binding Path=NumRows, ElementName=userControl}"
             />
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -44,13 +45,15 @@
             </Grid.ColumnDefinitions>
             <ComboBox Grid.Column="1" 
                       x:Name="cmbNumCols" 
-                      ItemsSource="{Binding Cols, ElementName=userControl}" 
-                      SelectedItem="{Binding NumCols, ElementName=userControl}"/>
+                      ItemsSource="{Binding Path=Cols, ElementName=userControl}" 
+                      SelectedValue="{Binding Path=NumCols, ElementName=userControl, Mode=TwoWay}"
+                      SelectionChanged="OnSelectionChanged"/>
             <TextBlock Grid.Column="2" Text=" x "/>
             <ComboBox Grid.Column="3" 
                       x:Name="cmbNumRows" 
-                      ItemsSource="{Binding Rows, ElementName=userControl}" 
-                      SelectedItem="{Binding NumRows, ElementName=userControl}"/>
+                      ItemsSource="{Binding Path=Rows, ElementName=userControl}" 
+                      SelectedValue="{Binding Path=NumRows, ElementName=userControl, Mode=TwoWay}"
+                      SelectionChanged="OnSelectionChanged"/>
         </Grid>
     </Grid>
 </UserControl>

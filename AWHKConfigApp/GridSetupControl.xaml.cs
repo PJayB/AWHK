@@ -191,5 +191,10 @@ namespace AWHKConfigApp
 
             border.BackgroundImage = new ScreenGrabber().Capture();
         }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            border.InvalidateVisual();
+        }
     }
 }
