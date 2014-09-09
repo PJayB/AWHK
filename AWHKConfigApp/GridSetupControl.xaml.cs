@@ -39,28 +39,26 @@ namespace AWHKConfigApp
 
             if (BackgroundImage != null)
             {
-                // Get the border rect from our dimensions
-                double imageAspect = BackgroundImage.Width / (double)BackgroundImage.Height;
-                double actualAspect = ActualWidth / ActualHeight;
-                if (actualAspect < 1)
+                double xscale = ActualWidth / (double) BackgroundImage.Width;
+                double yscale = ActualHeight / (double) BackgroundImage.Height;
+
+                drawRect.Width = Math.Min(ActualWidth, BackgroundImage.Width * yscale);
+                drawRect.Height = Math.Min(ActualHeight, BackgroundImage.Height * xscale);
+
+                // Center it
+                if (drawRect.Width < ActualWidth)
                 {
-                    // Too thin. Vertically position.
-                    double newImageHeight = ActualWidth / imageAspect;
-                    drawRect.Y = (drawRect.Height - newImageHeight) * 0.5;
-                    drawRect.Height = newImageHeight;
+                    drawRect.X = (ActualWidth - drawRect.Width) * 0.5;
                 }
-                else
+                if (drawRect.Height < ActualHeight)
                 {
-                    // Too short. Horizontally position.
-                    double newImageWidth = ActualHeight * imageAspect;
-                    drawRect.X = (drawRect.Width - newImageWidth) * 0.5;
-                    drawRect.Width = newImageWidth;
+                    drawRect.Y = (ActualHeight - drawRect.Height) * 0.5;
                 }
 
                 dc.DrawImage(BackgroundImage, drawRect);
             }
 
-            dc.DrawRectangle(null, borderPen, new Rect(0, 0, ActualWidth, ActualHeight));
+            dc.DrawRectangle(null, borderPen, drawRect);
         }
     }
 
