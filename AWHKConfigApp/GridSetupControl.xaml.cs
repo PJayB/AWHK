@@ -35,6 +35,8 @@ namespace AWHKConfigApp
             base.OnRender(dc);
 
             Pen borderPen = new Pen(BorderBrush, 1.0);
+            Pen gridLinePen = new Pen(BorderBrush, 1.0) { DashStyle = DashStyles.Dash };
+
             Rect drawRect = new Rect(0, 0, ActualWidth, ActualHeight);
 
             if (BackgroundImage != null)
