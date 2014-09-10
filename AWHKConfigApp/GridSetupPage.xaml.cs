@@ -20,13 +20,6 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class GridSetupPage : Page
     {
-        public bool? EnableWindowSnap;
-        public bool? EnableFineSnap;
-        public int? CoarseGridCols;
-        public int? CoarseGridRows;
-        public int? FineGridCols;
-        public int? FineGridRows;
-
         public GridSetupPage()
         {
             InitializeComponent();

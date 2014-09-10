@@ -4,16 +4,21 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:CustomControls="clr-namespace:AWHKConfigApp"
+      xmlns:AWHK="clr-namespace:AWHKConfigApp"
       xmlns:System="clr-namespace:System;assembly=mscorlib" 
       x:Name="gridPage" 
       mc:Ignorable="d" 
       d:DesignHeight="500" d:DesignWidth="512"
-	Title="GridSetupPage">
+	  Title="GridSetupPage">
     <Page.Resources>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
         </Style>
+        <AWHK:ConfigurationView x:Key="config"/>
     </Page.Resources>
+    <Page.DataContext>
+        <Binding Source="{StaticResource config}"/>
+    </Page.DataContext>
 
     <Grid Margin="7">
         <Grid.RowDefinitions>
@@ -27,14 +32,14 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableWindowSnap, ElementName=gridPage}"/>
+        <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowSnapToOthers, Mode=TwoWay}"/>
         <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping"><Run Text="What does snapping do?"/></Hyperlink></TextBlock>
-        <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid snap" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableFineSnap, ElementName=gridPage}"/>
+        <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid snap" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableFineSnap, Mode=TwoWay}"/>
         <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap"><Run Text="What is Fine Grid Snap?"/></Hyperlink></TextBlock>
         <CustomControls:GridSetupControl 
             Grid.Row="3" Grid.Column="0" Margin="0,0,7,0" x:Name="gridCoarse"
-            NumCols="{Binding CoarseGridCols, ElementName=gridPage, Mode=TwoWay}"
-            NumRows="{Binding CoarseGridRows, ElementName=gridPage, Mode=TwoWay}">
+            NumCols="{Binding CoarseGridCols, Mode=TwoWay}"
+            NumRows="{Binding CoarseGridRows, Mode=TwoWay}">
             <CustomControls:GridSetupControl.Cols>
                 <System:Int32>3</System:Int32>
                 <System:Int32>4</System:Int32>
@@ -51,8 +56,8 @@
         </CustomControls:GridSetupControl>
         <CustomControls:GridSetupControl 
             Grid.Row="3" Grid.Column="1" Margin="7,0,0,0" x:Name="gridFine" 
-            NumCols="{Binding FineGridCols, ElementName=gridPage, Mode=TwoWay}" 
-            NumRows="{Binding FineGridRows, ElementName=gridPage, Mode=TwoWay}"
+            NumCols="{Binding FineGridCols, Mode=TwoWay}" 
+            NumRows="{Binding FineGridRows, Mode=TwoWay}"
             IsEnabled="{Binding IsChecked, ElementName=chkAllowFine}">
             <CustomControls:GridSetupControl.Cols>
                 <System:Int32>8</System:Int32>

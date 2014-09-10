@@ -9,7 +9,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="1000" d:DesignWidth="512"
       x:Name="moveKeysPage"
-	  Title="MoveKeysPage" Loaded="Page_Loaded">
+	  Title="MoveKeysPage" Loaded="Page_Loaded"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Page.Resources>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
@@ -28,24 +29,22 @@
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fine Grid Snap Modifier" Margin="0,0,12,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Fine Grid Snap Modifier" Margin="0,0,12,0"/>
                 <ComboBox 
-					Grid.Row="2" Grid.Column="1"
+					Grid.Row="0" Grid.Column="1"
 					Width="100" 
 					HorizontalAlignment="Left"
 					x:Name="cmbFineSnapModifier"
-					ItemsSource="{Binding ModifierKeyValues, ElementName=moveKeysPage, Mode=TwoWay}"
-					SelectedItem="{Binding FineSnapModifier, ElementName=moveKeysPage, Mode=TwoWay}"
+					SelectedItem="{Binding FineSnapModifier, Mode=TwoWay}"
                     />
-                <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="why_are_fine_snap_modifiers_missing"><Run Text="Why are there modifiers missing?"/></Hyperlink></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap_modifier"><Run Text="What is this?"/></Hyperlink></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="why_are_fine_snap_modifiers_missing"><Run Text="Why are some modifiers missing?"/></Hyperlink></TextBlock>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1" Style="{DynamicResource SeparatorMargin}" Header="Resize Keys">

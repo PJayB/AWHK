@@ -63,6 +63,9 @@ namespace AWHKConfigShared {
         void Save();
     
         property bool AllowSnapToOthers;
+        property bool EnableFineSnap;    // TODO: save and load these
+        property bool EnableResizeKeys;  // TODO: save and load these
+        property bool EnableMoveKeys;    // TODO: save and load these
         property int MaxEdgeSearchSize;
         property int GridX;
         property int GridY;

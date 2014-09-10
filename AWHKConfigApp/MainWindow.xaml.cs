@@ -20,7 +20,7 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AWHKConfigShared.Configuration _config;
+        private ConfigurationView _config;
         private AWHKConfigShared.ServiceController _svcController;
         private MoveKeysPage moveKeysPage;
         private GridSetupPage gridPage;
@@ -32,26 +32,21 @@ namespace AWHKConfigApp
 
         private void SaveSettings()
         {
-            // TODO: copy in the UI selections into _config.
-            _config.AutoLogin = chkRunOnStartup.IsChecked.Value;
-            _config.AllowSnapToOthers = gridPage.EnableWindowSnap.GetValueOrDefault();
-            _config.GridX = gridPage.CoarseGridCols.GetValueOrDefault();
-            _config.GridY = gridPage.CoarseGridRows.GetValueOrDefault();
-            _config.FineX = gridPage.FineGridCols.GetValueOrDefault();
-            _config.FineY = gridPage.FineGridRows.GetValueOrDefault();
-
-            // Save the settings:
             try
             {
                 _config.Save();
-                _svcController.ReloadConfiguration();
             }
-            catch (AWHKConfigShared.ConfigurationIoException)
+            catch (ConfigurationWriteException)
             {
-                // Failed to save settings.
                 MessageBox.Show(
                     "Failed to save the settings. Ensure you have privileges to alter the Registry.",
                     "AWHK", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+
+            // Try and reload the settings
+            try
+            {
+                _svcController.ReloadConfiguration();
             }
             catch (AWHKConfigShared.ServiceNotRunningException)
             {
@@ -62,29 +57,26 @@ namespace AWHKConfigApp
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
             _svcController = new AWHKConfigShared.ServiceController();
-            _config = new AWHKConfigShared.Configuration();
+            _config = new ConfigurationView();
 
             // Grab the page references
             moveKeysPage = pgMoveKeys.Content as MoveKeysPage;
             gridPage = pgGridSetup.Content as GridSetupPage;
+
+            // Bind the data contexts
+            this.DataContext = _config;
+            moveKeysPage.DataContext = _config;
+            gridPage.DataContext = _config;
 
             // Load the configuration from the registry
             try
             {
                 _config.Load();
             }
-            catch (AWHKConfigShared.ConfigurationIoException)
+            catch (ConfigurationReadException)
             {
                 // May not be set up yet.
             }
-
-            // TODO: Update UI based on _config settings.
-            chkRunOnStartup.IsChecked = _config.AutoLogin;
-            gridPage.EnableWindowSnap = _config.AllowSnapToOthers;
-            gridPage.CoarseGridCols = _config.GridX;
-            gridPage.CoarseGridRows = _config.GridY;
-            gridPage.FineGridCols = _config.FineX;
-            gridPage.FineGridRows = _config.FineY;
 
             // Disable the Unload button if the service isn't running
             btnUnload.IsEnabled = _svcController.IsLoaded;

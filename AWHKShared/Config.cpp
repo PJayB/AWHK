@@ -23,6 +23,9 @@
 
 AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	: AllowSnapToOthers( TRUE )
+    , EnableFineSnap( TRUE )
+    , EnableResizeKeys( TRUE )
+    , EnableMoveKeys( TRUE )
 	, MaxEdgeSearchSize( 128 )
 	, GridX( 8 )
 	, GridY( 4 )

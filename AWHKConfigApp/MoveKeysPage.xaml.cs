@@ -25,10 +25,6 @@ namespace AWHKConfigApp
             InitializeComponent();
         }
 
-        public ModifierKeys? FineSnapModifier;
-        public bool? AllowResizeKeys;
-        public bool? AllowMoveKeys;
-
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show((sender as Hyperlink).TargetName);
@@ -36,13 +32,15 @@ namespace AWHKConfigApp
 
         private void FilterFineSnapModifierKeys()
         {
+            ConfigurationView configView = DataContext as ConfigurationView;
+
             // Get the current selection
-            ModifierKeys currentFineSnapKey = FineSnapModifier.GetValueOrDefault();
+            ModifierKeys currentFineSnapKey = configView.FineSnapModifier;
 
             // Compile a new list of possibles
             ModifierKeys unavailableKeys = ModifierKeys.None;
 
-            if (AllowResizeKeys.GetValueOrDefault())
+            if (configView.AllowResizeKeys)
             {
                 unavailableKeys |= hkResizeLeft.Modifiers;
                 unavailableKeys |= hkResizeRight.Modifiers;
@@ -50,7 +48,7 @@ namespace AWHKConfigApp
                 unavailableKeys |= hkResizeUp.Modifiers;
             }
 
-            if (AllowMoveKeys.GetValueOrDefault())
+            if (configView.AllowMoveKeys)
             {
                 unavailableKeys |= hkMoveLeft.Modifiers;
                 unavailableKeys |= hkMoveRight.Modifiers;

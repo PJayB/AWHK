@@ -32,6 +32,9 @@ struct AWHK_APP_CONFIG
 	AWHK_APP_CONFIG();
 
 	BOOL				AllowSnapToOthers;
+    BOOL                EnableFineSnap;
+    BOOL                EnableResizeKeys;
+    BOOL                EnableMoveKeys;
 
 	DWORD				MaxEdgeSearchSize;
 

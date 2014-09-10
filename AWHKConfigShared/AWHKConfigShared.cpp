@@ -83,6 +83,9 @@ namespace AWHKConfigShared {
 
     void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
     {
+        b->EnableFineSnap = a->EnableFineSnap;
+        b->EnableResizeKeys = a->EnableResizeKeys;
+        b->EnableMoveKeys = a->EnableMoveKeys;
         b->AllowSnapToOthers = a->AllowSnapToOthers;
         b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
         b->GridX = a->GridX;
@@ -100,6 +103,9 @@ namespace AWHKConfigShared {
 
     void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
     {
+        b->EnableFineSnap = (a->EnableFineSnap != FALSE);
+        b->EnableResizeKeys = (a->EnableResizeKeys != FALSE);
+        b->EnableMoveKeys = (a->EnableMoveKeys != FALSE);
         b->AllowSnapToOthers = (a->AllowSnapToOthers != FALSE);
         b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
         b->GridX = a->GridX;
