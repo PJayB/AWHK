@@ -33,9 +33,9 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <CheckBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowSnapToOthers, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping"><Run Text="What does snapping do?"/></Hyperlink></TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_snapping"><Run Text="What does this do?"/></Hyperlink></TextBlock>
         <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="chkAllowFine" Content="Enable Fine Grid snap" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding EnableFineSnap, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap"><Run Text="What is Fine Grid Snap?"/></Hyperlink></TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_is_fine_snap"><Run Text="What is Fine Grid snap?"/></Hyperlink></TextBlock>
         <CustomControls:GridSetupControl 
             Grid.Row="3" Grid.Column="0" Margin="0,0,7,0" x:Name="gridCoarse"
             NumCols="{Binding CoarseGridCols, Mode=TwoWay}"
