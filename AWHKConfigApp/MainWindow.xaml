@@ -78,12 +78,12 @@
                             <Frame Margin="12" Source="MediaPage.xaml" x:Name="pgMedia"/>
                         </TabItem>
                     </TabControl>
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" MouseDown="Grid_MouseDown">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="48"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Source="app.ico" Stretch="None" />
+                        <Image Grid.Column="0" Source="app.ico" Stretch="None" Margin="7,4,0,0"/>
                         <TextBlock Grid.Column="1" Text="Advanced Windows Hotkeys" VerticalAlignment="Center" Margin="12,0,0,0" FontSize="22" />
                     </Grid>
                     <!--buttons outside of the tab control-->
