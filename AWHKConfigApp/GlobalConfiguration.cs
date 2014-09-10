@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AWHKConfigShared;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -13,7 +12,7 @@ namespace AWHKConfigApp
     // Translate an AWHKShared exception to a write error
     class ConfigurationWriteException : Exception 
     {
-        public ConfigurationWriteException(ConfigurationIoException inner) 
+        public ConfigurationWriteException(AWHKConfigShared.ConfigurationIoException inner) 
             : base(
                 "Failed to save the configuration settings. Make sure you have permissions to write to the system registry.",
                 inner)
@@ -24,7 +23,7 @@ namespace AWHKConfigApp
     // Translate an AWHKShared exception to a write error
     class ConfigurationReadException : Exception 
     {
-        public ConfigurationReadException(ConfigurationIoException inner)
+        public ConfigurationReadException(AWHKConfigShared.ConfigurationIoException inner)
             : base(
                 "Failed to read the configuration settings. Make sure you have permissions to read from the system registry.",
                 inner)
@@ -32,29 +31,66 @@ namespace AWHKConfigApp
         }
     }
 
-    class ConfigurationView : INotifyPropertyChanged
+    public class KeyBindingView : INotifyPropertyChanged
+    {
+        private ModifierKeys _modifiers;
+        private Key _trigger;
+
+        public ModifierKeys Modifiers 
+        {
+            get { return _modifiers; }
+            set
+            {
+                _modifiers = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public Key Trigger 
+        {
+            get { return _trigger; }
+            set
+            {
+                _trigger = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // This method is called by the Set accessor of each property. 
+        // The CallerMemberName attribute that is applied to the optional propertyName 
+        // parameter causes the property name of the caller to be substituted as an argument. 
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public static KeyBindingView FromAwhk(AWHKConfigShared.KeyBinding key)
+        {
+            return new KeyBindingView()
+            {
+                Modifiers = (ModifierKeys) key.Modifiers,
+                Trigger = KeyInterop.KeyFromVirtualKey(key.Trigger)
+            };
+        }
+
+        public AWHKConfigShared.KeyBinding ToAwhk()
+        {
+            return new AWHKConfigShared.KeyBinding()
+            {
+                Modifiers = (AWHKConfigShared.ModifierKeys) this.Modifiers,
+                Trigger = KeyInterop.VirtualKeyFromKey(this.Trigger)
+            };
+        }
+    }
+
+    public class ConfigurationView : INotifyPropertyChanged
     {
         private AWHKConfigShared.Configuration _config;
-
-        private static ModifierKeys ConvertModifierSetToKeys(ModifierSet set)
-        {
-            ModifierKeys keys = ModifierKeys.None;
-            if (set.Alt) keys |= ModifierKeys.Alt;
-            if (set.Control) keys |= ModifierKeys.Control;
-            if (set.Shift) keys |= ModifierKeys.Shift;
-            if (set.Win) keys |= ModifierKeys.Windows;
-            return keys;
-        }
-
-        private static ModifierSet ConvertModifierKeysToSet(ModifierKeys keys)
-        {
-            ModifierSet set = new ModifierSet();
-            set.Alt = (keys & ModifierKeys.Alt) != 0;
-            set.Control = (keys & ModifierKeys.Control) != 0;
-            set.Shift = (keys & ModifierKeys.Shift) != 0;
-            set.Win = (keys & ModifierKeys.Windows) != 0;
-            return set;
-        }
 
         // General settings
         public bool RunOnStartUp
@@ -64,23 +100,16 @@ namespace AWHKConfigApp
         }
 
         // Resize/move hotkeys
-        public ModifierKeys FineSnapModifier
+        public KeyBindingView HelpKey
         {
-            get { return ConvertModifierSetToKeys(_config.FineKeyMod); }
-            set { _config.FineKeyMod = ConvertModifierKeysToSet(value); NotifyPropertyChanged(); }
+            get { return KeyBindingView.FromAwhk(_config.HelpKey); }
+            set { _config.HelpKey = value.ToAwhk(); }
         }
-        public bool AllowResizeKeys
+        public KeyBindingView ConfigKey
         {
-            get { return _config.EnableResizeKeys; }
-            set { _config.EnableResizeKeys = value; NotifyPropertyChanged(); }
+            get { return KeyBindingView.FromAwhk(_config.ConfigKey); }
+            set { _config.ConfigKey = value.ToAwhk(); }
         }
-        public bool AllowMoveKeys
-        {
-            get { return _config.EnableMoveKeys; }
-            set { _config.EnableMoveKeys = value; NotifyPropertyChanged(); }
-        }
-
-
 
         // Grid settings
         public bool AllowSnapToOthers
@@ -124,7 +153,7 @@ namespace AWHKConfigApp
         // constructor creates default settings
         public ConfigurationView()
         {
-            _config = new Configuration();
+            _config = new AWHKConfigShared.Configuration();
         }
 
         // This method is called by the Set accessor of each property. 
@@ -141,10 +170,9 @@ namespace AWHKConfigApp
         // May throw an exception if properties fail validation
         public void Save()
         {
-            Configuration config = new Configuration();
+            AWHKConfigShared.Configuration config = new AWHKConfigShared.Configuration();
 
             // TODO: translate the settings
-            config.AutoLogin = RunOnStartUp;
             
             // Save the settings:
             try

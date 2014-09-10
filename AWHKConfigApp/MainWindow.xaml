@@ -9,7 +9,7 @@
         WindowStyle="None"
         BorderBrush="Black"
         BorderThickness="1"
-        Background="#33000000"
+        Background="#19000040"
         Icon="app.ico" 
         WindowStartupLocation="CenterScreen" 
         Loaded="Window_Loaded_1" 

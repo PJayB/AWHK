@@ -14,111 +14,76 @@
 
 namespace AWHKConfigShared {
 
-    void ClrModifierSetToNative(ModifierSet a, DWORD* mods)
+    void ClrModifierSetToNative(ModifierKeys a, DWORD* mods)
     {
-        *mods = 0;
-        if (a.Shift) {
-            *mods |= MOD_SHIFT;
-        }
-        if (a.Control) {
-            *mods |= MOD_CONTROL;
-        }
-        if (a.Alt) {
-            *mods |= MOD_ALT;
-        }
-        if (a.Win) {
-            *mods |= MOD_WIN;
-        }
+        *mods = static_cast<DWORD>(a);
     }
 
-    ModifierSet NativeModifierSetToClr(DWORD mods)
+    ModifierKeys NativeModifierSetToClr(DWORD mods)
     {
-        ModifierSet b;
-        if (mods & MOD_SHIFT) {
-            b.Shift = true;
-        }
-        if (mods & MOD_CONTROL) {
-            b.Control = true;
-        }
-        if (mods & MOD_ALT) {
-            b.Alt = true;
-        }
-        if (mods & MOD_WIN) {
-            b.Win = true;
-        }
-        return b;
+        return static_cast<ModifierKeys>(mods);
     }
 
-    void ClrKeyBindingToNative(KeyBinding a, DWORD* key, DWORD* mods)
+    void ClrKeyBindingToNative(KeyBinding a, AWHK_KEY_BINDING* b)
     {
-        *key = a.Key;
-        ClrModifierSetToNative(a.Mods, mods);
+        b->Trigger = a.Trigger;
+        ClrModifierSetToNative(a.Modifiers, &b->Modifiers);
     }
 
-    KeyBinding NativeKeyBindingToClr(DWORD key, DWORD mods)
+    KeyBinding NativeKeyBindingToClr(const AWHK_KEY_BINDING* a)
     {
         KeyBinding b;
-        b.Key = key;
-        b.Mods = NativeModifierSetToClr(mods);
+        b.Trigger = a->Trigger;
+        b.Modifiers = NativeModifierSetToClr(a->Modifiers);
         return b;
     }
 
     void ClrCursorKeysToNative(CursorKeys a, AWHK_CURSOR_KEYS* b)
     {
-        b->LeftKey = a.Left;
-        b->RightKey = a.Right;
-        b->UpKey = a.Up;
-        b->DownKey = a.Down;
+        ClrKeyBindingToNative(a.Left, &b->LeftKey);
+        ClrKeyBindingToNative(a.Right, &b->RightKey);
+        ClrKeyBindingToNative(a.Up, &b->UpKey);
+        ClrKeyBindingToNative(a.Down, &b->DownKey);
     }
 
     CursorKeys NativeCursorKeysToClr(const AWHK_CURSOR_KEYS* a)
     {
         CursorKeys b;
-        b.Left = a->LeftKey;
-        b.Right = a->RightKey;
-        b.Up = a->UpKey;
-        b.Down = a->DownKey;
+        b.Left = NativeKeyBindingToClr(&a->LeftKey);
+        b.Right = NativeKeyBindingToClr(&a->RightKey);
+        b.Up = NativeKeyBindingToClr(&a->UpKey);
+        b.Down = NativeKeyBindingToClr(&a->DownKey);
         return b;
     }
 
     void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
     {
         b->EnableFineSnap = a->EnableFineSnap;
-        b->EnableResizeKeys = a->EnableResizeKeys;
-        b->EnableMoveKeys = a->EnableMoveKeys;
         b->AllowSnapToOthers = a->AllowSnapToOthers;
         b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
         b->GridX = a->GridX;
         b->GridY = a->GridY;
         b->FineX = a->FineX;
         b->FineY = a->FineY;
-        ClrKeyBindingToNative(a->HelpKey, &b->HelpKey, &b->HelpKeyMod);
-        ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey, &b->ConfigKeyMod);
+        ClrKeyBindingToNative(a->HelpKey, &b->HelpKey);
+        ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey);
         ClrCursorKeysToNative(a->MoveKeys, &b->MoveKeys);
         ClrCursorKeysToNative(a->ResizeKeys, &b->ResizeKeys);
-        ClrModifierSetToNative(a->MoveKeyMod, &b->MoveKeyMod);
-        ClrModifierSetToNative(a->NextKeyMod, &b->NextKeyMod);
-        ClrModifierSetToNative(a->FineKeyMod, &b->FineKeyMod);
     }
 
     void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
     {
         b->EnableFineSnap = (a->EnableFineSnap != FALSE);
-        b->EnableResizeKeys = (a->EnableResizeKeys != FALSE);
-        b->EnableMoveKeys = (a->EnableMoveKeys != FALSE);
         b->AllowSnapToOthers = (a->AllowSnapToOthers != FALSE);
         b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
         b->GridX = a->GridX;
         b->GridY = a->GridY;
         b->FineX = a->FineX;
         b->FineY = a->FineY;
-        b->HelpKey = NativeKeyBindingToClr(a->HelpKey, a->HelpKeyMod);
-        b->ConfigKey = NativeKeyBindingToClr(a->ConfigKey, a->ConfigKeyMod);
+        b->HelpKey = NativeKeyBindingToClr(&a->HelpKey);
+        b->ConfigKey = NativeKeyBindingToClr(&a->ConfigKey);
         b->MoveKeys = NativeCursorKeysToClr(&a->MoveKeys);
         b->ResizeKeys = NativeCursorKeysToClr(&a->ResizeKeys);
-        b->MoveKeyMod = NativeModifierSetToClr(a->MoveKeyMod);
-        b->NextKeyMod = NativeModifierSetToClr(a->NextKeyMod);
-        b->FineKeyMod = NativeModifierSetToClr(a->FineKeyMod);
     }
 
     Configuration::Configuration()

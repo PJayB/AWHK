@@ -30,69 +30,18 @@ namespace AWHKConfigApp
             MessageBox.Show((sender as Hyperlink).TargetName);
         }
 
-        private void FilterFineSnapModifierKeys()
-        {
-            ConfigurationView configView = DataContext as ConfigurationView;
-
-            // Get the current selection
-            ModifierKeys currentFineSnapKey = configView.FineSnapModifier;
-
-            // Compile a new list of possibles
-            ModifierKeys unavailableKeys = ModifierKeys.None;
-
-            if (configView.AllowResizeKeys)
-            {
-                unavailableKeys |= hkResizeLeft.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkResizeRight.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkResizeDown.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkResizeUp.Modifiers.GetValueOrDefault();
-            }
-
-            if (configView.AllowMoveKeys)
-            {
-                unavailableKeys |= hkMoveLeft.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkMoveRight.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkMoveDown.Modifiers.GetValueOrDefault();
-                unavailableKeys |= hkMoveUp.Modifiers.GetValueOrDefault();
-            }
-
-            List<ModifierKeys> eligibleModifierKeys = new List<ModifierKeys>();
-            foreach (var key in HotKeyCustomControlLibrary.ModifierKeyNameDataSource.Values)
-            {
-                // (I know these do the same thing but I'm being explicit)
-                if (key == ModifierKeys.None || (unavailableKeys & key) == 0)
-                {
-                    eligibleModifierKeys.Add(key);
-                }
-                else if (key == currentFineSnapKey)
-                {
-                    // Damn, we overwrote our fine snap key when updating other hotkeys.
-                    // We'll have to reset it.
-                    cmbFineSnapModifier.SelectedItem = null;
-                }
-            }
-            cmbFineSnapModifier.ItemsSource = eligibleModifierKeys;
-        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            FilterFineSnapModifierKeys();
+
         }
 
         private void HotKeyCommitted(object sender, RoutedEventArgs e)
         {
-            FilterFineSnapModifierKeys();
+            ConfigurationView config = DataContext as ConfigurationView;
+            HotKeyCustomControlLibrary.HotKeyBox hk = sender as HotKeyCustomControlLibrary.HotKeyBox;
+            MessageBox.Show(String.Format("{0} {1} -> {2} {3}", 
+                hk.Modifiers.ToString(), hk.Trigger.ToString(),
+                config.ConfigKey.Modifiers, (char) config.ConfigKey.Trigger));
         }
-
-        private void chkEnableResizeKeys_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            FilterFineSnapModifierKeys();
-        }
-
-        private void chkEnableMoveKeys_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            FilterFineSnapModifierKeys();
-        }
-
     }
 }

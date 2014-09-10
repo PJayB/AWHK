@@ -31,26 +31,27 @@ namespace AWHKConfigShared {
     {
     };
 
-    public value struct ModifierSet
+    [Flags] public enum class ModifierKeys
     {
-        bool Win;
-        bool Alt;
-        bool Control;
-        bool Shift;
+        None = 0,
+        Shift = MOD_SHIFT,
+        Control = MOD_CONTROL,
+        Alt = MOD_ALT,
+        Windows = MOD_WIN
     };
 
     public value struct KeyBinding
     {
-        ModifierSet Mods;
-        UInt32 Key;
+        ModifierKeys Modifiers;
+        Int32 Trigger;
     };
 
     public value struct CursorKeys
     {
-        UInt32 Left;
-        UInt32 Right;
-        UInt32 Up;
-        UInt32 Down;
+        KeyBinding Left;
+        KeyBinding Right;
+        KeyBinding Up;
+        KeyBinding Down;
     };
 
 	public ref class Configuration
@@ -63,9 +64,7 @@ namespace AWHKConfigShared {
         void Save();
     
         property bool AllowSnapToOthers;
-        property bool EnableFineSnap;    // TODO: save and load these
-        property bool EnableResizeKeys;  // TODO: save and load these
-        property bool EnableMoveKeys;    // TODO: save and load these
+        property bool EnableFineSnap;
         property int MaxEdgeSearchSize;
         property int GridX;
         property int GridY;
@@ -75,9 +74,6 @@ namespace AWHKConfigShared {
         property KeyBinding ConfigKey;
         property CursorKeys ResizeKeys;
         property CursorKeys MoveKeys;
-        property ModifierSet MoveKeyMod;
-        property ModifierSet NextKeyMod;
-        property ModifierSet FineKeyMod;
         property bool AutoLogin;
 	};
     
