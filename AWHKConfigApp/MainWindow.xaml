@@ -5,14 +5,20 @@
         xmlns:AWHK="clr-namespace:AWHKConfigApp"
         Title="Advanced Windows Hotkeys" 
         Height="590" Width="670" 
-        MinHeight="590" MinWidth="670"
-        Icon="app.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1" GotFocus="Window_GotFocus_1">
-    <Window.Background>
-        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
-    </Window.Background>
+        MinHeight="650" MinWidth="700"
+        WindowStyle="None"
+        BorderBrush="Transparent"
+        Background="Transparent"
+        Icon="app.ico" 
+        WindowStartupLocation="CenterScreen" 
+        Loaded="Window_Loaded_1" 
+        GotFocus="Window_GotFocus_1" 
+        SizeToContent="WidthAndHeight" 
+        ResizeMode="CanResize"
+        AllowsTransparency="True">
     <Window.Resources>
         <AWHK:ConfigurationView x:Key="config"/>
-        <SolidColorBrush x:Key="GreyIconBrush" Color="{DynamicResource {x:Static SystemColors.ControlDarkDarkColorKey}}"/>
+        <SolidColorBrush x:Key="GreyIconBrush" Color="White"/>
         <Style x:Key="GreyIcon" TargetType="{x:Type AWHK:DirectionHelpIcon}">
             <Setter Property="Foreground" Value="{DynamicResource GreyIconBrush}"/>
         </Style>
@@ -20,22 +26,22 @@
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="48"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="48"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="48"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Style="{DynamicResource GreyIcon}" Direction="Up"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Style="{DynamicResource GreyIcon}" Direction="Left"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="3" Grid.Row="2" Style="{DynamicResource GreyIcon}" Direction="Right"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="3" Style="{DynamicResource GreyIcon}" Direction="Down"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="0,15,0,0" Style="{DynamicResource GreyIcon}" Direction="Up"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="15,0,0,0" Style="{DynamicResource GreyIcon}" Direction="Left"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="3" Grid.Row="2" Margin="0,0,15,0" Style="{DynamicResource GreyIcon}" Direction="Right"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="3" Margin="0,0,0,15" Style="{DynamicResource GreyIcon}" Direction="Down"/>
         <Grid Grid.Column="2" Grid.Row="2" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
@@ -44,6 +50,9 @@
                 <Border.Background>
                     <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
                 </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="15" ShadowDepth="0"/>
+                </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
