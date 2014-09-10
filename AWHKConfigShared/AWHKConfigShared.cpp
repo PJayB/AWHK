@@ -38,24 +38,6 @@ namespace AWHKConfigShared {
         return b;
     }
 
-    void ClrCursorKeysToNative(CursorKeys a, AWHK_CURSOR_KEYS* b)
-    {
-        ClrKeyBindingToNative(a.Left, &b->LeftKey);
-        ClrKeyBindingToNative(a.Right, &b->RightKey);
-        ClrKeyBindingToNative(a.Up, &b->UpKey);
-        ClrKeyBindingToNative(a.Down, &b->DownKey);
-    }
-
-    CursorKeys NativeCursorKeysToClr(const AWHK_CURSOR_KEYS* a)
-    {
-        CursorKeys b;
-        b.Left = NativeKeyBindingToClr(&a->LeftKey);
-        b.Right = NativeKeyBindingToClr(&a->RightKey);
-        b.Up = NativeKeyBindingToClr(&a->UpKey);
-        b.Down = NativeKeyBindingToClr(&a->DownKey);
-        return b;
-    }
-
     void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
     {
         b->EnableFineSnap = a->EnableFineSnap;
@@ -67,8 +49,14 @@ namespace AWHKConfigShared {
         b->FineY = a->FineY;
         ClrKeyBindingToNative(a->HelpKey, &b->HelpKey);
         ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey);
-        ClrCursorKeysToNative(a->MoveKeys, &b->MoveKeys);
-        ClrCursorKeysToNative(a->ResizeKeys, &b->ResizeKeys);
+        ClrKeyBindingToNative(a->MoveLeft , &b->MoveKeys.LeftKey);
+        ClrKeyBindingToNative(a->MoveRight, &b->MoveKeys.RightKey);
+        ClrKeyBindingToNative(a->MoveUp   , &b->MoveKeys.UpKey);
+        ClrKeyBindingToNative(a->MoveDown , &b->MoveKeys.DownKey);
+        ClrKeyBindingToNative(a->ResizeLeft , &b->ResizeKeys.LeftKey);
+        ClrKeyBindingToNative(a->ResizeRight, &b->ResizeKeys.RightKey);
+        ClrKeyBindingToNative(a->ResizeUp   , &b->ResizeKeys.UpKey);
+        ClrKeyBindingToNative(a->ResizeDown , &b->ResizeKeys.DownKey);
     }
 
     void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
@@ -82,8 +70,14 @@ namespace AWHKConfigShared {
         b->FineY = a->FineY;
         b->HelpKey = NativeKeyBindingToClr(&a->HelpKey);
         b->ConfigKey = NativeKeyBindingToClr(&a->ConfigKey);
-        b->MoveKeys = NativeCursorKeysToClr(&a->MoveKeys);
-        b->ResizeKeys = NativeCursorKeysToClr(&a->ResizeKeys);
+        b->MoveLeft  = NativeKeyBindingToClr(&a->MoveKeys.LeftKey);
+        b->MoveRight = NativeKeyBindingToClr(&a->MoveKeys.RightKey);
+        b->MoveUp    = NativeKeyBindingToClr(&a->MoveKeys.UpKey);
+        b->MoveDown  = NativeKeyBindingToClr(&a->MoveKeys.DownKey);
+        b->ResizeLeft  = NativeKeyBindingToClr(&a->ResizeKeys.LeftKey);
+        b->ResizeRight = NativeKeyBindingToClr(&a->ResizeKeys.RightKey);
+        b->ResizeUp    = NativeKeyBindingToClr(&a->ResizeKeys.UpKey);
+        b->ResizeDown  = NativeKeyBindingToClr(&a->ResizeKeys.DownKey);
     }
 
     Configuration::Configuration()

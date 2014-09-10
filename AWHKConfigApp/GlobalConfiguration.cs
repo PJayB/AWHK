@@ -154,7 +154,15 @@ namespace AWHKConfigApp
 
         // Resize/move hotkeys
         public KeyBindingView HelpKey { get; private set; }
-        public KeyBindingView ConfigKey { get; private set; }
+        public KeyBindingView ConfigKey { get; private set; } 
+        public KeyBindingView ResizeLeft { get; private set; }
+        public KeyBindingView ResizeRight { get; private set; }
+        public KeyBindingView ResizeUp { get; private set; }
+        public KeyBindingView ResizeDown { get; private set; }
+        public KeyBindingView MoveLeft { get; private set; }
+        public KeyBindingView MoveRight { get; private set; }
+        public KeyBindingView MoveUp { get; private set; }
+        public KeyBindingView MoveDown { get; private set; }
 
         // Grid settings
         public bool AllowSnapToOthers
@@ -202,6 +210,14 @@ namespace AWHKConfigApp
 
             HelpKey = new KeyBindingView(_config, "HelpKey");
             ConfigKey = new KeyBindingView(_config, "ConfigKey");
+            ResizeLeft = new KeyBindingView(_config, "ResizeLeft");
+            ResizeRight = new KeyBindingView(_config, "ResizeRight");
+            ResizeUp = new KeyBindingView(_config, "ResizeUp");
+            ResizeDown = new KeyBindingView(_config, "ResizeDown");
+            MoveLeft = new KeyBindingView(_config, "MoveLeft");
+            MoveRight = new KeyBindingView(_config, "MoveRight");
+            MoveUp = new KeyBindingView(_config, "MoveUp");
+            MoveDown = new KeyBindingView(_config, "MoveDown");
         }
 
         // This method is called by the Set accessor of each property. 

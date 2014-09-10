@@ -48,16 +48,6 @@ namespace AWHKConfigShared {
         Int32 Trigger;
     };
 
-    public value struct CursorKeys
-    {
-    public:
-
-        KeyBinding Left;
-        KeyBinding Right;
-        KeyBinding Up;
-        KeyBinding Down;
-    };
-
 	public ref class Configuration
 	{
     public:
@@ -76,8 +66,14 @@ namespace AWHKConfigShared {
         property int FineY;
         property KeyBinding HelpKey;
         property KeyBinding ConfigKey;
-        property CursorKeys ResizeKeys;
-        property CursorKeys MoveKeys;
+        property KeyBinding ResizeLeft;
+        property KeyBinding ResizeRight;
+        property KeyBinding ResizeUp;
+        property KeyBinding ResizeDown;
+        property KeyBinding MoveLeft;
+        property KeyBinding MoveRight;
+        property KeyBinding MoveUp;
+        property KeyBinding MoveDown;
         property bool AutoLogin;
 	};
     

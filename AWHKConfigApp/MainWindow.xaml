@@ -69,9 +69,7 @@
                             <Frame Source="GridSetupPage.xaml" x:Name="pgGridSetup"/>
                         </TabItem>
                         <TabItem Header="Resize/Move" Background="{x:Null}" BorderBrush="{x:Null}">
-                            <ScrollViewer Margin="12">
-                                <Frame Source="MoveKeysPage.xaml" x:Name="pgMoveKeys"/>
-                            </ScrollViewer>
+                            <Frame Source="MoveKeysPage.xaml" x:Name="pgMoveKeys"/>
                         </TabItem>
                         <TabItem Header="Sessions" Background="{x:Null}" BorderBrush="{x:Null}">
                             <Frame Margin="12" Source="SessionsPage.xaml" x:Name="pgSessions"/>
