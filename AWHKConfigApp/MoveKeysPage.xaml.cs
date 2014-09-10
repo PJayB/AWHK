@@ -37,11 +37,12 @@ namespace AWHKConfigApp
 
         private void HotKeyCommitted(object sender, RoutedEventArgs e)
         {
-            ConfigurationView config = DataContext as ConfigurationView;
-            HotKeyCustomControlLibrary.HotKeyBox hk = sender as HotKeyCustomControlLibrary.HotKeyBox;
-            MessageBox.Show(String.Format("{0} {1} -> {2} {3}", 
-                hk.Modifiers.ToString(), hk.Trigger.ToString(),
-                config.ConfigKey.Modifiers, (char) config.ConfigKey.Trigger));
+            //ConfigurationView config = DataContext as ConfigurationView;
+            //
+            //HotKeyCustomControlLibrary.HotKeyBox hk = sender as HotKeyCustomControlLibrary.HotKeyBox;
+            //MessageBox.Show(String.Format("{0} {1} -> {2} {3}", 
+            //    hk.Modifiers.ToString(), (int) hk.Trigger,
+            //    config.ConfigKey.Modifiers, (int) config.ConfigKey.Trigger));
         }
     }
 }

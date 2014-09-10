@@ -42,12 +42,16 @@ namespace AWHKConfigShared {
 
     public value struct KeyBinding
     {
+    public:
+
         ModifierKeys Modifiers;
         Int32 Trigger;
     };
 
     public value struct CursorKeys
     {
+    public:
+
         KeyBinding Left;
         KeyBinding Right;
         KeyBinding Up;

@@ -33,49 +33,72 @@ namespace AWHKConfigApp
 
     public class KeyBindingView : INotifyPropertyChanged
     {
-        private ModifierKeys _modifiers;
-        private Key _trigger;
+        private AWHKConfigShared.Configuration _config;
+        private System.Reflection.PropertyInfo _property;
 
         public ModifierKeys Modifiers 
         {
-            get { return _modifiers; }
+            get 
+            {
+                return (ModifierKeys) GetBindingSourceCopy().Modifiers; 
+            }
             set
             {
-                _modifiers = value;
+                AWHKConfigShared.KeyBinding sourceBinding = GetBindingSourceCopy();
+                sourceBinding.Modifiers = (AWHKConfigShared.ModifierKeys) value;
+                SetBindingSource(sourceBinding);
                 NotifyPropertyChanged();
             }
         }
 
         public Key Trigger 
         {
-            get { return _trigger; }
+            get
+            {
+                return KeyInterop.KeyFromVirtualKey(GetBindingSourceCopy().Trigger);
+            }
             set
             {
-                _trigger = value;
+                AWHKConfigShared.KeyBinding sourceBinding = GetBindingSourceCopy();
+                sourceBinding.Trigger = KeyInterop.VirtualKeyFromKey(value);
+                SetBindingSource(sourceBinding);
                 NotifyPropertyChanged();
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public KeyBindingView(AWHKConfigShared.Configuration config, string propertyName)
+        {
+            _config = config;
+
+            _property = _config.GetType().GetProperty(propertyName);
+            if (_property == null)
+            {
+                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
+            }
+        }
+
+        private AWHKConfigShared.KeyBinding GetBindingSourceCopy()
+        {
+            return (AWHKConfigShared.KeyBinding)_property.GetValue(_config);
+        }
+
+        private void SetBindingSource(AWHKConfigShared.KeyBinding binding)
+        {
+            _property.SetValue(_config, binding);
+        }
+
         // This method is called by the Set accessor of each property. 
         // The CallerMemberName attribute that is applied to the optional propertyName 
         // parameter causes the property name of the caller to be substituted as an argument. 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
+            // Update the XAML dependency chain
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-        }
-
-        public static KeyBindingView FromAwhk(AWHKConfigShared.KeyBinding key)
-        {
-            return new KeyBindingView()
-            {
-                Modifiers = (ModifierKeys) key.Modifiers,
-                Trigger = KeyInterop.KeyFromVirtualKey(key.Trigger)
-            };
         }
 
         public AWHKConfigShared.KeyBinding ToAwhk()
@@ -92,6 +115,36 @@ namespace AWHKConfigApp
     {
         private AWHKConfigShared.Configuration _config;
 
+        // Set any property
+        public void SetConfig(string propertyName, object value)
+        {
+            var prop = this.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
+            }
+
+            prop.SetValue(this, value, null);
+        }
+
+        // Does the configuration have a property?
+        public bool HasConfig(string propertyName)
+        {
+            return this.GetType().GetProperty(propertyName) != null;
+        }
+
+        // Get any property
+        public object GetConfig(string propertyName)
+        {
+            var prop = this.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
+            }
+
+            return prop.GetValue(this, null);
+        }
+
         // General settings
         public bool RunOnStartUp
         {
@@ -100,16 +153,8 @@ namespace AWHKConfigApp
         }
 
         // Resize/move hotkeys
-        public KeyBindingView HelpKey
-        {
-            get { return KeyBindingView.FromAwhk(_config.HelpKey); }
-            set { _config.HelpKey = value.ToAwhk(); }
-        }
-        public KeyBindingView ConfigKey
-        {
-            get { return KeyBindingView.FromAwhk(_config.ConfigKey); }
-            set { _config.ConfigKey = value.ToAwhk(); }
-        }
+        public KeyBindingView HelpKey { get; private set; }
+        public KeyBindingView ConfigKey { get; private set; }
 
         // Grid settings
         public bool AllowSnapToOthers
@@ -154,6 +199,9 @@ namespace AWHKConfigApp
         public ConfigurationView()
         {
             _config = new AWHKConfigShared.Configuration();
+
+            HelpKey = new KeyBindingView(_config, "HelpKey");
+            ConfigKey = new KeyBindingView(_config, "ConfigKey");
         }
 
         // This method is called by the Set accessor of each property. 
@@ -170,14 +218,10 @@ namespace AWHKConfigApp
         // May throw an exception if properties fail validation
         public void Save()
         {
-            AWHKConfigShared.Configuration config = new AWHKConfigShared.Configuration();
-
-            // TODO: translate the settings
-            
             // Save the settings:
             try
             {
-                config.Save();
+                _config.Save();
             }
             catch (AWHKConfigShared.ConfigurationIoException ex)
             {
