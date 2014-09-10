@@ -73,6 +73,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DirectionHelpIcon.xaml.cs">
+      <DependentUpon>DirectionHelpIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GlobalConfiguration.cs" />
     <Compile Include="GridSetupControl.xaml.cs">
       <DependentUpon>GridSetupControl.xaml</DependentUpon>
@@ -87,6 +90,10 @@
     <Compile Include="SessionsPage.xaml.cs">
       <DependentUpon>SessionsPage.xaml</DependentUpon>
     </Compile>
+    <Page Include="DirectionHelpIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GridSetupControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

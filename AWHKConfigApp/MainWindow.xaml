@@ -4,21 +4,43 @@
         xmlns:CustomControls="clr-namespace:AWHKConfigApp"
         xmlns:AWHK="clr-namespace:AWHKConfigApp"
         Title="Advanced Windows Hotkeys" 
-        Height="525" Width="595" 
-        MinHeight="545" MinWidth="605"
+        Height="590" Width="670" 
+        MinHeight="590" MinWidth="670"
         Icon="app.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded_1" GotFocus="Window_GotFocus_1">
     <Window.Background>
-        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.AppWorkspaceColorKey}}"/>
+        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
     </Window.Background>
     <Window.Resources>
         <AWHK:ConfigurationView x:Key="config"/>
+        <SolidColorBrush x:Key="GreyIconBrush" Color="{DynamicResource {x:Static SystemColors.ControlDarkDarkColorKey}}"/>
+        <Style x:Key="GreyIcon" TargetType="{x:Type AWHK:DirectionHelpIcon}">
+            <Setter Property="Foreground" Value="{DynamicResource GreyIconBrush}"/>
+        </Style>
     </Window.Resources>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <Grid x:Name="ConfigPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="544" Height="340">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="48"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="48"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Style="{DynamicResource GreyIcon}" Direction="Up"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Style="{DynamicResource GreyIcon}" Direction="Left"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="3" Grid.Row="2" Style="{DynamicResource GreyIcon}" Direction="Right"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="3" Style="{DynamicResource GreyIcon}" Direction="Down"/>
+        <Grid Grid.Column="2" Grid.Row="2" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
             </Grid.Background>
-            <Border BorderBrush="Black" BorderThickness="1" Margin="0,-54,0,-62">
+            <Border BorderBrush="Black" BorderThickness="1">
                 <Border.Background>
                     <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
                 </Border.Background>
@@ -62,15 +84,15 @@
                         <TextBlock Grid.Column="1" Text="Advanced Windows Hotkeys" VerticalAlignment="Center" Margin="12,0,0,0" FontSize="22" />
                     </Grid>
                     <!--buttons outside of the tab control-->
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                    <Button x:Name="btnUnload" Grid.Row="2" Grid.Column="0"
+                        <Button x:Name="btnUnload" Grid.Row="2" Grid.Column="0"
                             Margin="12"
                             Click="btnUnload_Click"
                             Content="Unload" IsEnabled="False" 
