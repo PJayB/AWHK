@@ -15,9 +15,42 @@
             <Setter Property="Margin" Value="0,0,0,7"/>
         </Style>
     </Page.Resources>
-
-
     <Grid>
-        <HotKeyControls:HotKeyBox Trigger="{Binding ConfigKey.Trigger, Mode=TwoWay}" Modifiers="{Binding ConfigKey.Modifiers, Mode=TwoWay}" HotKeyCommitted="HotKeyCommitted"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ComboBox Grid.Row="1" Width="150" Text="Foo" SelectedIndex="0" IsReadOnly="True" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol" VerticalAlignment="Center">
+            <ComboBoxItem Content="&#x21D1;"/>
+            <ComboBoxItem Content="Ctrl"/>
+            <ComboBoxItem Content="Alt"/>
+            <ComboBoxItem Content="&#xE154; + &#x21D1;"/>
+            <ComboBoxItem Content="&#xE154; + Ctrl"/>
+            <ComboBoxItem Content="&#xE154; + Alt"/>
+        </ComboBox>
+        <TextBlock Grid.Column="1" Grid.Row="1" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI Symbol" Text="+" Margin="15,0" />
+        <Grid Grid.Column="2" Grid.Row="1" Width="100" Height="100">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="1" Grid.Row="0" Text="W" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="A" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Grid.Row="1" Text="D" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Grid.Row="2" Text="S" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </Page>
