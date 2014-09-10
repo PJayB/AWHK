@@ -7,13 +7,13 @@
         Height="590" Width="670" 
         MinHeight="650" MinWidth="700"
         WindowStyle="None"
-        BorderBrush="Transparent"
-        Background="Transparent"
+        BorderBrush="Black"
+        BorderThickness="1"
+        Background="#33000000"
         Icon="app.ico" 
         WindowStartupLocation="CenterScreen" 
         Loaded="Window_Loaded_1" 
         GotFocus="Window_GotFocus_1" 
-        SizeToContent="WidthAndHeight" 
         ResizeMode="CanResize"
         AllowsTransparency="True">
     <Window.Resources>
@@ -27,22 +27,18 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="0,15,0,0" Style="{DynamicResource GreyIcon}" Direction="Up"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="15,0,0,0" Style="{DynamicResource GreyIcon}" Direction="Left"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="3" Grid.Row="2" Margin="0,0,15,0" Style="{DynamicResource GreyIcon}" Direction="Right"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="3" Margin="0,0,0,15" Style="{DynamicResource GreyIcon}" Direction="Down"/>
-        <Grid Grid.Column="2" Grid.Row="2" x:Name="ConfigPanel" Width="544" Height="456">
+        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,0" Style="{DynamicResource GreyIcon}" Direction="Up"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,0,0" Style="{DynamicResource GreyIcon}" Direction="Left"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="0,0,15,0" Style="{DynamicResource GreyIcon}" Direction="Right"/>
+        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,0,0,15" Style="{DynamicResource GreyIcon}" Direction="Down"/>
+        <Grid Grid.Column="1" Grid.Row="1" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
             </Grid.Background>
