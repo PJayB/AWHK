@@ -19,9 +19,10 @@
 
 #include "stdafx.h"
 #include "IPC.h"
+#include "Version.h"
 
-#define AWHK_IPC_SEM	L"AWHK_IPC_SEM"
-#define AWHK_IPC_FILE	L"AWHK_IPC_MMF"
+#define AWHK_IPC_SEM	(L"AWHK_IPC_SEM_" AWHK_VERSION_STRING) 
+#define AWHK_IPC_FILE	(L"AWHK_IPC_MMF_" AWHK_VERSION_STRING) 
 
 struct AWHK_IPC_DATA
 {

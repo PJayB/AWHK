@@ -19,7 +19,9 @@
 
 #pragma once
 
-#define AWHK_REG_KEY			    L"Software\\AWHK\\1.5"
+#include "Version.h"
+
+#define AWHK_REG_KEY			    (L"Software\\AWHK\\" AWHK_VERSION_STRING)
 
 #define AWHK_REG_ALLOW_SNAP		    L"AllowSnapToOthers"
 #define AWHK_REG_FINE_SNAP		    L"EnableFineSnap"
