@@ -63,13 +63,25 @@
                 <CheckBox Grid.Row="0" Grid.Column="0" x:Name="chkEnableResizeKeys" Content="Enable Resize keys" Style="{DynamicResource SeparatorMargin}" Checked="chkEnableResizeKeys_CheckedChanged" Unchecked="chkEnableResizeKeys_CheckedChanged"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_are_resize_keys"><Run Text="What are Resize keys?"/></Hyperlink></TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Resize Left Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Left" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="Left" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Resize Right Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Right" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="Right" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Resize Up Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Up" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}"
+                                          Modifiers="Alt" 
+                                          Trigger="Up" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Resize Down Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="Down" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkResizeDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="Down" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="2" Style="{DynamicResource SeparatorMargin}" Header="Move Keys">
@@ -88,13 +100,25 @@
                 <CheckBox Grid.Row="0" Grid.ColumnSpan="2" x:Name="chkEnableMoveKeys" Content="Enable Move keys" Style="{DynamicResource SeparatorMargin}" Checked="chkEnableMoveKeys_CheckedChanged" Unchecked="chkEnableMoveKeys_CheckedChanged"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"><Hyperlink Click="Hyperlink_Click" TargetName="what_are_move_keys"><Run Text="What are Move keys?"/></Hyperlink></TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Move Left Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="A" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveLeft" Grid.Column="1" Grid.Row="1" Style="{DynamicResource SeparatorMargin}"
+                                          Modifiers="Alt" 
+                                          Trigger="A" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Move Right Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="D" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveRight" Grid.Column="1" Grid.Row="2" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="D" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Move Up Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="W" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveUp" Grid.Column="1" Grid.Row="3" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="W" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Move Down Key" Margin="0,0,12,0"/>
-                <HotKeyControls:HotKeyBox x:Name="hkMoveDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" HasControl="False" HasShift="False" HasSystem="False" HasAlt="True" Trigger="S" HotKeyCommitted="HotKeyCommitted"/>
+                <HotKeyControls:HotKeyBox x:Name="hkMoveDown" Grid.Column="1" Grid.Row="4" Style="{DynamicResource SeparatorMargin}" 
+                                          Modifiers="Alt" 
+                                          Trigger="S" 
+                                          HotKeyCommitted="HotKeyCommitted"/>
             </Grid>
         </GroupBox>
     </Grid>

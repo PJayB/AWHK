@@ -42,18 +42,18 @@ namespace AWHKConfigApp
 
             if (configView.AllowResizeKeys)
             {
-                unavailableKeys |= hkResizeLeft.Modifiers;
-                unavailableKeys |= hkResizeRight.Modifiers;
-                unavailableKeys |= hkResizeDown.Modifiers;
-                unavailableKeys |= hkResizeUp.Modifiers;
+                unavailableKeys |= hkResizeLeft.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkResizeRight.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkResizeDown.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkResizeUp.Modifiers.GetValueOrDefault();
             }
 
             if (configView.AllowMoveKeys)
             {
-                unavailableKeys |= hkMoveLeft.Modifiers;
-                unavailableKeys |= hkMoveRight.Modifiers;
-                unavailableKeys |= hkMoveDown.Modifiers;
-                unavailableKeys |= hkMoveUp.Modifiers;
+                unavailableKeys |= hkMoveLeft.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkMoveRight.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkMoveDown.Modifiers.GetValueOrDefault();
+                unavailableKeys |= hkMoveUp.Modifiers.GetValueOrDefault();
             }
 
             List<ModifierKeys> eligibleModifierKeys = new List<ModifierKeys>();

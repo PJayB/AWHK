@@ -5,14 +5,8 @@
     <Style TargetType="{x:Type local:HotKeyBox}">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
         <Setter Property="Trigger" Value="{x:Null}"/>
-        <Setter Property="HasShift" Value="{x:Null}"/>
-        <Setter Property="HasControl" Value="{x:Null}"/>
-        <Setter Property="HasAlt" Value="{x:Null}"/>
-        <Setter Property="HasSystem" Value="{x:Null}"/>
-        <Setter Property="AllowShift" Value="True"/>
-        <Setter Property="AllowControl" Value="True"/>
-        <Setter Property="AllowAlt" Value="True"/>
-        <Setter Property="AllowSystem" Value="True"/>
+        <Setter Property="Modifiers" Value="{x:Null}"/>
+        <Setter Property="DisabledModifiers" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:HotKeyBox}">

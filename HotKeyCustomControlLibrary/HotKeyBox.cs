@@ -34,58 +34,22 @@ namespace HotKeyCustomControlLibrary
         private bool hasFocus;
         private Key? previewTrigger;
 
-        public bool? AllowShift
-        {
-            get { return base.GetValue(AllowShiftProperty) as bool?; }
-            set { base.SetValue(AllowShiftProperty, value); }
-        }
-
-        public bool? AllowControl
-        {
-            get { return base.GetValue(AllowControlProperty) as bool?; }
-            set { base.SetValue(AllowControlProperty, value); }
-        }
-
-        public bool? AllowAlt
-        {
-            get { return base.GetValue(AllowAltProperty) as bool?; }
-            set { base.SetValue(AllowAltProperty, value); }
-        }
-
-        public bool? AllowSystem
-        {
-            get { return base.GetValue(AllowSystemProperty) as bool?; }
-            set { base.SetValue(AllowSystemProperty, value); }
-        }
-
         public Key? Trigger
         {
             get { return base.GetValue(TriggerProperty) as Key?; }
             set { base.SetValue(TriggerProperty, value); }
         }
 
-        public bool? HasShift
+        public ModifierKeys? Modifiers
         {
-            get { return base.GetValue(HasShiftProperty) as bool?; }
-            set { base.SetValue(HasShiftProperty, value); }
+            get { return base.GetValue(ModifiersProperty) as ModifierKeys?; }
+            set { base.SetValue(ModifiersProperty, value); }
         }
 
-        public bool? HasControl
+        public ModifierKeys? DisabledModifiers
         {
-            get { return base.GetValue(HasControlProperty) as bool?; }
-            set { base.SetValue(HasControlProperty, value); }
-        }
-
-        public bool? HasAlt
-        {
-            get { return base.GetValue(HasAltProperty) as bool?; }
-            set { base.SetValue(HasAltProperty, value); }
-        }
-
-        public bool? HasSystem
-        {
-            get { return base.GetValue(HasSystemProperty) as bool?; }
-            set { base.SetValue(HasSystemProperty, value); }
+            get { return base.GetValue(DisabledModifiersProperty) as ModifierKeys?; }
+            set { base.SetValue(DisabledModifiersProperty, value); }
         }
 
         public event RoutedEventHandler HotKeyCommitted
@@ -105,49 +69,17 @@ namespace HotKeyCustomControlLibrary
             get { return Trigger.HasValue ? KeyInterop.VirtualKeyFromKey(Trigger.Value) : 0; }
         }
 
-        public ModifierKeys Modifiers
-        {
-            get
-            {
-                ModifierKeys keys = ModifierKeys.None;
-                if (HasAlt.GetValueOrDefault()) keys |= ModifierKeys.Alt;
-                if (HasControl.GetValueOrDefault()) keys |= ModifierKeys.Control;
-                if (HasShift.GetValueOrDefault()) keys |= ModifierKeys.Shift;
-                if (HasSystem.GetValueOrDefault()) keys |= ModifierKeys.Windows;
-                return keys;
-            }
-            set
-            {
-                HasAlt = null;
-                HasControl = null;
-                HasShift = null;
-                HasSystem = null;
-
-                if ((value & ModifierKeys.Alt) != 0) HasAlt = true;
-                if ((value & ModifierKeys.Control) != 0) HasControl = true;
-                if ((value & ModifierKeys.Shift) != 0) HasShift = true;
-                if ((value & ModifierKeys.Windows) != 0) HasSystem = true;
-            }
-        }
+        public bool HasAlt { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; } }
+        public bool HasControl { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; } }
+        public bool HasShift { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; } }
+        public bool HasWindows { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; } }
 
         public static readonly DependencyProperty TriggerProperty =
             DependencyProperty.Register("Trigger", typeof(Key?), typeof(HotKeyBox));
-        public static readonly DependencyProperty HasShiftProperty =
-            DependencyProperty.Register("HasShift", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty HasControlProperty =
-            DependencyProperty.Register("HasControl", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty HasAltProperty =
-            DependencyProperty.Register("HasAlt", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty HasSystemProperty =
-            DependencyProperty.Register("HasSystem", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty AllowShiftProperty =
-            DependencyProperty.Register("AllowShift", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty AllowControlProperty =
-            DependencyProperty.Register("AllowControl", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty AllowAltProperty =
-            DependencyProperty.Register("AllowAlt", typeof(bool?), typeof(HotKeyBox));
-        public static readonly DependencyProperty AllowSystemProperty =
-            DependencyProperty.Register("AllowSystem", typeof(bool?), typeof(HotKeyBox));
+        public static readonly DependencyProperty ModifiersProperty =
+            DependencyProperty.Register("Modifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
+        public static readonly DependencyProperty DisabledModifiersProperty =
+            DependencyProperty.Register("DisabledModifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
 
         public static readonly RoutedEvent CommitEvent = EventManager.RegisterRoutedEvent(
             "HotKeyCommitted", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(HotKeyBox));
@@ -169,9 +101,6 @@ namespace HotKeyCustomControlLibrary
             if (displayBox != null)
             {
                 displayBox.LostKeyboardFocus += new System.Windows.Input.KeyboardFocusChangedEventHandler(OnLostKeyboardFocus);
-                //displayBox.GotKeyboardFocus += new System.Windows.Input.KeyboardFocusChangedEventHandler(OnGotKeyboardFocus);
-                //displayBox.PreviewKeyDown += new Preview(OnFilterBoxTextChanged);
-                // TODO
             }
 
             this.PreviewKeyDown += new KeyEventHandler(OnPreviewKeyDown);
@@ -217,27 +146,25 @@ namespace HotKeyCustomControlLibrary
             return Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
         }
 
-        private bool IsSystemKeyDown()
+        private bool IsWindowsKeyDown()
         {
             return Keyboard.IsKeyDown(Key.LWin) || Keyboard.IsKeyDown(Key.RWin);
         }
 
         private void CommitHotKey(Key k)
         {
-            HasShift = null;
-            HasControl = null;
-            HasAlt = null;
-            HasSystem = null;
+            ModifierKeys mods = ModifierKeys.None;
           
-            if (ShiftIsAllowed()) 
-                HasShift = IsShiftKeyDown();
-            if (ControlIsAllowed()) 
-                HasControl = IsControlKeyDown();
-            if (AltIsAllowed()) 
-                HasAlt = IsAltKeyDown();
-            if (SystemIsAllowed())
-                HasSystem = IsSystemKeyDown();
+            if (ShiftIsAllowed() && IsShiftKeyDown())
+                mods |= ModifierKeys.Shift;
+            if (ControlIsAllowed() && IsControlKeyDown())
+                mods |= ModifierKeys.Control;
+            if (AltIsAllowed() && IsAltKeyDown())
+                mods |= ModifierKeys.Alt;
+            if (WindowsIsAllowed() && IsWindowsKeyDown())
+                mods |= ModifierKeys.Windows;
 
+            Modifiers = mods;
             Trigger = k;
 
             // Raise the event
@@ -265,7 +192,7 @@ namespace HotKeyCustomControlLibrary
                 (isShift && ShiftIsAllowed()) || 
                 (isCtrl && ControlIsAllowed()) || 
                 (isAlt && AltIsAllowed()) ||
-                (isSys && SystemIsAllowed()))
+                (isSys && WindowsIsAllowed()))
             {
                 if (Trigger.HasValue && !Keyboard.IsKeyDown(Trigger.Value))
                     Trigger = null;
@@ -286,22 +213,22 @@ namespace HotKeyCustomControlLibrary
 
         private bool ShiftIsAllowed() 
         {
-            return !AllowShift.HasValue || AllowShift.GetValueOrDefault();
+            return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Shift) == 0;
         }
 
         private bool ControlIsAllowed()
         {
-            return !AllowControl.HasValue || AllowControl.GetValueOrDefault();
+            return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Control) == 0;
         }
 
         private bool AltIsAllowed()
         {
-            return !AllowAlt.HasValue || AllowAlt.GetValueOrDefault();
+            return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Alt) == 0;
         }
 
-        private bool SystemIsAllowed()
+        private bool WindowsIsAllowed()
         {
-            return !AllowSystem.HasValue || AllowSystem.GetValueOrDefault();
+            return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Windows) == 0;
         }
 
         private static readonly string WinKeyName = ModifierKeys.Windows.ToString();
@@ -319,10 +246,10 @@ namespace HotKeyCustomControlLibrary
             else
             {
                 StringBuilder sb = new StringBuilder();
-                if (HasSystem.GetValueOrDefault()) sb.Append(WinKeyName + " + ");
-                if (HasShift.GetValueOrDefault()) sb.Append(ShiftKeyName + " + ");
-                if (HasControl.GetValueOrDefault()) sb.Append(ControlKeyName + " + ");
-                if (HasAlt.GetValueOrDefault()) sb.Append(AltKeyName + " + ");
+                if (HasWindows) sb.Append(WinKeyName + " + ");
+                if (HasShift) sb.Append(ShiftKeyName + " + ");
+                if (HasControl) sb.Append(ControlKeyName + " + ");
+                if (HasAlt) sb.Append(AltKeyName + " + ");
                 sb.Append(Trigger.Value.ToString());
                 displayBox.Text = sb.ToString();
             }
@@ -331,7 +258,7 @@ namespace HotKeyCustomControlLibrary
         private void UpdateDisplayWithPreviewValues()
         {
             StringBuilder sb = new StringBuilder();
-            if (IsSystemKeyDown() && SystemIsAllowed()) sb.Append(WinKeyName + " + ");
+            if (IsWindowsKeyDown() && WindowsIsAllowed()) sb.Append(WinKeyName + " + ");
             if (IsShiftKeyDown() && ShiftIsAllowed()) sb.Append(ShiftKeyName + " + ");
             if (IsControlKeyDown() && ControlIsAllowed()) sb.Append(ControlKeyName + " + ");
             if (IsAltKeyDown() && AltIsAllowed()) sb.Append(AltKeyName + " + ");
@@ -357,10 +284,7 @@ namespace HotKeyCustomControlLibrary
         public void Clear()
         {
             Trigger = null;
-            HasAlt = null;
-            HasControl = null;
-            HasShift = null;
-            HasSystem = null;
+            Modifiers = null;
             UpdateDisplay();
         }
     }
