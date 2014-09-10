@@ -54,6 +54,11 @@ namespace AWHKConfigApp
             get { return IconSymbolMap[Direction.GetValueOrDefault()]; }
         }
 
+        public string Instruction
+        {
+            get { return Direction.ToString(); }
+        }
+
         public static readonly DependencyProperty DirectionIconProperty =
             DependencyProperty.Register("DirectionIcon", typeof(DirectionIcon), typeof(DirectionHelpIcon));
 

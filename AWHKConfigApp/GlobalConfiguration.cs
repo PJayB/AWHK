@@ -80,6 +80,8 @@ namespace AWHKConfigApp
             set { _config.EnableMoveKeys = value; NotifyPropertyChanged(); }
         }
 
+
+
         // Grid settings
         public bool AllowSnapToOthers
         {

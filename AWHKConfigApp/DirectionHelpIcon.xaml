@@ -15,7 +15,7 @@
                 <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
             </TextBlock.Effect>
         </TextBlock>
-        <TextBlock Grid.Row="1" Text="Test" HorizontalAlignment="Center">
+        <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=Instruction}" HorizontalAlignment="Center">
             <TextBlock.Effect>
                 <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
             </TextBlock.Effect>
