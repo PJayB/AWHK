@@ -252,6 +252,46 @@ namespace AWHKConfigApp
             }
         }
 
+        // TODO
+        public ModifierKeys FineSnapModifierKeys
+        {
+            get
+            {
+                return ResizeLeft.Modifiers;
+            }
+            set
+            {
+                ResizeLeft.Modifiers = value;
+                ResizeRight.Modifiers = value;
+                ResizeUp.Modifiers = value;
+                ResizeDown.Modifiers = value;
+                MoveLeft.Modifiers = value;
+                MoveRight.Modifiers = value;
+                MoveUp.Modifiers = value;
+                MoveDown.Modifiers = value;
+            }
+        }
+
+        // TODO
+        public ModifierKeys GrabModifierKeys
+        {
+            get
+            {
+                return ResizeLeft.Modifiers;
+            }
+            set
+            {
+                ResizeLeft.Modifiers = value;
+                ResizeRight.Modifiers = value;
+                ResizeUp.Modifiers = value;
+                ResizeDown.Modifiers = value;
+                MoveLeft.Modifiers = value;
+                MoveRight.Modifiers = value;
+                MoveUp.Modifiers = value;
+                MoveDown.Modifiers = value;
+            }
+        }
+
         // Grid settings
         public bool AllowSnapToOthers
         {
