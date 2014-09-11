@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using HotKeyCustomControlLibrary;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace AWHKConfigApp
 {
@@ -28,6 +31,59 @@ namespace AWHKConfigApp
                 "Failed to read the configuration settings. Make sure you have permissions to read from the system registry.",
                 inner)
         {
+        }
+    }
+
+    public class ModifierKeyView
+    {
+        public ModifierKeys Value { get; set; }
+
+        public bool HasShift
+        {
+            get { return (Value & ModifierKeys.Shift) != 0; }
+            set { Value = ModifierKeyState.Set(Value, ModifierKeys.Shift, value); }
+        }
+
+        public bool HasControl
+        {
+            get { return (Value & ModifierKeys.Control) != 0; }
+            set { Value = ModifierKeyState.Set(Value, ModifierKeys.Control, value); }
+        }
+
+        public bool HasAlt
+        {
+            get { return (Value & ModifierKeys.Alt) != 0; }
+            set { Value = ModifierKeyState.Set(Value, ModifierKeys.Alt, value); }
+        }
+
+        public bool HasWindows
+        {
+            get { return (Value & ModifierKeys.Windows) != 0; }
+            set { Value = ModifierKeyState.Set(Value, ModifierKeys.Windows, value); }
+        }
+    }    
+
+    public class ModifierKeysSymbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ModifierKeySymbols.CreateSymbolString((ModifierKeys)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string)
+            {
+                return ModifierKeySymbols.GetKeysFromSymbols((string)value);
+            }
+            else if (value is ModifierKeys || value is Int32)
+            {
+                return (ModifierKeys)value;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 
@@ -163,6 +219,25 @@ namespace AWHKConfigApp
         public KeyBindingView MoveRight { get; private set; }
         public KeyBindingView MoveUp { get; private set; }
         public KeyBindingView MoveDown { get; private set; }
+
+        public ModifierKeys BaseModifierKeys
+        {
+            get
+            {
+                return ResizeLeft.Modifiers;
+            }
+            set
+            {
+                ResizeLeft.Modifiers = value;
+                ResizeRight.Modifiers = value;
+                ResizeUp.Modifiers = value;
+                ResizeDown.Modifiers = value;
+                MoveLeft.Modifiers = value;
+                MoveRight.Modifiers = value;
+                MoveUp.Modifiers = value;
+                MoveDown.Modifiers = value;
+            }
+        }
 
         // Grid settings
         public bool AllowSnapToOthers

@@ -25,11 +25,6 @@ namespace AWHKConfigApp
             InitializeComponent();
         }
 
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show((sender as Hyperlink).TargetName);
-        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 
@@ -38,6 +33,11 @@ namespace AWHKConfigApp
         private void HotKeyCommitted(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show((sender as Hyperlink).TargetName);
         }
     }
 }

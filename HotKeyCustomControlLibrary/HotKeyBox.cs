@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,95 @@ namespace HotKeyCustomControlLibrary
             {
                 return Enum.GetValues(typeof(ModifierKeys)).Cast<ModifierKeys>();
             }
+        }
+    }
+
+    public static class ModifierKeySymbols
+    {
+        // TODO: localization?
+        public const string WindowsKey = "\xE154";
+        public const string ShiftKey = "\x21D1";
+        public const string ControlKey = "Ctrl";
+        public const string AltKey = "Alt";
+        public const string NoKeyName = "(None)";
+
+        public static string CreateSymbolString(ModifierKeys keys)
+        {
+            string[] symbols = new string[4];
+            int currentSymbol = 0;
+
+            if ((keys & ModifierKeys.Windows) != 0) symbols[currentSymbol++] = ModifierKeySymbols.WindowsKey;
+            if ((keys & ModifierKeys.Shift) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ShiftKey;
+            if ((keys & ModifierKeys.Control) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ControlKey;
+            if ((keys & ModifierKeys.Alt) != 0) symbols[currentSymbol++] = ModifierKeySymbols.AltKey;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < currentSymbol; ++i)
+            {
+                if (i != 0) { sb.Append(" + "); }
+                sb.Append(symbols[i]);
+            }
+            return sb.ToString();
+        }
+
+        public static string CreateSymbolString(ModifierKeys keys, Key trigger)
+        {
+            string[] symbols = new string[5];
+            int currentSymbol = 0;
+
+            if ((keys & ModifierKeys.Windows) != 0) symbols[currentSymbol++] = ModifierKeySymbols.WindowsKey;
+            if ((keys & ModifierKeys.Shift) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ShiftKey;
+            if ((keys & ModifierKeys.Control) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ControlKey;
+            if ((keys & ModifierKeys.Alt) != 0) symbols[currentSymbol++] = ModifierKeySymbols.AltKey;
+            if (trigger != Key.None) symbols[currentSymbol++] = trigger.ToString();
+
+            if (currentSymbol == 0)
+            {
+                return NoKeyName;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < currentSymbol; ++i)
+            {
+                if (i != 0) { sb.Append(" + "); }
+                sb.Append(symbols[i]);
+            }
+            return sb.ToString();
+        }
+
+        public static ModifierKeys GetKeysFromSymbols(string value)
+        {
+            string[] symbols = value.Split(new char[] { ' ', '+' });
+
+            ModifierKeys keys = ModifierKeys.None;
+            foreach (string sym in symbols)
+            {
+                switch (sym)
+                {
+                    case ModifierKeySymbols.AltKey: keys |= ModifierKeys.Alt; break;
+                    case ModifierKeySymbols.ControlKey: keys |= ModifierKeys.Control; break;
+                    case ModifierKeySymbols.ShiftKey: keys |= ModifierKeys.Shift; break;
+                    case ModifierKeySymbols.WindowsKey: keys |= ModifierKeys.Windows; break;
+                }
+            }
+
+            return keys;
+        }
+    }
+
+    public static class ModifierKeyState
+    {
+        public static ModifierKeys Set(ModifierKeys source, ModifierKeys value, bool enabled)
+        {
+            if (enabled) return source | value;
+            else return source & (~value);
+        }
+
+        public static ModifierKeys? Set(ModifierKeys? source, ModifierKeys value, bool enabled)
+        {
+            if (enabled) return source.GetValueOrDefault() | value;
+            else if (!source.HasValue) return source;
+            else return source.GetValueOrDefault() & (~value);
         }
     }
 
@@ -55,61 +145,55 @@ namespace HotKeyCustomControlLibrary
         public bool HasAlt
         {
             get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; }
-            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Alt; }
+            set { Modifiers = ModifierKeyState.Set(Modifiers, ModifierKeys.Alt, value); }
         }
 
         public bool HasControl
         {
             get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; }
-            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Control; }
+            set { Modifiers = ModifierKeyState.Set(Modifiers, ModifierKeys.Control, value); }
         }
 
         public bool HasShift
         {
             get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; }
-            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Shift; }
+            set { Modifiers = ModifierKeyState.Set(Modifiers, ModifierKeys.Shift, value); }
         }
 
         public bool HasWindows
         {
             get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; }
-            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Windows; }
+            set { Modifiers = ModifierKeyState.Set(Modifiers, ModifierKeys.Windows, value); }
         }
 
         public bool DisableAlt
         {
             get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; }
-            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Alt; }
+            set { DisabledModifiers = ModifierKeyState.Set(DisabledModifiers, ModifierKeys.Alt, value); }
         }
 
         public bool DisableControl
         {
             get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; }
-            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Control; }
+            set { DisabledModifiers = ModifierKeyState.Set(DisabledModifiers, ModifierKeys.Control, value); }
         }
 
         public bool DisableShift
         {
             get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; }
-            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Shift; }
+            set { DisabledModifiers = ModifierKeyState.Set(DisabledModifiers, ModifierKeys.Shift, value); }
         }
 
         public bool DisableWindows
         {
             get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; }
-            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Windows; }
+            set { DisabledModifiers = ModifierKeyState.Set(DisabledModifiers, ModifierKeys.Windows, value); }
         }
 
         public event RoutedEventHandler HotKeyCommitted
         {
             add { AddHandler(CommitEvent, value); }
             remove { RemoveHandler(CommitEvent, value); }
-        }
-
-        public string DisplayText
-        {
-            get;
-            private set;
         }
 
         public int VirtualKey
@@ -274,39 +358,28 @@ namespace HotKeyCustomControlLibrary
             return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Windows) == 0;
         }
 
-        private static readonly string WinKeyName = ModifierKeys.Windows.ToString();
-        private static readonly string AltKeyName = ModifierKeys.Alt.ToString();
-        private static readonly string ControlKeyName = ModifierKeys.Control.ToString();
-        private static readonly string ShiftKeyName = ModifierKeys.Shift.ToString();
-        private static readonly string NoKeyName = ModifierKeys.None.ToString();
-
         private void UpdateDisplayWithStoredValues()
         {
-            if (Trigger == null)
+            if (Trigger.HasValue)
             {
-                displayBox.Text = NoKeyName;
+                displayBox.Text = ModifierKeySymbols.CreateSymbolString(
+                    Modifiers.GetValueOrDefault(),
+                    Trigger.GetValueOrDefault());
             }
             else
             {
-                StringBuilder sb = new StringBuilder();
-                if (HasWindows) sb.Append(WinKeyName + " + ");
-                if (HasShift) sb.Append(ShiftKeyName + " + ");
-                if (HasControl) sb.Append(ControlKeyName + " + ");
-                if (HasAlt) sb.Append(AltKeyName + " + ");
-                sb.Append(Trigger.Value.ToString());
-                displayBox.Text = sb.ToString();
+                displayBox.Text = ModifierKeySymbols.CreateSymbolString(
+                    ModifierKeys.None,
+                    Key.None);
             }
         }
 
         private void UpdateDisplayWithPreviewValues()
         {
-            StringBuilder sb = new StringBuilder();
-            if (IsWindowsKeyDown() && WindowsIsAllowed()) sb.Append(WinKeyName + " + ");
-            if (IsShiftKeyDown() && ShiftIsAllowed()) sb.Append(ShiftKeyName + " + ");
-            if (IsControlKeyDown() && ControlIsAllowed()) sb.Append(ControlKeyName + " + ");
-            if (IsAltKeyDown() && AltIsAllowed()) sb.Append(AltKeyName + " + ");
-            if (Trigger.HasValue) sb.Append(Trigger.Value.ToString());
-            displayBox.Text = sb.ToString();
+            ModifierKeys showKeys = Modifiers.GetValueOrDefault() & ~DisabledModifiers.GetValueOrDefault();
+            displayBox.Text = ModifierKeySymbols.CreateSymbolString(
+                showKeys,
+                Trigger.GetValueOrDefault());
         }
 
         private void UpdateDisplay()

@@ -11,9 +11,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:HotKeyBox}">
                     <TextBox x:Name="txtDisplayBox"  AutoWordSelection="True"
-                             Grid.Column="1"
                              IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                             Margin="0,1,0,1" VerticalAlignment="Center"
+                             VerticalContentAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:HotKeyBox, Mode=FindAncestor}, Path=VerticalContentAlignment}"
+                             HorizontalContentAlignment="{Binding RelativeSource={RelativeSource AncestorType=local:HotKeyBox, Mode=FindAncestor}, Path=HorizontalContentAlignment}"
+                             FontFamily="Segoe UI Symbol"
                              Text=""/>
                 </ControlTemplate>
             </Setter.Value>

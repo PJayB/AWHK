@@ -5,14 +5,31 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:CustomControls="clr-namespace:AWHKConfigApp"
       xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
-      xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="AWHKConfigApp.MoveKeysPage"
+      xmlns:System="clr-namespace:System;assembly=mscorlib"
+      xmlns:Input="clr-namespace:System.Windows.Input;assembly=WindowsBase"
+      xmlns:AWHKConfigShared="clr-namespace:AWHKConfigShared;assembly=AWHKConfigShared" x:Class="AWHKConfigApp.MoveKeysPage"
+      xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase"
       mc:Ignorable="d" 
       d:DesignHeight="1000" d:DesignWidth="512"
       x:Name="moveKeysPage"
 	  Title="MoveKeysPage" Loaded="Page_Loaded">
     <Page.Resources>
+        <CustomControls:ModifierKeysSymbolConverter x:Key="ModifierKeysSymbolConverter"/>
+        <DataTemplate x:Key="ModifierSymbolsConverterDataTemplate">
+            <TextBlock Text="{Binding Converter={StaticResource ModifierKeysSymbolConverter}}"/>
+        </DataTemplate>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
+        </Style>
+        <Style x:Key="KeyCombo" TargetType="{x:Type ComboBox}">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="ItemTemplate" Value="{StaticResource ModifierSymbolsConverterDataTemplate}"/>
         </Style>
     </Page.Resources>
     <!--
@@ -21,51 +38,29 @@
         Ctrl = Control Key
         Alt = Alt Key
         &#xE154; = Windows Key
-    
-    Combo box settings:
-        IsReadOnly="True" 
-        HorizontalContentAlignment="Center" 
-        VerticalContentAlignment="Center" 
-        FontSize="24" 
-        FontFamily="Segoe UI Symbol"
     -->
-    <Grid>
+    <Grid Margin="7">
         <Grid.RowDefinitions>
-            <RowDefinition/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition />
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Row="1" Width="150" Text="Foo" SelectedIndex="0" IsReadOnly="True" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol" VerticalAlignment="Center">
-            <ComboBoxItem Content="&#x21D1;"/>
-            <ComboBoxItem Content="Ctrl"/>
-            <ComboBoxItem Content="Alt"/>
-            <ComboBoxItem Content="&#xE154; + &#x21D1;"/>
-            <ComboBoxItem Content="&#xE154; + Ctrl"/>
-            <ComboBoxItem Content="&#xE154; + Alt"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Move/Resize Key Combination"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Style="{DynamicResource KeyCombo}"
+                  SelectedValue="{Binding BaseModifierKeys, Mode=TwoWay, diagnostics:PresentationTraceSources.TraceLevel=High}">
+            <System:Int32>0</System:Int32>
+            <System:Int32>1</System:Int32>
+            <System:Int32>12</System:Int32>
+            <System:Int32>10</System:Int32>
+            <System:Int32>9</System:Int32>
         </ComboBox>
-        <TextBlock Grid.Column="1" Grid.Row="1" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe UI Symbol" Text="+" Margin="15,0" />
-        <Grid Grid.Column="2" Grid.Row="1" Height="100">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <HotKeyControls:HotKeyBox Grid.Column="1" Grid.Row="0" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Trigger="W" DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"/>
-            <!--<TextBlock Grid.Column="1" Grid.Row="0" Text="W" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="A" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="D" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Grid.Row="2" Text="S" FontSize="24" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
+        <TextBlock Grid.Row="1" Grid.Column="0"><Hyperlink TargetName="what_is_move_resize_key_combo" Click="Hyperlink_Click"><Run Text="What is the Move/Resize Key Combination?"/></Hyperlink></TextBlock>
+        <HotKeyControls:HotKeyBox Grid.Row="2"/>
     </Grid>
 </Page>
