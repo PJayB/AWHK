@@ -15,6 +15,7 @@
 	  Title="MoveKeysPage" Loaded="Page_Loaded">
     <Page.Resources>
         <CustomControls:ModifierKeysSymbolConverter x:Key="ModifierKeysSymbolConverter"/>
+        <CustomControls:ModifierKeysIntConverter x:Key="ModifierKeysIntConverter"/>
         <DataTemplate x:Key="ModifierSymbolsConverterDataTemplate">
             <TextBlock Text="{Binding Converter={StaticResource ModifierKeysSymbolConverter}}"/>
         </DataTemplate>
@@ -53,7 +54,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Move/Resize Key Combination"/>
         <ComboBox Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Style="{DynamicResource KeyCombo}"
-                  SelectedValue="{Binding BaseModifierKeys, Mode=TwoWay, diagnostics:PresentationTraceSources.TraceLevel=High}">
+                  SelectedValue="{Binding BaseModifierKeys, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay, diagnostics:PresentationTraceSources.TraceLevel=High}">
             <System:Int32>0</System:Int32>
             <System:Int32>1</System:Int32>
             <System:Int32>12</System:Int32>

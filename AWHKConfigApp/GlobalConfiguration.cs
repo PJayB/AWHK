@@ -87,6 +87,19 @@ namespace AWHKConfigApp
         }
     }
 
+    public class ModifierKeysIntConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (ModifierKeys)value;
+        }
+    }
+
     public class KeyBindingView : INotifyPropertyChanged
     {
         private AWHKConfigShared.Configuration _config;
