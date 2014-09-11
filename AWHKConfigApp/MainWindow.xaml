@@ -4,8 +4,8 @@
         xmlns:CustomControls="clr-namespace:AWHKConfigApp"
         xmlns:AWHK="clr-namespace:AWHKConfigApp"
         Title="Advanced Windows Hotkeys" 
-        Height="590" Width="670" 
-        MinHeight="650" MinWidth="700"
+        Height="682" Width="812" 
+        MinHeight="682" MinWidth="812"
         WindowStyle="None"
         BorderBrush="Black"
         BorderThickness="1"
@@ -18,7 +18,7 @@
         AllowsTransparency="True">
     <Window.Resources>
         <AWHK:ConfigurationView x:Key="config"/>
-        <SolidColorBrush x:Key="GreyIconBrush" Color="White"/>
+        <SolidColorBrush x:Key="GreyIconBrush" Color="Black"/>
         <Style x:Key="GreyIcon" TargetType="{x:Type AWHK:DirectionHelpIcon}">
             <Setter Property="Foreground" Value="{DynamicResource GreyIconBrush}"/>
         </Style>
@@ -34,10 +34,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Up"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,0,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Left"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="0,0,15,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Right"/>
-        <CustomControls:DirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,0,0,15" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Down"/>
+        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Up"/>
+        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,0,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Left"/>
+        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="0,0,15,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Right"/>
+        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,0,0,15" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Down"/>
         <Grid Grid.Column="1" Grid.Row="1" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>

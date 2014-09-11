@@ -16,42 +16,34 @@ using System.Windows.Shapes;
 
 namespace AWHKConfigApp
 {
-    public enum DirectionIcon
+    public class DirectionHelpIcon : UserControl
     {
-        None,
-        Left,
-        Right,
-        Up,
-        Down
-    };
-
-    /// <summary>
-    /// Interaction logic for DirectionHelpIcon.xaml
-    /// </summary>
-    public partial class DirectionHelpIcon : UserControl
-    {
-        private static readonly Dictionary<DirectionIcon, char> ExpandSymbolMap = new Dictionary<DirectionIcon, char>() 
+        public enum DirectionIcon
         {
-            { DirectionIcon.None, '\0' },
-            { DirectionIcon.Left, '\xE150' },
-            { DirectionIcon.Right, '\xE0D6' },
-            { DirectionIcon.Up, '\xE11C' },
-            { DirectionIcon.Down, '\xE118' }
+            None,
+            Left,
+            Right,
+            Up,
+            Down
         };
 
-        private static readonly Dictionary<DirectionIcon, char> MoveSymbolMap = new Dictionary<DirectionIcon, char>() 
+        protected static readonly Dictionary<DirectionIcon, string> ExpandSymbolMap = new Dictionary<DirectionIcon, string>() 
         {
-            { DirectionIcon.None, '\0' },
-            { DirectionIcon.Left, '\xE2B6' },
-            { DirectionIcon.Right, '\xE2B7' },
-            { DirectionIcon.Up, '\xE1FE' },
-            { DirectionIcon.Down, '\xE1FC' }
+            { DirectionIcon.None, "\0" },
+            { DirectionIcon.Left, "\xE29D" },
+            { DirectionIcon.Right, "\xE29C" },
+            { DirectionIcon.Up, "\xE11C" },
+            { DirectionIcon.Down, "\xE118" }
         };
 
-        public DirectionHelpIcon()
+        private static readonly Dictionary<DirectionIcon, string> MoveSymbolMap = new Dictionary<DirectionIcon, string>() 
         {
-            InitializeComponent();
-        }
+            { DirectionIcon.None, "\0" },
+            { DirectionIcon.Left, "\xE2B6" },
+            { DirectionIcon.Right, "\xE2B7" },
+            { DirectionIcon.Up, "\xE1FE" },
+            { DirectionIcon.Down, "\xE1FC" }
+        };
 
         public DirectionIcon? Direction
         {
@@ -59,7 +51,7 @@ namespace AWHKConfigApp
             set { base.SetValue(DirectionIconProperty, value); }
         }
 
-        public char ExpandSymbol
+        public string ExpandSymbol
         {
             get { return ExpandSymbolMap[Direction.GetValueOrDefault()]; }
         }
@@ -71,8 +63,8 @@ namespace AWHKConfigApp
 
         public string ExpandCombo
         {
-            get 
-            { 
+            get
+            {
                 ConfigurationView config = (DataContext as ConfigurationView);
                 if (config == null)
                     return "<ERROR>";
@@ -80,7 +72,7 @@ namespace AWHKConfigApp
             }
         }
 
-        public char MoveSymbol
+        public string MoveSymbol
         {
             get { return MoveSymbolMap[Direction.GetValueOrDefault()]; }
         }
@@ -103,7 +95,5 @@ namespace AWHKConfigApp
 
         public static readonly DependencyProperty DirectionIconProperty =
             DependencyProperty.Register("DirectionIcon", typeof(DirectionIcon), typeof(DirectionHelpIcon));
-
-
     }
 }
