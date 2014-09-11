@@ -52,6 +52,54 @@ namespace HotKeyCustomControlLibrary
             set { base.SetValue(DisabledModifiersProperty, value); }
         }
 
+        public bool HasAlt
+        {
+            get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; }
+            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Alt; }
+        }
+
+        public bool HasControl
+        {
+            get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; }
+            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Control; }
+        }
+
+        public bool HasShift
+        {
+            get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; }
+            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Shift; }
+        }
+
+        public bool HasWindows
+        {
+            get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; }
+            set { Modifiers = Modifiers.GetValueOrDefault() | ModifierKeys.Windows; }
+        }
+
+        public bool DisableAlt
+        {
+            get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; }
+            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Alt; }
+        }
+
+        public bool DisableControl
+        {
+            get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; }
+            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Control; }
+        }
+
+        public bool DisableShift
+        {
+            get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; }
+            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Shift; }
+        }
+
+        public bool DisableWindows
+        {
+            get { return (DisabledModifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; }
+            set { DisabledModifiers = DisabledModifiers.GetValueOrDefault() | ModifierKeys.Windows; }
+        }
+
         public event RoutedEventHandler HotKeyCommitted
         {
             add { AddHandler(CommitEvent, value); }
@@ -68,11 +116,6 @@ namespace HotKeyCustomControlLibrary
         {
             get { return Trigger.HasValue ? KeyInterop.VirtualKeyFromKey(Trigger.Value) : 0; }
         }
-
-        public bool HasAlt { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; } }
-        public bool HasControl { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Control) != 0; } }
-        public bool HasShift { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Shift) != 0; } }
-        public bool HasWindows { get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Windows) != 0; } }
 
         public static readonly DependencyProperty TriggerProperty =
             DependencyProperty.Register("Trigger", typeof(Key?), typeof(HotKeyBox));
