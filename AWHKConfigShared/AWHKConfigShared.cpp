@@ -14,9 +14,9 @@
 
 namespace AWHKConfigShared {
 
-    void ClrModifierSetToNative(ModifierKeys a, DWORD* mods)
+    DWORD ClrModifierSetToNative(ModifierKeys a)
     {
-        *mods = static_cast<DWORD>(a);
+        return static_cast<DWORD>(a);
     }
 
     ModifierKeys NativeModifierSetToClr(DWORD mods)
@@ -24,60 +24,64 @@ namespace AWHKConfigShared {
         return static_cast<ModifierKeys>(mods);
     }
 
-    void ClrKeyBindingToNative(KeyBinding a, AWHK_KEY_BINDING* b)
+    void ClrKeyBindingToNative(KeyBinding a, DWORD* bkey, DWORD* bmod)
     {
-        b->Trigger = a.Trigger;
-        ClrModifierSetToNative(a.Modifiers, &b->Modifiers);
+        *bkey = a.Trigger;
+        *bmod = ClrModifierSetToNative(a.Modifiers);
     }
 
-    KeyBinding NativeKeyBindingToClr(const AWHK_KEY_BINDING* a)
+    KeyBinding NativeKeyBindingToClr(DWORD akey, DWORD amod)
     {
         KeyBinding b;
-        b.Trigger = a->Trigger;
-        b.Modifiers = NativeModifierSetToClr(a->Modifiers);
+        b.Trigger = akey;
+        b.Modifiers = NativeModifierSetToClr(amod);
         return b;
     }
 
     void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
     {
-        b->EnableFineSnap = a->EnableFineSnap;
-        b->AllowSnapToOthers = a->AllowSnapToOthers;
-        b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
-        b->GridX = a->GridX;
-        b->GridY = a->GridY;
-        b->FineX = a->FineX;
-        b->FineY = a->FineY;
-        ClrKeyBindingToNative(a->HelpKey, &b->HelpKey);
-        ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey);
-        ClrKeyBindingToNative(a->MoveLeft , &b->MoveKeys.LeftKey);
-        ClrKeyBindingToNative(a->MoveRight, &b->MoveKeys.RightKey);
-        ClrKeyBindingToNative(a->MoveUp   , &b->MoveKeys.UpKey);
-        ClrKeyBindingToNative(a->MoveDown , &b->MoveKeys.DownKey);
-        ClrKeyBindingToNative(a->ResizeLeft , &b->ResizeKeys.LeftKey);
-        ClrKeyBindingToNative(a->ResizeRight, &b->ResizeKeys.RightKey);
-        ClrKeyBindingToNative(a->ResizeUp   , &b->ResizeKeys.UpKey);
-        ClrKeyBindingToNative(a->ResizeDown , &b->ResizeKeys.DownKey);
+        b->AllowSnapToOthers   = a->AllowSnapToOthers;
+        b->MaxEdgeSearchSize   = a->MaxEdgeSearchSize;
+        b->GridX               = a->GridX;
+        b->GridY               = a->GridY;
+        b->FineX               = a->FineX;
+        b->FineY               = a->FineY;
+        ClrKeyBindingToNative(a->HelpKey, &b->HelpKey, &b->HelpKeyMod);
+        ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey, &b->ConfigKeyMod);
+        b->MoveKeys.LeftKey    = a->MoveLeft   ;
+        b->MoveKeys.RightKey   = a->MoveRight  ;
+        b->MoveKeys.UpKey      = a->MoveUp     ;
+        b->MoveKeys.DownKey    = a->MoveDown   ;
+        b->ResizeKeys.LeftKey  = a->ResizeLeft ;
+        b->ResizeKeys.RightKey = a->ResizeRight;
+        b->ResizeKeys.UpKey    = a->ResizeUp   ;
+        b->ResizeKeys.DownKey  = a->ResizeDown ;
+        b->FineKeyMod          = ClrModifierSetToNative(a->FineModifier);
+        b->NextKeyMod          = ClrModifierSetToNative(a->GrabModifier);
+        b->MoveKeyMod          = ClrModifierSetToNative(a->BaseModifier);
     }
 
     void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
     {
-        b->EnableFineSnap = (a->EnableFineSnap != FALSE);
-        b->AllowSnapToOthers = (a->AllowSnapToOthers != FALSE);
-        b->MaxEdgeSearchSize = a->MaxEdgeSearchSize;
-        b->GridX = a->GridX;
-        b->GridY = a->GridY;
-        b->FineX = a->FineX;
-        b->FineY = a->FineY;
-        b->HelpKey = NativeKeyBindingToClr(&a->HelpKey);
-        b->ConfigKey = NativeKeyBindingToClr(&a->ConfigKey);
-        b->MoveLeft  = NativeKeyBindingToClr(&a->MoveKeys.LeftKey);
-        b->MoveRight = NativeKeyBindingToClr(&a->MoveKeys.RightKey);
-        b->MoveUp    = NativeKeyBindingToClr(&a->MoveKeys.UpKey);
-        b->MoveDown  = NativeKeyBindingToClr(&a->MoveKeys.DownKey);
-        b->ResizeLeft  = NativeKeyBindingToClr(&a->ResizeKeys.LeftKey);
-        b->ResizeRight = NativeKeyBindingToClr(&a->ResizeKeys.RightKey);
-        b->ResizeUp    = NativeKeyBindingToClr(&a->ResizeKeys.UpKey);
-        b->ResizeDown  = NativeKeyBindingToClr(&a->ResizeKeys.DownKey);
+        b->AllowSnapToOthers   = (a->AllowSnapToOthers != FALSE);
+        b->MaxEdgeSearchSize   = a->MaxEdgeSearchSize;
+        b->GridX               = a->GridX;
+        b->GridY               = a->GridY;
+        b->FineX               = a->FineX;
+        b->FineY               = a->FineY;
+        b->HelpKey             = NativeKeyBindingToClr(a->HelpKey, a->HelpKeyMod);
+        b->HelpKey             = NativeKeyBindingToClr(a->ConfigKey, a->ConfigKeyMod);
+        b->MoveLeft            = a->MoveKeys.LeftKey   ;
+        b->MoveRight           = a->MoveKeys.RightKey  ;
+        b->MoveUp              = a->MoveKeys.UpKey     ;
+        b->MoveDown            = a->MoveKeys.DownKey   ;
+        b->ResizeLeft          = a->ResizeKeys.LeftKey ;
+        b->ResizeRight         = a->ResizeKeys.RightKey;
+        b->ResizeUp            = a->ResizeKeys.UpKey   ;
+        b->ResizeDown          = a->ResizeKeys.DownKey ;
+        b->FineModifier        = NativeModifierSetToClr(a->FineKeyMod);
+        b->GrabModifier        = NativeModifierSetToClr(a->NextKeyMod);
+        b->BaseModifier        = NativeModifierSetToClr(a->MoveKeyMod);
     }
 
     Configuration::Configuration()

@@ -21,39 +21,35 @@
 
 #include "Version.h"
 
-#define AWHK_REG_KEY			    (L"Software\\AWHK\\" AWHK_VERSION_STRING)
+#define AWHK_REG_KEY			(L"Software\\AWHK\\" AWHK_VERSION_STRING)
 
-#define AWHK_REG_ALLOW_SNAP		    L"AllowSnapToOthers"
-#define AWHK_REG_FINE_SNAP		    L"EnableFineSnap"
-#define AWHK_REG_EDGE_SEARCH	    L"MaxEdgeSearchSize"
+#define AWHK_REG_ALLOW_SNAP		L"AllowSnapToOthers"
+#define AWHK_REG_EDGE_SEARCH	L"MaxEdgeSearchSize"
 
-#define AWHK_REG_GRID_X			    L"GridX"
-#define AWHK_REG_GRID_Y			    L"GridY"
-#define AWHK_REG_FINE_X			    L"FineX"
-#define AWHK_REG_FINE_Y			    L"FineY"
+#define AWHK_REG_GRID_X			L"GridX"
+#define AWHK_REG_GRID_Y			L"GridY"
+#define AWHK_REG_FINE_X			L"FineX"
+#define AWHK_REG_FINE_Y			L"FineY"
 
-#define AWKH_REG_HELP_KEY		    L"HelpKey"
-#define AWKH_REG_HELP_KEY_MOD	    L"HelpKeyMod"
-#define AWKH_REG_CFG_KEY		    L"ConfigKey"
-#define AWKH_REG_CFG_KEY_MOD	    L"ConfigKeyMod"
+#define AWKH_REG_HELP_KEY		L"HelpKey"
+#define AWKH_REG_HELP_KEY_MOD	L"HelpKeyMod"
+#define AWKH_REG_CFG_KEY		L"ConfigKey"
+#define AWKH_REG_CFG_KEY_MOD	L"ConfigKeyMod"
 
-#define AWHK_REG_LEFT_KEY		    L"LeftKey"
-#define AWHK_REG_LEFT_KEY_MOD	    L"LeftKeyMod"
-#define AWHK_REG_RIGHT_KEY		    L"RightKey"
-#define AWHK_REG_RIGHT_KEY_MOD	    L"RightKeyMod"
-#define AWHK_REG_UP_KEY			    L"UpKey"
-#define AWHK_REG_UP_KEY_MOD		    L"UpKeyMod"
-#define AWHK_REG_DOWN_KEY		    L"DownKey"
-#define AWHK_REG_DOWN_KEY_MOD	    L"DownKeyMod"
+#define AWHK_REG_LEFT_KEY		L"LeftKey"
+#define AWHK_REG_RIGHT_KEY		L"RightKey"
+#define AWHK_REG_UP_KEY			L"UpKey"
+#define AWHK_REG_DOWN_KEY		L"DownKey"
 
-#define AWHK_REG_LEFT_KEY_2		    L"MoveLeftKey"
-#define AWHK_REG_LEFT_KEY_2_MOD	    L"MoveLeftKeyMod"
-#define AWHK_REG_RIGHT_KEY_2	    L"MoveRightKey"
-#define AWHK_REG_RIGHT_KEY_2_MOD    L"MoveRightKeyMod"
-#define AWHK_REG_UP_KEY_2		    L"MoveUpKey"
-#define AWHK_REG_UP_KEY_2_MOD	    L"MoveUpKeyMod"
-#define AWHK_REG_DOWN_KEY_2		    L"MoveDownKey"
-#define AWHK_REG_DOWN_KEY_2_MOD	    L"MoveDownKeyMod"
+#define AWHK_REG_LEFT_KEY_2		L"MoveLeftKey"
+#define AWHK_REG_RIGHT_KEY_2	L"MoveRightKey"
+#define AWHK_REG_UP_KEY_2		L"MoveUpKey"
+#define AWHK_REG_DOWN_KEY_2		L"MoveDownKey"
+
+#define AWHK_REG_MOVE_KEY_MOD	L"MoveKeyMod"
+#define AWHK_REG_NEXT_KEY_MOD	L"NextKeyMod"
+#define AWHK_REG_FINE_KEY_MOD	L"FineKeyMod"
+
 
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 

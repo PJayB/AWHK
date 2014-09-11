@@ -66,14 +66,17 @@ namespace AWHKConfigShared {
         property int FineY;
         property KeyBinding HelpKey;
         property KeyBinding ConfigKey;
-        property KeyBinding ResizeLeft;
-        property KeyBinding ResizeRight;
-        property KeyBinding ResizeUp;
-        property KeyBinding ResizeDown;
-        property KeyBinding MoveLeft;
-        property KeyBinding MoveRight;
-        property KeyBinding MoveUp;
-        property KeyBinding MoveDown;
+        property Int32 ResizeLeft;
+        property Int32 ResizeRight;
+        property Int32 ResizeUp;
+        property Int32 ResizeDown;
+        property Int32 MoveLeft;
+        property Int32 MoveRight;
+        property Int32 MoveUp;
+        property Int32 MoveDown;
+        property ModifierKeys BaseModifier;
+        property ModifierKeys FineModifier;
+        property ModifierKeys GrabModifier;
         property bool AutoLogin;
 	};
     

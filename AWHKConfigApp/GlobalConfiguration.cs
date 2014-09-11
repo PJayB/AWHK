@@ -114,23 +114,17 @@ namespace AWHKConfigApp
         }
     }
 
-    public class KeyBindingView : INotifyPropertyChanged
+    public class KeyBindingView
     {
         private AWHKConfigShared.Configuration _config;
-        private System.Reflection.PropertyInfo _property;
+        private System.Reflection.PropertyInfo _triggerProperty;
+        private System.Reflection.PropertyInfo _modifiersProperty;
 
         public ModifierKeys Modifiers 
         {
             get 
             {
-                return (ModifierKeys) GetBindingSourceCopy().Modifiers; 
-            }
-            set
-            {
-                AWHKConfigShared.KeyBinding sourceBinding = GetBindingSourceCopy();
-                sourceBinding.Modifiers = (AWHKConfigShared.ModifierKeys) value;
-                SetBindingSource(sourceBinding);
-                NotifyPropertyChanged();
+                return (ModifierKeys)_modifiersProperty.GetValue(_config);
             }
         }
 
@@ -138,59 +132,25 @@ namespace AWHKConfigApp
         {
             get
             {
-                return KeyInterop.KeyFromVirtualKey(GetBindingSourceCopy().Trigger);
-            }
-            set
-            {
-                AWHKConfigShared.KeyBinding sourceBinding = GetBindingSourceCopy();
-                sourceBinding.Trigger = KeyInterop.VirtualKeyFromKey(value);
-                SetBindingSource(sourceBinding);
-                NotifyPropertyChanged();
+                return KeyInterop.KeyFromVirtualKey((int)_triggerProperty.GetValue(_config));
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public KeyBindingView(AWHKConfigShared.Configuration config, string propertyName)
+        public KeyBindingView(AWHKConfigShared.Configuration config, string triggerPropertyName, string modifierPropertyName)
         {
             _config = config;
 
-            _property = _config.GetType().GetProperty(propertyName);
-            if (_property == null)
+            _triggerProperty = _config.GetType().GetProperty(triggerPropertyName);
+            if (_triggerProperty == null)
             {
-                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
+                throw new MissingMemberException("Property '" + triggerPropertyName + "' doesn't exist.");
             }
-        }
 
-        private AWHKConfigShared.KeyBinding GetBindingSourceCopy()
-        {
-            return (AWHKConfigShared.KeyBinding)_property.GetValue(_config);
-        }
-
-        private void SetBindingSource(AWHKConfigShared.KeyBinding binding)
-        {
-            _property.SetValue(_config, binding);
-        }
-
-        // This method is called by the Set accessor of each property. 
-        // The CallerMemberName attribute that is applied to the optional propertyName 
-        // parameter causes the property name of the caller to be substituted as an argument. 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            // Update the XAML dependency chain
-            if (PropertyChanged != null)
+            _modifiersProperty = _config.GetType().GetProperty(modifierPropertyName);
+            if (_modifiersProperty == null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                throw new MissingMemberException("Property '" + modifierPropertyName + "' doesn't exist.");
             }
-        }
-
-        public AWHKConfigShared.KeyBinding ToAwhk()
-        {
-            return new AWHKConfigShared.KeyBinding()
-            {
-                Modifiers = (AWHKConfigShared.ModifierKeys) this.Modifiers,
-                Trigger = KeyInterop.VirtualKeyFromKey(this.Trigger)
-            };
         }
     }
 
@@ -228,6 +188,61 @@ namespace AWHKConfigApp
             return prop.GetValue(this, null);
         }
 
+        // Uses magic to get any key based on the property name
+        private Key GetTriggerKey([CallerMemberName] String propertyName = "")
+        {
+            // Get the property
+            var prop = _config.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMethodException();
+            }
+
+            int vkey = (int)prop.GetValue(_config);
+            return KeyInterop.KeyFromVirtualKey(vkey);
+        }
+
+        // Uses magic to get any modifiers based on the property name
+        private ModifierKeys GetModifierKeys([CallerMemberName] String propertyName = "")
+        {
+            // Get the property
+            var prop = _config.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMethodException();
+            }
+
+            return (ModifierKeys) prop.GetValue(_config);
+        }
+
+        // Uses magic to set any key based on the property name
+        private void SetTriggerKey(Key key, [CallerMemberName] String propertyName = "")
+        {
+            // Get the property
+            var prop = _config.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMethodException();
+            }
+
+            prop.SetValue(_config, KeyInterop.VirtualKeyFromKey(key));
+            NotifyPropertyChanged(propertyName);
+        }
+
+        // Uses magic to set any modifiers based on the property name
+        private void SetModifierKeys(ModifierKeys keys, [CallerMemberName] String propertyName = "")
+        {
+            // Get the property
+            var prop = _config.GetType().GetProperty(propertyName);
+            if (prop == null)
+            {
+                throw new MissingMethodException();
+            }
+
+            prop.SetValue(_config, (AWHKConfigShared.ModifierKeys) keys);
+            NotifyPropertyChanged(propertyName);
+        }
+
         // General settings
         public bool RunOnStartUp
         {
@@ -235,77 +250,98 @@ namespace AWHKConfigApp
             set { _config.AutoLogin = value; NotifyPropertyChanged(); }
         }
 
-        // Resize/move hotkeys
-        public KeyBindingView HelpKey { get; private set; }
-        public KeyBindingView ConfigKey { get; private set; } 
-        public KeyBindingView ResizeLeft { get; private set; }
-        public KeyBindingView ResizeRight { get; private set; }
-        public KeyBindingView ResizeUp { get; private set; }
-        public KeyBindingView ResizeDown { get; private set; }
-        public KeyBindingView MoveLeft { get; private set; }
-        public KeyBindingView MoveRight { get; private set; }
-        public KeyBindingView MoveUp { get; private set; }
-        public KeyBindingView MoveDown { get; private set; }
+        // Explicit hotkeys
+        public Key HelpKey
+        {
+            get { return GetTriggerKey(); }
+            set { SetTriggerKey(value); }
+        }
 
+        public ModifierKeys HelpKeyMod
+        {
+            get { return GetModifierKeys(); }
+            set { SetModifierKeys(value); }
+        }
+
+        public Key ConfigKey
+        {
+            get { return GetTriggerKey(); }
+            set { SetTriggerKey(value); }
+        }
+        
+        public ModifierKeys ConfigKeyMod
+        {
+            get { return GetModifierKeys(); }
+            set { SetModifierKeys(value); }
+        }
+
+        public KeyBindingView HelpKeyView { get; private set; }
+        public KeyBindingView ConfigKeyView { get; private set; }
+
+        // Trigger keys
+        public Key ResizeLeft
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key ResizeRight
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key ResizeUp
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key ResizeDown
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key MoveLeft
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key MoveRight
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key MoveUp
+        {
+            get { return GetTriggerKey(); } 
+            set { SetTriggerKey(value); }
+        }
+        public Key MoveDown
+        {
+            get { return GetTriggerKey(); }
+            set { SetTriggerKey(value); }
+        }
+
+        // Modifier keys
         public ModifierKeys BaseModifierKeys
         {
-            get
-            {
-                return ResizeLeft.Modifiers;
-            }
-            set
-            {
-                ResizeLeft.Modifiers = value;
-                ResizeRight.Modifiers = value;
-                ResizeUp.Modifiers = value;
-                ResizeDown.Modifiers = value;
-                MoveLeft.Modifiers = value;
-                MoveRight.Modifiers = value;
-                MoveUp.Modifiers = value;
-                MoveDown.Modifiers = value;
-            }
+            get { return (ModifierKeys) _config.BaseModifier; }
+            set { _config.BaseModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
         }
 
-        // TODO
         public ModifierKeys FineSnapModifierKeys
         {
-            get
-            {
-                return ResizeLeft.Modifiers;
-            }
-            set
-            {
-                ResizeLeft.Modifiers = value;
-                ResizeRight.Modifiers = value;
-                ResizeUp.Modifiers = value;
-                ResizeDown.Modifiers = value;
-                MoveLeft.Modifiers = value;
-                MoveRight.Modifiers = value;
-                MoveUp.Modifiers = value;
-                MoveDown.Modifiers = value;
-            }
+            get { return (ModifierKeys)_config.FineModifier; }
+            set { _config.FineModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
         }
 
-        // TODO
         public ModifierKeys GrabModifierKeys
         {
-            get
-            {
-                return ResizeLeft.Modifiers;
-            }
-            set
-            {
-                ResizeLeft.Modifiers = value;
-                ResizeRight.Modifiers = value;
-                ResizeUp.Modifiers = value;
-                ResizeDown.Modifiers = value;
-                MoveLeft.Modifiers = value;
-                MoveRight.Modifiers = value;
-                MoveUp.Modifiers = value;
-                MoveDown.Modifiers = value;
-            }
+            get { return (ModifierKeys)_config.GrabModifier; }
+            set { _config.GrabModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
         }
 
+        // Properties for conveniently binding the key bindings
+
+        
         // Grid settings
         public bool AllowSnapToOthers
         {
@@ -350,16 +386,8 @@ namespace AWHKConfigApp
         {
             _config = new AWHKConfigShared.Configuration();
 
-            HelpKey = new KeyBindingView(_config, "HelpKey");
-            ConfigKey = new KeyBindingView(_config, "ConfigKey");
-            ResizeLeft = new KeyBindingView(_config, "ResizeLeft");
-            ResizeRight = new KeyBindingView(_config, "ResizeRight");
-            ResizeUp = new KeyBindingView(_config, "ResizeUp");
-            ResizeDown = new KeyBindingView(_config, "ResizeDown");
-            MoveLeft = new KeyBindingView(_config, "MoveLeft");
-            MoveRight = new KeyBindingView(_config, "MoveRight");
-            MoveUp = new KeyBindingView(_config, "MoveUp");
-            MoveDown = new KeyBindingView(_config, "MoveDown");
+            HelpKeyView = new KeyBindingView(_config, "HelpKey", "HelpKeyMod");
+            ConfigKeyView = new KeyBindingView(_config, "ConfigKey", "ConfigKeyMod");
         }
 
         // This method is called by the Set accessor of each property. 

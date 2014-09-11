@@ -19,18 +19,12 @@
 
 #pragma once
 
-struct AWHK_KEY_BINDING
-{
-    DWORD               Modifiers;
-    DWORD               Trigger;
-};
-
 struct AWHK_CURSOR_KEYS
 {
-	AWHK_KEY_BINDING    LeftKey;
-	AWHK_KEY_BINDING    RightKey;
-	AWHK_KEY_BINDING    UpKey;
-	AWHK_KEY_BINDING    DownKey;
+	DWORD				LeftKey;
+	DWORD				RightKey;
+	DWORD				UpKey;
+	DWORD				DownKey;
 };
 
 struct AWHK_APP_CONFIG
@@ -38,7 +32,6 @@ struct AWHK_APP_CONFIG
 	AWHK_APP_CONFIG();
 
 	BOOL				AllowSnapToOthers;
-    BOOL                EnableFineSnap;
 
 	DWORD				MaxEdgeSearchSize;
 
@@ -47,11 +40,17 @@ struct AWHK_APP_CONFIG
 	DWORD				FineX;
 	DWORD				FineY;
 
-	AWHK_KEY_BINDING	HelpKey;
-	AWHK_KEY_BINDING	ConfigKey;
+	DWORD				HelpKey;
+	DWORD				HelpKeyMod;
+	DWORD				ConfigKey;
+	DWORD				ConfigKeyMod;
 
 	AWHK_CURSOR_KEYS	ResizeKeys;
 	AWHK_CURSOR_KEYS	MoveKeys;
+
+	DWORD				MoveKeyMod;
+	DWORD				NextKeyMod;
+	DWORD				FineKeyMod;
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );
