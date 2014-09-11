@@ -39,20 +39,20 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,5" Style="{DynamicResource GreyIcon}" 
-                                                  ExpandCombo="{Binding ResizeUp, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
-                                                  MoveCombo="{Binding MoveUp, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  ExpandCombo="{Binding ResizeUpView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveUpView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
                                                   Direction="Up"/>
         <CustomControls:HorizontalDirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,5,0" Style="{DynamicResource GreyIcon}"
-                                                  ExpandCombo="{Binding ResizeLeft, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
-                                                  MoveCombo="{Binding MoveLeft, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  ExpandCombo="{Binding ResizeLeftView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveLeftView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
                                                   Direction="Left"/>
         <CustomControls:HorizontalDirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="5,0,15,0" Style="{DynamicResource GreyIcon}"
-                                                  ExpandCombo="{Binding ResizeRight, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
-                                                  MoveCombo="{Binding MoveRight, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  ExpandCombo="{Binding ResizeRightView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveRightView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
                                                   Direction="Right"/>
         <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,5,0,15" Style="{DynamicResource GreyIcon}"
-                                                  ExpandCombo="{Binding ResizeDown, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
-                                                  MoveCombo="{Binding MoveDown, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  ExpandCombo="{Binding ResizeDownView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveDownView, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
                                                   Direction="Down"/>
         <Grid Grid.Column="1" Grid.Row="1" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>

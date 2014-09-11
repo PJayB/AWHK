@@ -343,22 +343,22 @@ namespace AWHKConfigApp
         }
 
         // Modifier keys
-        public ModifierKeys BaseModifierKeys
+        public ModifierKeys BaseKeyMod
         {
-            get { return (ModifierKeys) _config.BaseModifier; }
-            set { _config.BaseModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
+            get { return GetModifierKeys(); }
+            set { SetModifierKeys(value); }
         }
 
-        public ModifierKeys FineSnapModifierKeys
+        public ModifierKeys FineKeyMod
         {
-            get { return (ModifierKeys)_config.FineModifier; }
-            set { _config.FineModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
+            get { return GetModifierKeys(); }
+            set { SetModifierKeys(value); }
         }
 
-        public ModifierKeys GrabModifierKeys
+        public ModifierKeys GrabKeyMod
         {
-            get { return (ModifierKeys)_config.GrabModifier; }
-            set { _config.GrabModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
+            get { return GetModifierKeys(); }
+            set { SetModifierKeys(value); }
         }
 
         // Grid settings
@@ -407,14 +407,14 @@ namespace AWHKConfigApp
 
             HelpKeyView = new KeyBindingView(this, "HelpKey", "HelpKeyMod");
             ConfigKeyView = new KeyBindingView(this, "ConfigKey", "ConfigKeyMod");
-            ResizeLeftView = new KeyBindingView(this, "ResizeLeft", "BaseModifier");
-            ResizeRightView = new KeyBindingView(this, "ResizeRight", "BaseModifier");
-            ResizeUpView = new KeyBindingView(this, "ResizeUp", "BaseModifier");
-            ResizeDownView = new KeyBindingView(this, "ResizeDown", "BaseModifier");
-            MoveLeftView = new KeyBindingView(this, "MoveLeft", "BaseModifier");
-            MoveRightView = new KeyBindingView(this, "MoveRight", "BaseModifier");
-            MoveUpView = new KeyBindingView(this, "MoveUp", "BaseModifier");
-            MoveDownView = new KeyBindingView(this, "MoveDown", "BaseModifier");
+            ResizeLeftView = new KeyBindingView(this, "ResizeLeft", "BaseKeyMod");
+            ResizeRightView = new KeyBindingView(this, "ResizeRight", "BaseKeyMod");
+            ResizeUpView = new KeyBindingView(this, "ResizeUp", "BaseKeyMod");
+            ResizeDownView = new KeyBindingView(this, "ResizeDown", "BaseKeyMod");
+            MoveLeftView = new KeyBindingView(this, "MoveLeft", "BaseKeyMod");
+            MoveRightView = new KeyBindingView(this, "MoveRight", "BaseKeyMod");
+            MoveUpView = new KeyBindingView(this, "MoveUp", "BaseKeyMod");
+            MoveDownView = new KeyBindingView(this, "MoveDown", "BaseKeyMod");
         }
 
         // This method is called by the Set accessor of each property. 

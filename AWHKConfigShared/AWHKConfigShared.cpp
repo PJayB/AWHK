@@ -24,20 +24,6 @@ namespace AWHKConfigShared {
         return static_cast<ModifierKeys>(mods);
     }
 
-    void ClrKeyBindingToNative(KeyBinding a, DWORD* bkey, DWORD* bmod)
-    {
-        *bkey = a.Trigger;
-        *bmod = ClrModifierSetToNative(a.Modifiers);
-    }
-
-    KeyBinding NativeKeyBindingToClr(DWORD akey, DWORD amod)
-    {
-        KeyBinding b;
-        b.Trigger = akey;
-        b.Modifiers = NativeModifierSetToClr(amod);
-        return b;
-    }
-
     void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
     {
         b->AllowSnapToOthers   = a->AllowSnapToOthers;
@@ -46,8 +32,10 @@ namespace AWHKConfigShared {
         b->GridY               = a->GridY;
         b->FineX               = a->FineX;
         b->FineY               = a->FineY;
-        ClrKeyBindingToNative(a->HelpKey, &b->HelpKey, &b->HelpKeyMod);
-        ClrKeyBindingToNative(a->ConfigKey, &b->ConfigKey, &b->ConfigKeyMod);
+        b->HelpKey             = a->HelpKey;
+        b->HelpKeyMod          = ClrModifierSetToNative(a->HelpKeyMod);
+        b->ConfigKey           = a->ConfigKey;
+        b->ConfigKeyMod        = ClrModifierSetToNative(a->ConfigKeyMod);
         b->MoveKeys.LeftKey    = a->MoveLeft   ;
         b->MoveKeys.RightKey   = a->MoveRight  ;
         b->MoveKeys.UpKey      = a->MoveUp     ;
@@ -56,9 +44,9 @@ namespace AWHKConfigShared {
         b->ResizeKeys.RightKey = a->ResizeRight;
         b->ResizeKeys.UpKey    = a->ResizeUp   ;
         b->ResizeKeys.DownKey  = a->ResizeDown ;
-        b->FineKeyMod          = ClrModifierSetToNative(a->FineModifier);
-        b->NextKeyMod          = ClrModifierSetToNative(a->GrabModifier);
-        b->MoveKeyMod          = ClrModifierSetToNative(a->BaseModifier);
+        b->FineKeyMod          = ClrModifierSetToNative(a->FineKeyMod);
+        b->NextKeyMod          = ClrModifierSetToNative(a->GrabKeyMod);
+        b->MoveKeyMod          = ClrModifierSetToNative(a->BaseKeyMod);
     }
 
     void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
@@ -69,8 +57,10 @@ namespace AWHKConfigShared {
         b->GridY               = a->GridY;
         b->FineX               = a->FineX;
         b->FineY               = a->FineY;
-        b->HelpKey             = NativeKeyBindingToClr(a->HelpKey, a->HelpKeyMod);
-        b->HelpKey             = NativeKeyBindingToClr(a->ConfigKey, a->ConfigKeyMod);
+        b->HelpKey             = a->HelpKey;
+        b->HelpKeyMod          = NativeModifierSetToClr(a->HelpKeyMod);
+        b->ConfigKey           = a->ConfigKey;
+        b->ConfigKeyMod        = NativeModifierSetToClr(a->ConfigKeyMod);
         b->MoveLeft            = a->MoveKeys.LeftKey   ;
         b->MoveRight           = a->MoveKeys.RightKey  ;
         b->MoveUp              = a->MoveKeys.UpKey     ;
@@ -79,9 +69,9 @@ namespace AWHKConfigShared {
         b->ResizeRight         = a->ResizeKeys.RightKey;
         b->ResizeUp            = a->ResizeKeys.UpKey   ;
         b->ResizeDown          = a->ResizeKeys.DownKey ;
-        b->FineModifier        = NativeModifierSetToClr(a->FineKeyMod);
-        b->GrabModifier        = NativeModifierSetToClr(a->NextKeyMod);
-        b->BaseModifier        = NativeModifierSetToClr(a->MoveKeyMod);
+        b->FineKeyMod          = NativeModifierSetToClr(a->FineKeyMod);
+        b->GrabKeyMod          = NativeModifierSetToClr(a->NextKeyMod);
+        b->BaseKeyMod          = NativeModifierSetToClr(a->MoveKeyMod);
     }
 
     Configuration::Configuration()

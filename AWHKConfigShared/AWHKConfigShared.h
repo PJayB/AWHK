@@ -39,15 +39,7 @@ namespace AWHKConfigShared {
         Alt = MOD_ALT,
         Windows = MOD_WIN
     };
-
-    public value struct KeyBinding
-    {
-    public:
-
-        ModifierKeys Modifiers;
-        Int32 Trigger;
-    };
-
+    
 	public ref class Configuration
 	{
     public:
@@ -64,8 +56,10 @@ namespace AWHKConfigShared {
         property int GridY;
         property int FineX;
         property int FineY;
-        property KeyBinding HelpKey;
-        property KeyBinding ConfigKey;
+        property Int32 HelpKey;
+        property ModifierKeys HelpKeyMod;
+        property Int32 ConfigKey;
+        property ModifierKeys ConfigKeyMod;
         property Int32 ResizeLeft;
         property Int32 ResizeRight;
         property Int32 ResizeUp;
@@ -74,9 +68,9 @@ namespace AWHKConfigShared {
         property Int32 MoveRight;
         property Int32 MoveUp;
         property Int32 MoveDown;
-        property ModifierKeys BaseModifier;
-        property ModifierKeys FineModifier;
-        property ModifierKeys GrabModifier;
+        property ModifierKeys BaseKeyMod;
+        property ModifierKeys FineKeyMod;
+        property ModifierKeys GrabKeyMod;
         property bool AutoLogin;
 	};
     
