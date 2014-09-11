@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotKeyCustomControlLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,13 +30,22 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class DirectionHelpIcon : UserControl
     {
-        private static readonly Dictionary<DirectionIcon, char> IconSymbolMap = new Dictionary<DirectionIcon, char>() 
+        private static readonly Dictionary<DirectionIcon, char> ExpandSymbolMap = new Dictionary<DirectionIcon, char>() 
         {
             { DirectionIcon.None, '\0' },
-            { DirectionIcon.Left, '\xE29D' },
-            { DirectionIcon.Right, '\xE29C' },
+            { DirectionIcon.Left, '\xE150' },
+            { DirectionIcon.Right, '\xE0D6' },
             { DirectionIcon.Up, '\xE11C' },
             { DirectionIcon.Down, '\xE118' }
+        };
+
+        private static readonly Dictionary<DirectionIcon, char> MoveSymbolMap = new Dictionary<DirectionIcon, char>() 
+        {
+            { DirectionIcon.None, '\0' },
+            { DirectionIcon.Left, '\xE2B6' },
+            { DirectionIcon.Right, '\xE2B7' },
+            { DirectionIcon.Up, '\xE1FE' },
+            { DirectionIcon.Down, '\xE1FC' }
         };
 
         public DirectionHelpIcon()
@@ -49,14 +59,46 @@ namespace AWHKConfigApp
             set { base.SetValue(DirectionIconProperty, value); }
         }
 
-        public char Symbol
+        public char ExpandSymbol
         {
-            get { return IconSymbolMap[Direction.GetValueOrDefault()]; }
+            get { return ExpandSymbolMap[Direction.GetValueOrDefault()]; }
         }
 
-        public string Instruction
+        public string ExpandInstruction
         {
-            get { return Direction.ToString(); }
+            get { return "Resize " + Direction.ToString(); }
+        }
+
+        public string ExpandCombo
+        {
+            get 
+            { 
+                ConfigurationView config = (DataContext as ConfigurationView);
+                if (config == null)
+                    return "<ERROR>";
+                return ModifierKeySymbols.CreateSymbolString(config.ResizeLeft.Modifiers, config.ResizeLeft.Trigger);
+            }
+        }
+
+        public char MoveSymbol
+        {
+            get { return MoveSymbolMap[Direction.GetValueOrDefault()]; }
+        }
+
+        public string MoveInstruction
+        {
+            get { return "Move " + Direction.ToString(); }
+        }
+
+        public string MoveCombo
+        {
+            get
+            {
+                ConfigurationView config = (DataContext as ConfigurationView);
+                if (config == null)
+                    return "<ERROR>";
+                return ModifierKeySymbols.CreateSymbolString(config.MoveLeft.Modifiers, config.MoveLeft.Trigger);
+            }
         }
 
         public static readonly DependencyProperty DirectionIconProperty =

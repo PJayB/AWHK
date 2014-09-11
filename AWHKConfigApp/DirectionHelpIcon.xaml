@@ -9,13 +9,37 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=Symbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Grid.Row="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock.Effect>
                 <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
             </TextBlock.Effect>
         </TextBlock>
-        <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=Instruction}" HorizontalAlignment="Center">
+        <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandInstruction}" HorizontalAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock Grid.Row="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandCombo}" HorizontalAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock Grid.Row="3" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock Grid.Row="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveInstruction}" HorizontalAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock Grid.Row="5" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveCombo}" HorizontalAlignment="Center">
             <TextBlock.Effect>
                 <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
             </TextBlock.Effect>
