@@ -100,6 +100,20 @@ namespace AWHKConfigApp
         }
     }
 
+    public class KeyBindingViewSymbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            KeyBindingView keyView = value as KeyBindingView;
+            return ModifierKeySymbols.CreateSymbolString(keyView.Modifiers, keyView.Trigger);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class KeyBindingView : INotifyPropertyChanged
     {
         private AWHKConfigShared.Configuration _config;
@@ -372,6 +386,9 @@ namespace AWHKConfigApp
                 // Failed to save settings.
                 throw new ConfigurationWriteException(ex);
             }
+
+            // Force a refresh of all the settings
+            NotifyPropertyChanged(String.Empty);
         }
 
         // Resets the configuration

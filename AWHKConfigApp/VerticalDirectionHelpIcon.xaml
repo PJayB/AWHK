@@ -18,35 +18,11 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandInstruction}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandCombo}" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
-        <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
-        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveInstruction}" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveCombo}" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="0"/>
-            </TextBlock.Effect>
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Left" VerticalAlignment="Top"/>
     </Grid>
 </local:DirectionHelpIcon>

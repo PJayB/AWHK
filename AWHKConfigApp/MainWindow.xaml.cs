@@ -27,6 +27,11 @@ namespace AWHKConfigApp
 
         public MainWindow()
         {
+            _svcController = new AWHKConfigShared.ServiceController();
+            _config = new ConfigurationView();
+
+            this.DataContext = _config;
+
             InitializeComponent();
         }
 
@@ -56,15 +61,11 @@ namespace AWHKConfigApp
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
-            _svcController = new AWHKConfigShared.ServiceController();
-            _config = new ConfigurationView();
-
             // Grab the page references
             moveKeysPage = pgMoveKeys.Content as MoveKeysPage;
             gridPage = pgGridSetup.Content as GridSetupPage;
 
             // Bind the data contexts
-            this.DataContext = _config;
             moveKeysPage.DataContext = _config;
             gridPage.DataContext = _config;
 

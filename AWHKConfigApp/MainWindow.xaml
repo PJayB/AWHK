@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:CustomControls="clr-namespace:AWHKConfigApp"
+        xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:AWHK="clr-namespace:AWHKConfigApp"
         Title="Advanced Windows Hotkeys" 
         Height="682" Width="812" 
@@ -18,9 +19,12 @@
         AllowsTransparency="True">
     <Window.Resources>
         <AWHK:ConfigurationView x:Key="config"/>
-        <SolidColorBrush x:Key="GreyIconBrush" Color="Black"/>
+        <CustomControls:KeyBindingViewSymbolConverter x:Key="KeyBindingViewSymbolConverter"/>
+        <SolidColorBrush x:Key="GreyIconBrush" Color="White"/>
+        <DropShadowEffect x:Key="IconDropShadow" Color="Black" BlurRadius="20" ShadowDepth="0"/>
         <Style x:Key="GreyIcon" TargetType="{x:Type AWHK:DirectionHelpIcon}">
-            <Setter Property="Foreground" Value="{DynamicResource GreyIconBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource GreyIconBrush}"/>
+            <Setter Property="Effect" Value="{StaticResource IconDropShadow}"/>
         </Style>
     </Window.Resources>
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -34,10 +38,22 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,5" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Up"/>
-        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,5,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Left"/>
-        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="5,0,15,0" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Right"/>
-        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,5,0,15" Style="{DynamicResource GreyIcon}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" Direction="Down"/>
+        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="0" Margin="0,15,0,5" Style="{DynamicResource GreyIcon}" 
+                                                  ExpandCombo="{Binding ResizeUp, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveUp, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  Direction="Up"/>
+        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="0" Grid.Row="1" Margin="15,0,5,0" Style="{DynamicResource GreyIcon}"
+                                                  ExpandCombo="{Binding ResizeLeft, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveLeft, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  Direction="Left"/>
+        <CustomControls:HorizontalDirectionHelpIcon Grid.Column="2" Grid.Row="1" Margin="5,0,15,0" Style="{DynamicResource GreyIcon}"
+                                                  ExpandCombo="{Binding ResizeRight, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveRight, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  Direction="Right"/>
+        <CustomControls:VerticalDirectionHelpIcon Grid.Column="1" Grid.Row="2" Margin="0,5,0,15" Style="{DynamicResource GreyIcon}"
+                                                  ExpandCombo="{Binding ResizeDown, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}" 
+                                                  MoveCombo="{Binding MoveDown, Converter={StaticResource KeyBindingViewSymbolConverter}, Mode=OneWay}"
+                                                  Direction="Down"/>
         <Grid Grid.Column="1" Grid.Row="1" x:Name="ConfigPanel" Width="544" Height="456">
             <Grid.Background>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>

@@ -63,13 +63,8 @@ namespace AWHKConfigApp
 
         public string ExpandCombo
         {
-            get
-            {
-                ConfigurationView config = (DataContext as ConfigurationView);
-                if (config == null)
-                    return "<ERROR>";
-                return ModifierKeySymbols.CreateSymbolString(config.ResizeLeft.Modifiers, config.ResizeLeft.Trigger);
-            }
+            get { return base.GetValue(ExpandComboProperty) as string; }
+            set { base.SetValue(ExpandComboProperty, value); }
         }
 
         public string MoveSymbol
@@ -84,16 +79,15 @@ namespace AWHKConfigApp
 
         public string MoveCombo
         {
-            get
-            {
-                ConfigurationView config = (DataContext as ConfigurationView);
-                if (config == null)
-                    return "<ERROR>";
-                return ModifierKeySymbols.CreateSymbolString(config.MoveLeft.Modifiers, config.MoveLeft.Trigger);
-            }
+            get { return base.GetValue(MoveComboProperty) as string; }
+            set { base.SetValue(MoveComboProperty, value); }
         }
 
         public static readonly DependencyProperty DirectionIconProperty =
             DependencyProperty.Register("DirectionIcon", typeof(DirectionIcon), typeof(DirectionHelpIcon));
+        public static readonly DependencyProperty ExpandComboProperty =
+            DependencyProperty.Register("ExpandCombo", typeof(string), typeof(DirectionHelpIcon));
+        public static readonly DependencyProperty MoveComboProperty =
+            DependencyProperty.Register("MoveCombo", typeof(string), typeof(DirectionHelpIcon));
     }
 }
