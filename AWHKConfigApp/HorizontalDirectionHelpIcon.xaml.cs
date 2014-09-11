@@ -21,9 +21,41 @@ namespace AWHKConfigApp
     /// </summary>
     public partial class HorizontalDirectionHelpIcon : DirectionHelpIcon
     {
+        private static readonly Dictionary<DirectionIcon, string> PinSymbolMap = new Dictionary<DirectionIcon, string>() 
+        {
+            { DirectionIcon.None, "\0" },
+            { DirectionIcon.Left, "\xE176" },
+            { DirectionIcon.Right, "\xE140" }
+        };
+
         public HorizontalDirectionHelpIcon()
         {
             InitializeComponent();
         }
+
+        public string PinSymbol
+        {
+            get { return PinSymbolMap[Direction.GetValueOrDefault()]; }
+        }
+
+        public string PinInstruction
+        {
+            get { return "Pin " + Direction.ToString(); }
+        }
+
+        public string PinCombo
+        {
+            get 
+            {
+                Key key = Key.None;
+                switch (Direction)
+                {
+                    case DirectionIcon.Left: key = Key.Left; break;
+                    case DirectionIcon.Right: key = Key.Right; break;
+                }
+                return ModifierKeySymbols.CreateSymbolString(ModifierKeys.Windows, key);
+            }
+        }
+
     }
 }

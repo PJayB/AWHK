@@ -14,12 +14,18 @@
             <RowDefinition />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Row="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Row="3" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Grid.Row="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Row="5" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=PinSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=PinInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="2" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=PinCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="3" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="4" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="5" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=ExpandCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="6" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveSymbol}" FontFamily="Segoe UI Symbol" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="7" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveInstruction}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="8" Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}, Path=MoveCombo}" FontFamily="Segoe UI Symbol" HorizontalAlignment="Center"/>
     </Grid>
 </local:DirectionHelpIcon>
