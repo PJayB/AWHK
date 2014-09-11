@@ -15,6 +15,20 @@
             <Setter Property="Margin" Value="0,0,0,7"/>
         </Style>
     </Page.Resources>
+    <!--
+    Legend for key names:
+        &#x21D1; = Shift Key
+        Ctrl = Control Key
+        Alt = Alt Key
+        &#xE154; = Windows Key
+    
+    Combo box settings:
+        IsReadOnly="True" 
+        HorizontalContentAlignment="Center" 
+        VerticalContentAlignment="Center" 
+        FontSize="24" 
+        FontFamily="Segoe UI Symbol"
+    -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
