@@ -114,12 +114,14 @@ namespace AWHKConfigApp
         }
     }
 
-    public class KeyBindingView
+    public class KeyBindingView : INotifyPropertyChanged
     {
         private AWHKConfigShared.Configuration _config;
         private System.Reflection.PropertyInfo _triggerProperty;
         private System.Reflection.PropertyInfo _modifiersProperty;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        
         public ModifierKeys Modifiers 
         {
             get 
@@ -136,9 +138,11 @@ namespace AWHKConfigApp
             }
         }
 
-        public KeyBindingView(AWHKConfigShared.Configuration config, string triggerPropertyName, string modifierPropertyName)
+        public KeyBindingView(ConfigurationView config, string triggerPropertyName, string modifierPropertyName)
         {
-            _config = config;
+            _config = config.Config;
+
+            config.PropertyChanged += config_PropertyChanged;
 
             _triggerProperty = _config.GetType().GetProperty(triggerPropertyName);
             if (_triggerProperty == null)
@@ -152,11 +156,21 @@ namespace AWHKConfigApp
                 throw new MissingMemberException("Property '" + modifierPropertyName + "' doesn't exist.");
             }
         }
+
+        void config_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (PropertyChanged != null && (e.PropertyName == _triggerProperty.Name || e.PropertyName == _modifiersProperty.Name))
+            {
+                PropertyChanged(sender, e);
+            }
+        }
     }
 
     public class ConfigurationView : INotifyPropertyChanged
     {
         private AWHKConfigShared.Configuration _config;
+
+        public AWHKConfigShared.Configuration Config { get { return _config; } }
 
         // Set any property
         public void SetConfig(string propertyName, object value)
@@ -277,6 +291,14 @@ namespace AWHKConfigApp
 
         public KeyBindingView HelpKeyView { get; private set; }
         public KeyBindingView ConfigKeyView { get; private set; }
+        public KeyBindingView ResizeLeftView { get; private set; }
+        public KeyBindingView ResizeRightView { get; private set; }
+        public KeyBindingView ResizeUpView { get; private set; }
+        public KeyBindingView ResizeDownView { get; private set; }
+        public KeyBindingView MoveLeftView { get; private set; }
+        public KeyBindingView MoveRightView { get; private set; }
+        public KeyBindingView MoveUpView { get; private set; }
+        public KeyBindingView MoveDownView { get; private set; }
 
         // Trigger keys
         public Key ResizeLeft
@@ -339,9 +361,6 @@ namespace AWHKConfigApp
             set { _config.GrabModifier = (AWHKConfigShared.ModifierKeys)value; NotifyPropertyChanged(); }
         }
 
-        // Properties for conveniently binding the key bindings
-
-        
         // Grid settings
         public bool AllowSnapToOthers
         {
@@ -386,8 +405,16 @@ namespace AWHKConfigApp
         {
             _config = new AWHKConfigShared.Configuration();
 
-            HelpKeyView = new KeyBindingView(_config, "HelpKey", "HelpKeyMod");
-            ConfigKeyView = new KeyBindingView(_config, "ConfigKey", "ConfigKeyMod");
+            HelpKeyView = new KeyBindingView(this, "HelpKey", "HelpKeyMod");
+            ConfigKeyView = new KeyBindingView(this, "ConfigKey", "ConfigKeyMod");
+            ResizeLeftView = new KeyBindingView(this, "ResizeLeft", "BaseModifier");
+            ResizeRightView = new KeyBindingView(this, "ResizeRight", "BaseModifier");
+            ResizeUpView = new KeyBindingView(this, "ResizeUp", "BaseModifier");
+            ResizeDownView = new KeyBindingView(this, "ResizeDown", "BaseModifier");
+            MoveLeftView = new KeyBindingView(this, "MoveLeft", "BaseModifier");
+            MoveRightView = new KeyBindingView(this, "MoveRight", "BaseModifier");
+            MoveUpView = new KeyBindingView(this, "MoveUp", "BaseModifier");
+            MoveDownView = new KeyBindingView(this, "MoveDown", "BaseModifier");
         }
 
         // This method is called by the Set accessor of each property. 
