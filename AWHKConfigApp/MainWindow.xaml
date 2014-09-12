@@ -73,13 +73,13 @@
                     </Grid.RowDefinitions>
                     <TabControl Grid.Row="1" BorderThickness="0,1,0,0" Margin="1">
                         <TabItem Header="General" Background="{x:Null}" BorderBrush="{x:Null}" Margin="1,-2,-2,0">
-                            <Frame Source="GeneralPage.xaml" x:Name="pgGeneral"/>
+                            <Frame Margin="12" Source="GeneralPage.xaml" x:Name="pgGeneral"/>
                         </TabItem>
                         <TabItem Header="Grid &amp; Snap" Background="{x:Null}" BorderBrush="{x:Null}">
-                            <Frame Source="GridSetupPage.xaml" x:Name="pgGridSetup"/>
+                            <Frame Margin="12" Source="GridSetupPage.xaml" x:Name="pgGridSetup"/>
                         </TabItem>
                         <TabItem Header="Resize/Move" Background="{x:Null}" BorderBrush="{x:Null}">
-                            <Frame Source="MoveKeysPage.xaml" x:Name="pgMoveKeys"/>
+                            <Frame Margin="12" Source="MoveKeysPage.xaml" x:Name="pgMoveKeys"/>
                         </TabItem>
                         <TabItem Header="Sessions" Background="{x:Null}" BorderBrush="{x:Null}">
                             <Frame Margin="12" Source="SessionsPage.xaml" x:Name="pgSessions"/>

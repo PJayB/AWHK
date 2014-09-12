@@ -7,7 +7,7 @@
       d:DesignHeight="580" d:DesignWidth="580"
 	Title="GeneralPage">
 
-    <Grid Margin="12">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="10*"/>

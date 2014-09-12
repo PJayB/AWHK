@@ -45,7 +45,7 @@
         &#xE154; = Windows Key
     -->
     <StackPanel>
-        <Grid Margin="7">
+        <Grid Style="{StaticResource SeparatorMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -98,7 +98,7 @@
                 <System:Int32>4</System:Int32>
             </ComboBox>
         </Grid>
-        <Grid Margin="7">
+        <Grid Style="{StaticResource SeparatorMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -144,7 +144,7 @@
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
                 Trigger="{Binding ResizeDown, Mode=TwoWay}"/>
         </Grid>
-        <Grid Margin="7">
+        <Grid Style="{StaticResource SeparatorMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -191,7 +191,7 @@
                 Trigger="{Binding MoveDown, Mode=TwoWay}"/>
 
         </Grid>
-        <Grid Margin="7,25,7,7">
+        <Grid Margin="0,25,0,7">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
