@@ -93,6 +93,9 @@
                         <TabItem Header="Media" Background="{x:Null}" BorderBrush="{x:Null}">
                             <Frame Margin="12" Source="MediaPage.xaml" x:Name="pgMedia"/>
                         </TabItem>
+                        <TabItem Header="About" Background="{x:Null}" BorderBrush="{x:Null}">
+                            <Frame Margin="12" Source="AboutPage.xaml" x:Name="pgAbout"/>
+                        </TabItem>
                     </TabControl>
                     <Grid Grid.Row="0" MouseDown="Grid_MouseDown">
                         <Grid.ColumnDefinitions>

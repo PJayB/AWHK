@@ -36,7 +36,7 @@ namespace HotKeyCustomControlLibrary
         public const string ShiftKey = "\x21D1";
         public const string ControlKey = "Ctrl";
         public const string AltKey = "Alt";
-        public const string NoKeyName = "(None)";
+        public const string NoKeyName = "None";
 
         public static string CreateSymbolString(ModifierKeys keys)
         {
@@ -47,6 +47,11 @@ namespace HotKeyCustomControlLibrary
             if ((keys & ModifierKeys.Shift) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ShiftKey;
             if ((keys & ModifierKeys.Control) != 0) symbols[currentSymbol++] = ModifierKeySymbols.ControlKey;
             if ((keys & ModifierKeys.Alt) != 0) symbols[currentSymbol++] = ModifierKeySymbols.AltKey;
+
+            if (currentSymbol == 0)
+            {
+                return NoKeyName;
+            }
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < currentSymbol; ++i)

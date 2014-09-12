@@ -73,6 +73,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DirectionHelpIcon.cs" />
     <Compile Include="HorizontalDirectionHelpIcon.xaml.cs">
       <DependentUpon>HorizontalDirectionHelpIcon.xaml</DependentUpon>
@@ -94,6 +97,10 @@
     <Compile Include="VerticalDirectionHelpIcon.xaml.cs">
       <DependentUpon>VerticalDirectionHelpIcon.xaml</DependentUpon>
     </Compile>
+    <Page Include="AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HorizontalDirectionHelpIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
