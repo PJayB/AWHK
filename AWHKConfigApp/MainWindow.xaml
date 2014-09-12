@@ -73,13 +73,7 @@
                     </Grid.RowDefinitions>
                     <TabControl Grid.Row="1" BorderThickness="0,1,0,0" Margin="1">
                         <TabItem Header="General" Background="{x:Null}" BorderBrush="{x:Null}" Margin="1,-2,-2,0">
-                            <Grid Margin="12">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="10*"/>
-                                </Grid.RowDefinitions>
-                                <CheckBox x:Name="chkRunOnStartup" Grid.Row="0" Content="Run when Windows starts" IsChecked="{Binding RunOnStartUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            </Grid>
+                            <Frame Source="GeneralPage.xaml" x:Name="pgGeneral"/>
                         </TabItem>
                         <TabItem Header="Grid &amp; Snap" Background="{x:Null}" BorderBrush="{x:Null}">
                             <Frame Source="GridSetupPage.xaml" x:Name="pgGridSetup"/>

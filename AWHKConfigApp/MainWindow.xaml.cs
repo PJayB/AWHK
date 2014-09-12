@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,8 +23,6 @@ namespace AWHKConfigApp
     {
         private ConfigurationView _config;
         private AWHKConfigShared.ServiceController _svcController;
-        private MoveKeysPage moveKeysPage;
-        private GridSetupPage gridPage;
 
         public MainWindow()
         {
@@ -62,12 +61,22 @@ namespace AWHKConfigApp
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
             // Grab the page references
-            moveKeysPage = pgMoveKeys.Content as MoveKeysPage;
-            gridPage = pgGridSetup.Content as GridSetupPage;
-
-            // Bind the data contexts
-            moveKeysPage.DataContext = _config;
-            gridPage.DataContext = _config;
+            var members = this.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (var member in members)
+            {
+                // If the type is a Frame and the frame is valid ...
+                Frame frame = member.GetValue(this) as Frame;
+                if (frame != null)
+                {
+                    // ... check that it has a valid Page as content...
+                    Page page = frame.Content as Page;
+                    if (page != null)
+                    {
+                        // ... set the data context to our configuration view.
+                        page.DataContext = _config;
+                    }
+                }
+            }
 
             // Load the configuration from the registry
             try

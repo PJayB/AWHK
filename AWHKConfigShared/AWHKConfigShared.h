@@ -50,7 +50,6 @@ namespace AWHKConfigShared {
         void Save();
     
         property bool AllowSnapToOthers;
-        property bool EnableFineSnap;
         property int MaxEdgeSearchSize;
         property int GridX;
         property int GridY;

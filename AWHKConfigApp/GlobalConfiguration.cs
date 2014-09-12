@@ -367,11 +367,6 @@ namespace AWHKConfigApp
             get { return _config.AllowSnapToOthers; }
             set { _config.AllowSnapToOthers = value; NotifyPropertyChanged(); }
         }
-        public bool EnableFineSnap
-        {
-            get { return _config.EnableFineSnap; }
-            set { _config.EnableFineSnap = value; NotifyPropertyChanged(); }
-        }
         public int CoarseGridCols
         {
             get { return _config.GridX; }
