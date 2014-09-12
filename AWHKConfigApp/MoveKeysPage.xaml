@@ -22,6 +22,10 @@
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
         </Style>
+        <Style x:Key="HotKeyBox" TargetType="{x:Type HotKeyControls:HotKeyBox}">
+            <Setter Property="Margin" Value="7"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
         <Style x:Key="KeyCombo" TargetType="{x:Type ComboBox}">
             <Setter Property="Margin" Value="0,0,0,7"/>
             <Setter Property="IsReadOnly" Value="True"/>
@@ -30,7 +34,6 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Width" Value="150"/>
             <Setter Property="ItemTemplate" Value="{StaticResource ModifierSymbolsConverterDataTemplate}"/>
         </Style>
     </Page.Resources>
@@ -41,144 +44,169 @@
         Alt = Alt Key
         &#xE154; = Windows Key
     -->
-    <Grid Margin="7">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        
-        <!-- Primary binding -->
-        <TextBlock Grid.Row="0" Grid.Column="0">
+    <StackPanel>
+        <Grid Margin="7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <!-- Primary binding -->
+            <TextBlock Grid.Row="0" Grid.Column="0">
             Move/Resize key combination
             <Hyperlink TargetName="what_is_move_resize_key_combo" Click="Hyperlink_Click">(What is this?)</Hyperlink>
-        </TextBlock>
-        <ComboBox Grid.Row="0" Grid.Column="1" 
+            </TextBlock>
+            <ComboBox Grid.Row="0" Grid.Column="1" 
                   x:Name="cmbMoveResizeMod" Style="{DynamicResource KeyCombo}"
                   SelectedValue="{Binding BaseKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
-            <System:Int32>0</System:Int32>
-            <System:Int32>1</System:Int32>
-            <System:Int32>12</System:Int32>
-            <System:Int32>10</System:Int32>
-            <System:Int32>9</System:Int32>
-        </ComboBox>
+                <System:Int32>0</System:Int32>
+                <System:Int32>1</System:Int32>
+                <System:Int32>12</System:Int32>
+                <System:Int32>10</System:Int32>
+                <System:Int32>9</System:Int32>
+            </ComboBox>
 
-        <!-- Fine Snap binding -->
-        <TextBlock Grid.Row="1" Grid.Column="0">
+            <!-- Fine Snap binding -->
+            <TextBlock Grid.Row="1" Grid.Column="0">
             Fine Grid Snap modifier
             <Hyperlink TargetName="what_is_move_fine_key" Click="Hyperlink_Click">(What is this?)</Hyperlink>
-        </TextBlock>
-        <ComboBox Grid.Row="1" Grid.Column="1" 
+            </TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" 
                   x:Name="cmbFineMod" Style="{DynamicResource KeyCombo}"
                   SelectedValue="{Binding FineKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
-            <System:Int32>0</System:Int32>
-            <System:Int32>1</System:Int32>
-            <System:Int32>2</System:Int32>
-            <System:Int32>4</System:Int32>
-        </ComboBox>
+                <System:Int32>0</System:Int32>
+                <System:Int32>1</System:Int32>
+                <System:Int32>2</System:Int32>
+                <System:Int32>4</System:Int32>
+            </ComboBox>
 
-        <!-- Grab binding -->
-        <TextBlock Grid.Row="2" Grid.Column="0">
+            <!-- Grab binding -->
+            <TextBlock Grid.Row="2" Grid.Column="0">
             Grab Adjacent Windows modifier
             <Hyperlink TargetName="what_is_move_grab_key" Click="Hyperlink_Click">(What is this?)</Hyperlink>
-        </TextBlock>
-        <ComboBox Grid.Row="2" Grid.Column="1" 
+            </TextBlock>
+            <ComboBox Grid.Row="2" Grid.Column="1" 
                   x:Name="cmbGrabMod" Style="{DynamicResource KeyCombo}"
                   SelectedValue="{Binding GrabKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
-            <System:Int32>0</System:Int32>
-            <System:Int32>1</System:Int32>
-            <System:Int32>2</System:Int32>
-            <System:Int32>4</System:Int32>
-        </ComboBox>
-        
-        <!-- Resize keys -->
-        <TextBlock Grid.Row="3" Grid.Column="0">
-            Resize Window Left key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="3" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding ResizeLeft, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="4" Grid.Column="0">
-            Resize Window Right key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="4" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding ResizeRight, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="5" Grid.Column="0">
-            Resize Window Up key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="5" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding ResizeUp, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="6" Grid.Column="0">
-            Resize Window Down key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="6" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding ResizeDown, Mode=TwoWay}"/>
+                <System:Int32>0</System:Int32>
+                <System:Int32>1</System:Int32>
+                <System:Int32>2</System:Int32>
+                <System:Int32>4</System:Int32>
+            </ComboBox>
+        </Grid>
+        <Grid Margin="7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Resize keys -->
+            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
+            Resize Window Left
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="0" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding ResizeLeft, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+            Resize Window Right
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="1" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding ResizeRight, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
+            Resize Window Up
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="2" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding ResizeUp, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center">
+            Resize Window Down
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="3" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding ResizeDown, Mode=TwoWay}"/>
+        </Grid>
+        <Grid Margin="7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Move keys -->
+            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
+            Move Window Left
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="0" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding MoveLeft, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+            Move Window Right
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="1" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding MoveRight, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
+            Move Window Up
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="2" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding MoveUp, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center">
+            Move Window Down
+            </TextBlock>
+            <HotKeyControls:HotKeyBox 
+                Grid.Row="0" Grid.Column="3" 
+                Style="{StaticResource HotKeyBox}" 
+                DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
+                Trigger="{Binding MoveDown, Mode=TwoWay}"/>
 
-        <!-- Move keys -->
-        <TextBlock Grid.Row="7" Grid.Column="0">
-            Move Window Left key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="7" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding MoveLeft, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="8" Grid.Column="0">
-            Move Window Right key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="8" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding MoveRight, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="9" Grid.Column="0">
-            Move Window Up key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="9" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding MoveUp, Mode=TwoWay}"/>
-        <TextBlock Grid.Row="10" Grid.Column="0">
-            Move Window Down key
-        </TextBlock>
-        <HotKeyControls:HotKeyBox 
-            Grid.Row="10" Grid.Column="1" 
-            Style="{StaticResource SeparatorMargin}" 
-            DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-            Trigger="{Binding MoveDown, Mode=TwoWay}"/>
+        </Grid>
+        <Grid Margin="7,25,7,7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <!-- Help key binding -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE11B; Open Help" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="0" Grid.Column="1" Style="{StaticResource SeparatorMargin}" Modifiers="{Binding HelpKeyMod, Mode=TwoWay}" Trigger="{Binding HelpKey, Mode=TwoWay}"/>
 
-        <!-- Help key binding -->
-        <TextBlock Grid.Row="11" Grid.Column="0" Text="Open Help"/>
-        <HotKeyControls:HotKeyBox Grid.Row="11" Grid.Column="1" Style="{StaticResource SeparatorMargin}" Modifiers="{Binding HelpKeyMod, Mode=TwoWay}" Trigger="{Binding HelpKey, Mode=TwoWay}"/>
-
-        <!-- Config key binding -->
-        <TextBlock Grid.Row="12" Grid.Column="0" Text="Open Configuration Dialog"/>
-        <HotKeyControls:HotKeyBox Grid.Row="12" Grid.Column="1" Style="{StaticResource SeparatorMargin}" Modifiers="{Binding ConfigKeyMod, Mode=TwoWay}" Trigger="{Binding ConfigKey, Mode=TwoWay}"/>
-    </Grid>
+            <!-- Config key binding -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="&#xE115; Open Configuration Dialog" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="1" Grid.Column="1" Style="{StaticResource SeparatorMargin}" Modifiers="{Binding ConfigKeyMod, Mode=TwoWay}" Trigger="{Binding ConfigKey, Mode=TwoWay}"/>
+        </Grid>
+    </StackPanel>
 </Page>
