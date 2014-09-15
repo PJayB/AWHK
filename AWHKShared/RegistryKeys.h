@@ -31,10 +31,8 @@
 #define AWHK_REG_FINE_X			L"FineX"
 #define AWHK_REG_FINE_Y			L"FineY"
 
-#define AWKH_REG_HELP_KEY		L"HelpKey"
-#define AWKH_REG_HELP_KEY_MOD	L"HelpKeyMod"
-#define AWKH_REG_CFG_KEY		L"ConfigKey"
-#define AWKH_REG_CFG_KEY_MOD	L"ConfigKeyMod"
+#define AWKH_REG_HELP_COMBO		L"HelpCombo"
+#define AWKH_REG_CFG_COMBO  	L"ConfigCombo"
 
 #define AWHK_REG_LEFT_KEY		L"LeftKey"
 #define AWHK_REG_RIGHT_KEY		L"RightKey"
@@ -52,8 +50,12 @@
 
 
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
+BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue );
+BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, DWORD dwTrigger, DWORD dwModifiers );
 
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut );
+BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut );
 BOOL LoadRegistryBool( LPCWSTR strName, BOOL* pOut );
 BOOL LoadRegistryVKey( LPCWSTR strName, DWORD* pOut );
 BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut );
+BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers );

@@ -28,10 +28,6 @@ AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	, GridY( 4 )
 	, FineX( 32 )
 	, FineY( 16 )
-	, HelpKey( VK_F1 )
-	, HelpKeyMod( MOD_ALT )
-	, ConfigKey( VK_F2 )
-	, ConfigKeyMod( MOD_ALT )
 	, MoveKeyMod( MOD_ALT )
 	, NextKeyMod( MOD_CONTROL )
 	, FineKeyMod( MOD_SHIFT )
@@ -45,16 +41,45 @@ AWHK_APP_CONFIG::AWHK_APP_CONFIG()
 	MoveKeys.RightKey = 'D';
 	MoveKeys.UpKey = 'W';
 	MoveKeys.DownKey = 'S';
+
+    HelpCombo.Trigger = VK_F1;
+    HelpCombo.Modifiers = MOD_ALT;
+    ConfigCombo.Trigger = VK_F2;
+    ConfigCombo.Modifiers = MOD_ALT;
+    
+    for (INT i = 0; i < ARRAYSIZE(SessionSaveCombo); ++i)
+    {
+        SessionSaveCombo[i].Trigger = '1' + i;
+        SessionSaveCombo[i].Modifiers = MOD_SHIFT | MOD_CONTROL | MOD_ALT;
+    }
+    
+    for (INT i = 0; i < ARRAYSIZE(SessionRestoreCombo); ++i)
+    {
+        SessionRestoreCombo[i].Trigger = '1' + i;
+        SessionRestoreCombo[i].Modifiers = MOD_CONTROL | MOD_ALT;
+    }
 }
 
-void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
+BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
 	DWORD gridVal = 0;
 	if ( LoadRegistryDword( strName, &gridVal ) )
 	{
 		*value = max( gridVal, 2 );
 		*value = min( *value, 0xFF );
+        return TRUE;
 	}
+    return FALSE;
+}
+
+BOOL LoadKeyCombo( LPCWSTR strName, AWHK_KEY_COMBO* combo )
+{
+    return LoadRegistryKeyCombo( strName, &combo->Trigger, &combo->Modifiers );
+}
+
+BOOL SaveKeyCombo( LPCWSTR strName, const AWHK_KEY_COMBO* combo )
+{
+    return StoreRegistryKeyCombo( strName, combo->Trigger, combo->Modifiers );
 }
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
@@ -67,10 +92,8 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadConfigGridValue	( AWHK_REG_FINE_X		, &cfg->FineX );
 	LoadConfigGridValue	( AWHK_REG_FINE_Y		, &cfg->FineY );
 
-	LoadRegistryVKey	( AWKH_REG_HELP_KEY		, &cfg->HelpKey );
-	LoadRegistryKeyMod	( AWKH_REG_HELP_KEY_MOD	, &cfg->HelpKeyMod );
-	LoadRegistryVKey	( AWKH_REG_CFG_KEY		, &cfg->ConfigKey );
-	LoadRegistryKeyMod	( AWKH_REG_CFG_KEY_MOD	, &cfg->ConfigKeyMod );
+	LoadKeyCombo	    ( AWKH_REG_HELP_COMBO	, &cfg->HelpCombo );
+	LoadKeyCombo	    ( AWKH_REG_CFG_COMBO	, &cfg->ConfigCombo );
 
 	LoadRegistryVKey	( AWHK_REG_LEFT_KEY		, &cfg->ResizeKeys.LeftKey );
 	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY	, &cfg->ResizeKeys.RightKey );
@@ -112,10 +135,8 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 	StoreRegistryDword( AWHK_REG_FINE_X			, cfg->FineX );
 	StoreRegistryDword( AWHK_REG_FINE_Y			, cfg->FineY );
 
-	StoreRegistryDword( AWKH_REG_HELP_KEY		, cfg->HelpKey );
-	StoreRegistryDword( AWKH_REG_HELP_KEY_MOD	, cfg->HelpKeyMod );
-	StoreRegistryDword( AWKH_REG_CFG_KEY		, cfg->ConfigKey );
-	StoreRegistryDword( AWKH_REG_CFG_KEY_MOD	, cfg->ConfigKeyMod );
+	SaveKeyCombo      ( AWKH_REG_HELP_COMBO 	, &cfg->HelpCombo );
+	SaveKeyCombo      ( AWKH_REG_CFG_COMBO		, &cfg->ConfigCombo );
 
 	StoreRegistryDword( AWHK_REG_LEFT_KEY		, cfg->ResizeKeys.LeftKey );
 	StoreRegistryDword( AWHK_REG_RIGHT_KEY		, cfg->ResizeKeys.RightKey );

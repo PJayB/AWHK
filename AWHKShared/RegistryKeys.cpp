@@ -45,6 +45,38 @@ BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 	return ret == ERROR_SUCCESS;
 }
 
+BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
+{
+	HKEY hKey;
+	if ( ::RegCreateKey(
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		&hKey ) != ERROR_SUCCESS )
+	{
+		return FALSE;
+	}
+
+	DWORD dwValueSize = sizeof( LONGLONG );
+	LONG ret = ::RegSetValueEx(
+		hKey,
+		strName,
+		0,
+		REG_QWORD,
+		(BYTE*) &qwValue, 
+		dwValueSize );
+	
+	::RegCloseKey( hKey );
+
+	return ret == ERROR_SUCCESS;
+}
+
+BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, DWORD dwTrigger, DWORD dwModifiers )
+{
+    DWORD dwPacked = MAKEWORD( dwModifiers, dwTrigger );
+
+    return StoreRegistryDword( strComboName, dwPacked );
+}
+
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 {
 	DWORD dwValue = 0;
@@ -59,6 +91,25 @@ BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 		&dwValueSize ) == ERROR_SUCCESS )
 	{
 		*pOut = (DWORD) dwValue;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut )
+{
+	LONGLONG qwValue = 0;
+	DWORD dwValueSize = sizeof( LONGLONG );
+	if ( ::RegGetValue( 
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		strName,
+		RRF_RT_QWORD,
+		nullptr,
+		&qwValue, 
+		&dwValueSize ) == ERROR_SUCCESS )
+	{
+		*pOut = (LONGLONG) qwValue;
 		return TRUE;
 	}
 	return FALSE;
@@ -129,3 +180,25 @@ BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
 
 	return TRUE;
 }
+
+BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers )
+{
+    DWORD dwPacked = 0;
+    if ( !LoadRegistryDword( strComboName, &dwPacked ) )
+        return FALSE;
+
+    DWORD dwTrigger = HIWORD( dwPacked );
+    DWORD dwModifiers = LOWORD( dwPacked );
+
+    // Sanity check
+    if ( dwTrigger > 0xFF )
+        return FALSE;
+	DWORD dwAllKeys = MOD_ALT | MOD_CONTROL | MOD_SHIFT | MOD_WIN;
+	if ( dwModifiers > dwAllKeys )
+		return FALSE;
+
+    *pdwTrigger = dwTrigger;
+    *pdwModifiers = dwModifiers;
+    return TRUE;
+}
+

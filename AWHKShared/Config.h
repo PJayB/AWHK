@@ -27,6 +27,12 @@ struct AWHK_CURSOR_KEYS
 	DWORD				DownKey;
 };
 
+struct AWHK_KEY_COMBO
+{
+    DWORD               Trigger;
+    DWORD               Modifiers;
+};
+
 struct AWHK_APP_CONFIG
 {
 	AWHK_APP_CONFIG();
@@ -40,10 +46,10 @@ struct AWHK_APP_CONFIG
 	DWORD				FineX;
 	DWORD				FineY;
 
-	DWORD				HelpKey;
-	DWORD				HelpKeyMod;
-	DWORD				ConfigKey;
-	DWORD				ConfigKeyMod;
+	AWHK_KEY_COMBO      HelpCombo;
+	AWHK_KEY_COMBO      ConfigCombo;
+	AWHK_KEY_COMBO      SessionSaveCombo[10];
+    AWHK_KEY_COMBO      SessionRestoreCombo[10];
 
 	AWHK_CURSOR_KEYS	ResizeKeys;
 	AWHK_CURSOR_KEYS	MoveKeys;

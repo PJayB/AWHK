@@ -219,13 +219,13 @@ BOOL HandleHotKey(
 	USHORT mods )
 {
 	// Deal with system keys
-	if ( vKey == cfg->HelpKey &&
-		 mods == cfg->HelpKeyMod )
+	if ( vKey == cfg->HelpCombo.Trigger &&
+		 mods == cfg->HelpCombo.Modifiers )
 	{
 		return ShowWebHelp();
 	}
-	if ( vKey == cfg->ConfigKey &&
-		 mods == cfg->ConfigKeyMod )
+	if ( vKey == cfg->ConfigCombo.Trigger &&
+		 mods == cfg->ConfigCombo.Modifiers )
 	{
 		return ShowControlPanel( state );
 	}
@@ -288,6 +288,20 @@ DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, DWORD keyMod, DWORD 
 	}
 }
 
+DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, const AWHK_KEY_COMBO* pCombo )
+{
+	assert( hotkeyCount > 0 );
+	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
+
+	pKeys[hotkeyCount - 1] = MAKELONG( pCombo->Modifiers, pCombo->Trigger );
+	if ( ::RegisterHotKey( NULL, hotkeyCount, pCombo->Modifiers, pCombo->Trigger ) )
+		return 1 << (hotkeyCount - 1);
+	else
+	{
+		return 0;
+	}
+}
+
 BOOL RegisterArrowKeys( 
 	const AWHK_APP_CONFIG* cfg,
 	const AWHK_CURSOR_KEYS* pArrowKeys,
@@ -343,8 +357,8 @@ BOOL RegisterExtraHotKeys(
 	DWORD dwKeyBits = 0;
 	LONG hotKeyCount = 0;
 
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->HelpKeyMod, cfg->HelpKey );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, cfg->ConfigKeyMod, cfg->ConfigKey );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->HelpCombo );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->ConfigCombo );
 
 	pKeys->dwKeyBits = dwKeyBits;
 	pKeys->HotKeyCount = hotKeyCount;
