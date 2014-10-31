@@ -426,6 +426,22 @@ namespace AWHKConfigApp
         // May throw an exception if properties fail validation
         public void Save()
         {
+            /*
+             * 
+             * TODO: validate these assumptions
+             * 
+             * 	
+            // We MUST have a move key mod (otherwise what's the point?)
+	        if ( moveKeyMod )
+		        cfg->MoveKeyMod = moveKeyMod;
+
+	        // The two other modifiers must be different
+	        if ( !fineKeyMod || ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod ) )
+		        cfg->FineKeyMod = fineKeyMod;
+	        if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
+		        cfg->NextKeyMod = nextKeyMod;
+            */
+
             // Save the settings:
             try
             {

@@ -38,7 +38,6 @@ struct AWHK_APP_CONFIG
 	AWHK_APP_CONFIG();
 
 	BOOL				AllowSnapToOthers;
-
 	DWORD				MaxEdgeSearchSize;
 
 	DWORD				GridX;
@@ -48,17 +47,28 @@ struct AWHK_APP_CONFIG
 
 	AWHK_KEY_COMBO      HelpCombo;
 	AWHK_KEY_COMBO      ConfigCombo;
-	AWHK_KEY_COMBO      SessionSaveCombo[10];
-    AWHK_KEY_COMBO      SessionRestoreCombo[10];
-
-	AWHK_CURSOR_KEYS	ResizeKeys;
-	AWHK_CURSOR_KEYS	MoveKeys;
 
 	DWORD				MoveKeyMod;
 	DWORD				NextKeyMod;
 	DWORD				FineKeyMod;
+
+	AWHK_CURSOR_KEYS	ResizeKeys;
+	AWHK_CURSOR_KEYS	MoveKeys;
+
+	AWHK_KEY_COMBO      SessionSave[10];
+    AWHK_KEY_COMBO      SessionLoad[10];
+
+    AWHK_KEY_COMBO      MediaPrev;
+    AWHK_KEY_COMBO      MediaNext;
+    AWHK_KEY_COMBO      MediaPlay;
+    AWHK_KEY_COMBO      MediaPause;
+    AWHK_KEY_COMBO      MediaPlayPause;
+    AWHK_KEY_COMBO      MediaVolumeUp;
+    AWHK_KEY_COMBO      MediaVolumeDown;
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );
 BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg );
+
+
 

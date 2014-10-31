@@ -21,33 +21,68 @@
 
 #include "Version.h"
 
-#define AWHK_REG_KEY			(L"Software\\AWHK\\" AWHK_VERSION_STRING)
+#define AWHK_REG_KEY			        (L"Software\\AWHK\\" AWHK_VERSION_STRING)
 
-#define AWHK_REG_ALLOW_SNAP		L"AllowSnapToOthers"
-#define AWHK_REG_EDGE_SEARCH	L"MaxEdgeSearchSize"
+#define AWHK_REG_ALLOW_SNAP		        L"AllowSnapToOthers"
+#define AWHK_REG_EDGE_SEARCH	        L"MaxEdgeSearchSize"
 
-#define AWHK_REG_GRID_X			L"GridX"
-#define AWHK_REG_GRID_Y			L"GridY"
-#define AWHK_REG_FINE_X			L"FineX"
-#define AWHK_REG_FINE_Y			L"FineY"
+#define AWHK_REG_GRID_X			        L"GridX"
+#define AWHK_REG_GRID_Y			        L"GridY"
+#define AWHK_REG_FINE_X			        L"FineX"
+#define AWHK_REG_FINE_Y			        L"FineY"
 
-#define AWKH_REG_HELP_COMBO		L"HelpCombo"
-#define AWKH_REG_CFG_COMBO  	L"ConfigCombo"
+#define AWKH_REG_HELP_COMBO		        L"Help"
+#define AWKH_REG_CFG_COMBO  	        L"Config"
 
-#define AWHK_REG_LEFT_KEY		L"LeftKey"
-#define AWHK_REG_RIGHT_KEY		L"RightKey"
-#define AWHK_REG_UP_KEY			L"UpKey"
-#define AWHK_REG_DOWN_KEY		L"DownKey"
+#define AWHK_REG_RESIZE_LEFT		    L"ResizeLeft"
+#define AWHK_REG_RESIZE_RIGHT		    L"ResizeRight"
+#define AWHK_REG_RESIZE_UP			    L"ResizeUp"
+#define AWHK_REG_RESIZE_DOWN		    L"ResizeDown"
 
-#define AWHK_REG_LEFT_KEY_2		L"MoveLeftKey"
-#define AWHK_REG_RIGHT_KEY_2	L"MoveRightKey"
-#define AWHK_REG_UP_KEY_2		L"MoveUpKey"
-#define AWHK_REG_DOWN_KEY_2		L"MoveDownKey"
+#define AWHK_REG_MOVE_LEFT		        L"MoveLeft"
+#define AWHK_REG_MOVE_RIGHT	            L"MoveRight"
+#define AWHK_REG_MOVE_UP		        L"MoveUp"
+#define AWHK_REG_MOVE_DOWN		        L"MoveDown"
 
-#define AWHK_REG_MOVE_KEY_MOD	L"MoveKeyMod"
-#define AWHK_REG_NEXT_KEY_MOD	L"NextKeyMod"
-#define AWHK_REG_FINE_KEY_MOD	L"FineKeyMod"
+#define AWHK_REG_MOVE_KEY_MOD           L"MoveMod"
+#define AWHK_REG_NEXT_KEY_MOD           L"NextMod" 
+#define AWHK_REG_FINE_KEY_MOD           L"FineMod" 
 
+#define AWHK_REG_SESSION_SAVE_0         L"SessionSave0"
+#define AWHK_REG_SESSION_SAVE_1         L"SessionSave1"
+#define AWHK_REG_SESSION_SAVE_2         L"SessionSave2"
+#define AWHK_REG_SESSION_SAVE_3         L"SessionSave3"
+#define AWHK_REG_SESSION_SAVE_4         L"SessionSave4"
+#define AWHK_REG_SESSION_SAVE_5         L"SessionSave5"
+#define AWHK_REG_SESSION_SAVE_6         L"SessionSave6"
+#define AWHK_REG_SESSION_SAVE_7         L"SessionSave7"
+#define AWHK_REG_SESSION_SAVE_8         L"SessionSave8"
+#define AWHK_REG_SESSION_SAVE_9         L"SessionSave9"
+ 
+#define AWHK_REG_SESSION_LOAD_0         L"SessionLoad0"
+#define AWHK_REG_SESSION_LOAD_1         L"SessionLoad1"
+#define AWHK_REG_SESSION_LOAD_2         L"SessionLoad2"
+#define AWHK_REG_SESSION_LOAD_3         L"SessionLoad3"
+#define AWHK_REG_SESSION_LOAD_4         L"SessionLoad4"
+#define AWHK_REG_SESSION_LOAD_5         L"SessionLoad5"
+#define AWHK_REG_SESSION_LOAD_6         L"SessionLoad6"
+#define AWHK_REG_SESSION_LOAD_7         L"SessionLoad7"
+#define AWHK_REG_SESSION_LOAD_8         L"SessionLoad8"
+#define AWHK_REG_SESSION_LOAD_9         L"SessionLoad9"
+
+#define AWHK_REG_MEDIA_PREV             L"MediaPrev"
+#define AWHK_REG_MEDIA_NEXT             L"MediaPrev"
+#define AWHK_REG_MEDIA_PLAY             L"MediaPlay"
+#define AWHK_REG_MEDIA_PAUSE            L"MediaPause"
+#define AWHK_REG_MEDIA_PLAY_PAUSE       L"MediaPlayPause"
+#define AWHK_REG_MEDIA_VOLUME_UP        L"MediaVolumeUp"
+#define AWHK_REG_MEDIA_VOLUME_DOWN      L"MediaVolumeDown"
+
+#define MAKE_KEY_COMBO( mods, trigger ) MAKELONG( mods, trigger )
+#define GET_TRIGGER_KEY( packed ) HIWORD( packed )
+#define GET_MODIFIER_KEYS( packed) LOWORD( packed )
+
+DWORD GetRegistryDefaultValue( LPCWSTR strKey );
 
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue );
