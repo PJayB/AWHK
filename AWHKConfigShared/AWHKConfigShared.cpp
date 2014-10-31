@@ -12,6 +12,8 @@
 
 #include "AWHKConfigShared.h"
 
+#include <vcclr.h>
+
 namespace AWHKConfigShared {
 
     DWORD ClrModifierSetToNative(ModifierKeys a)
@@ -24,87 +26,118 @@ namespace AWHKConfigShared {
         return static_cast<ModifierKeys>(mods);
     }
 
-    void ClrConfigToNative(Configuration^ a, AWHK_APP_CONFIG* b)
-    {
-        b->AllowSnapToOthers   = a->AllowSnapToOthers;
-        b->MaxEdgeSearchSize   = a->MaxEdgeSearchSize;
-        b->GridX               = a->GridX;
-        b->GridY               = a->GridY;
-        b->FineX               = a->FineX;
-        b->FineY               = a->FineY;
-        b->HelpKey             = a->HelpKey;
-        b->HelpKeyMod          = ClrModifierSetToNative(a->HelpKeyMod);
-        b->ConfigKey           = a->ConfigKey;
-        b->ConfigKeyMod        = ClrModifierSetToNative(a->ConfigKeyMod);
-        b->MoveKeys.LeftKey    = a->MoveLeft   ;
-        b->MoveKeys.RightKey   = a->MoveRight  ;
-        b->MoveKeys.UpKey      = a->MoveUp     ;
-        b->MoveKeys.DownKey    = a->MoveDown   ;
-        b->ResizeKeys.LeftKey  = a->ResizeLeft ;
-        b->ResizeKeys.RightKey = a->ResizeRight;
-        b->ResizeKeys.UpKey    = a->ResizeUp   ;
-        b->ResizeKeys.DownKey  = a->ResizeDown ;
-        b->FineKeyMod          = ClrModifierSetToNative(a->FineKeyMod);
-        b->NextKeyMod          = ClrModifierSetToNative(a->GrabKeyMod);
-        b->MoveKeyMod          = ClrModifierSetToNative(a->BaseKeyMod);
-    }
-
-    void NativeConfigToClr(const AWHK_APP_CONFIG* a, Configuration^ b)
-    {
-        b->AllowSnapToOthers   = (a->AllowSnapToOthers != FALSE);
-        b->MaxEdgeSearchSize   = a->MaxEdgeSearchSize;
-        b->GridX               = a->GridX;
-        b->GridY               = a->GridY;
-        b->FineX               = a->FineX;
-        b->FineY               = a->FineY;
-        b->HelpKey             = a->HelpKey;
-        b->HelpKeyMod          = NativeModifierSetToClr(a->HelpKeyMod);
-        b->ConfigKey           = a->ConfigKey;
-        b->ConfigKeyMod        = NativeModifierSetToClr(a->ConfigKeyMod);
-        b->MoveLeft            = a->MoveKeys.LeftKey   ;
-        b->MoveRight           = a->MoveKeys.RightKey  ;
-        b->MoveUp              = a->MoveKeys.UpKey     ;
-        b->MoveDown            = a->MoveKeys.DownKey   ;
-        b->ResizeLeft          = a->ResizeKeys.LeftKey ;
-        b->ResizeRight         = a->ResizeKeys.RightKey;
-        b->ResizeUp            = a->ResizeKeys.UpKey   ;
-        b->ResizeDown          = a->ResizeKeys.DownKey ;
-        b->FineKeyMod          = NativeModifierSetToClr(a->FineKeyMod);
-        b->GrabKeyMod          = NativeModifierSetToClr(a->NextKeyMod);
-        b->BaseKeyMod          = NativeModifierSetToClr(a->MoveKeyMod);
-    }
-
     Configuration::Configuration()
     {
-        AWHK_APP_CONFIG cfg;
-        NativeConfigToClr(&cfg, this);
     }
 
-    void Configuration::Load()
+    bool Configuration::AutoLogin::get()
     {
-        AutoLogin = (::IsAutoLoginEnabled() != FALSE);
+        return ::IsAutoLoginEnabled() != FALSE;
+    }
 
-        AWHK_APP_CONFIG cfg;
-        if (LoadConfiguration(&cfg))
+    void Configuration::AutoLogin::set( bool v )
+    {
+        ::SetAutoLoginEnabled( v );
+    }
+
+    bool Configuration::LoadBool( System::String^ name )
+    {
+        BOOL v = FALSE;
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (LoadRegistryBool( nameC, &v ))
         {
-            NativeConfigToClr(&cfg, this);
+            return v != FALSE;
         }
-        else
+        throw gcnew ConfigurationIoException();
+    }
+
+	Int32 Configuration::LoadInt( System::String^ name )
+    {
+        DWORD v = 0;
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (LoadRegistryDword( nameC, &v ))
+        {
+            return (Int32) v;
+        }
+        throw gcnew ConfigurationIoException();
+    }
+
+	Int32 Configuration::LoadVKey( System::String^ name )
+    {
+        DWORD v = 0;
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (LoadRegistryVKey( nameC, &v ))
+        {
+            return (Int32) v;
+        }
+        throw gcnew ConfigurationIoException();
+    }
+
+	ModifierKeys Configuration::LoadModKeys( System::String^ name )
+    {
+        DWORD v = 0;
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (LoadRegistryKeyMod( nameC, &v ))
+        {
+            return (ModifierKeys) v;
+        }
+        throw gcnew ConfigurationIoException();
+    }
+
+	KeyCombo Configuration::LoadKeyCombo( System::String^ name )
+    {
+        DWORD mods = 0;
+        DWORD trigger = 0;
+
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (!LoadRegistryKeyCombo( nameC, &trigger, &mods ))
+        {
+            throw gcnew ConfigurationIoException();
+        }
+
+        KeyCombo kc;
+        kc.Modifiers = (ModifierKeys) mods;
+        kc.VKey = (Int32) trigger;
+
+        return kc;
+    }
+        
+    void Configuration::Store( System::String^ name, bool v )
+    {
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (!StoreRegistryDword( nameC, (DWORD) v ))
         {
             throw gcnew ConfigurationIoException();
         }
     }
 
-    void Configuration::Save()
+    void Configuration::Store( System::String^ name, Int32 v )
     {
-        ::SetAutoLoginEnabled(AutoLogin);
-
-        AWHK_APP_CONFIG cfg;
-        ClrConfigToNative(this, &cfg);
-        if (!SaveConfiguration(&cfg))
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (!StoreRegistryDword( nameC, v ))
+        {
             throw gcnew ConfigurationIoException();
+        }
     }
 
+    void Configuration::Store( System::String^ name, ModifierKeys v )
+    {
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (!StoreRegistryDword( nameC, (DWORD) v ))
+        {
+            throw gcnew ConfigurationIoException();
+        }
+    }
+    
+    void Configuration::Store( System::String^ name, ModifierKeys mods, Int32 trigger )
+    {
+        pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
+        if (!StoreRegistryKeyCombo( nameC, (DWORD) trigger, (DWORD) mods ))
+        {
+            throw gcnew ConfigurationIoException();
+        }
+    }
+    
     void ServiceController::ReloadConfiguration()
     {
         IPC ipc;

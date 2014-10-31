@@ -39,6 +39,12 @@ namespace AWHKConfigShared {
         Alt = MOD_ALT,
         Windows = MOD_WIN
     };
+
+    public struct KeyCombo
+    {
+        ModifierKeys Modifiers;
+        Int32 VKey;
+    };
     
 	public ref class Configuration
 	{
@@ -46,31 +52,22 @@ namespace AWHKConfigShared {
 
         Configuration();
     
-		void Load();
-        void Save();
-    
-        property bool AllowSnapToOthers;
-        property int MaxEdgeSearchSize;
-        property int GridX;
-        property int GridY;
-        property int FineX;
-        property int FineY;
-        property Int32 HelpKey;
-        property ModifierKeys HelpKeyMod;
-        property Int32 ConfigKey;
-        property ModifierKeys ConfigKeyMod;
-        property Int32 ResizeLeft;
-        property Int32 ResizeRight;
-        property Int32 ResizeUp;
-        property Int32 ResizeDown;
-        property Int32 MoveLeft;
-        property Int32 MoveRight;
-        property Int32 MoveUp;
-        property Int32 MoveDown;
-        property ModifierKeys BaseKeyMod;
-        property ModifierKeys FineKeyMod;
-        property ModifierKeys GrabKeyMod;
-        property bool AutoLogin;
+		bool LoadBool( System::String^ name );
+		Int32 LoadInt( System::String^ name );
+		Int32 LoadVKey( System::String^ name );
+		ModifierKeys LoadModKeys( System::String^ name );
+        KeyCombo LoadKeyCombo( System::String^ name );
+        
+        void Store( System::String^ name, bool v );
+        void Store( System::String^ name, Int32 v );
+        void Store( System::String^ name, ModifierKeys v );
+        void Store( System::String^ name, ModifierKeys mods, Int32 trigger );
+
+        property bool AutoLogin
+        {
+            bool get();
+            void set( bool v );
+        };
 	};
     
     public ref class ServiceController
