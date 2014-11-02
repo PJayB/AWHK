@@ -46,7 +46,7 @@ namespace AWHKConfigShared {
         Int32 VKey;
     };
     
-	public ref class Configuration
+	public ref class Configuration sealed
 	{
     public:
 

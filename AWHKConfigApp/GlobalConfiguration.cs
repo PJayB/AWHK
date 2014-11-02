@@ -202,6 +202,28 @@ namespace AWHKConfigApp
             return prop.GetValue(this, null);
         }
 
+        private bool GetBool([CallerMemberName] String propertyName = "")
+        {
+            return (bool)GetConfig(propertyName);
+        }
+
+        private void SetBool(bool v, [CallerMemberName] String propertyName = "")
+        {
+            SetConfig(propertyName, v);
+            NotifyPropertyChanged();
+        }
+
+        private Int32 GetInt([CallerMemberName] String propertyName = "")
+        {
+            return (Int32)GetConfig(propertyName);
+        }
+
+        private void SetInt(Int32 v, [CallerMemberName] String propertyName = "")
+        {
+            SetConfig(propertyName, v);
+            NotifyPropertyChanged();
+        }
+
         // Uses magic to get any key based on the property name
         private Key GetTriggerKey([CallerMemberName] String propertyName = "")
         {
@@ -364,28 +386,28 @@ namespace AWHKConfigApp
         // Grid settings
         public bool AllowSnapToOthers
         {
-            get { return _config.AllowSnapToOthers; }
-            set { _config.AllowSnapToOthers = value; NotifyPropertyChanged(); }
+            get { return GetBool(); }
+            set { SetBool(value); }
         }
-        public int CoarseGridCols
+        public int GridX
         {
-            get { return _config.GridX; }
-            set { _config.GridX = value; NotifyPropertyChanged(); }
+            get { return GetInt(); }
+            set { SetInt(value); }
         }
-        public int CoarseGridRows
+        public int GridY
         {
-            get { return _config.GridY; }
-            set { _config.GridY = value; NotifyPropertyChanged(); }
+            get { return GetInt(); }
+            set { SetInt(value); }
         }
-        public int FineGridCols
+        public int FineX
         {
-            get { return _config.FineX; }
-            set { _config.FineX = value; NotifyPropertyChanged(); }
+            get { return GetInt(); }
+            set { SetInt(value); }
         }
-        public int FineGridRows
+        public int FineY
         {
-            get { return _config.FineY; }
-            set { _config.FineY = value; NotifyPropertyChanged(); }
+            get { return GetInt(); }
+            set { SetInt(value); }
         }
 
         // Session settings

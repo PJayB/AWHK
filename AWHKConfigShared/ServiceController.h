@@ -27,7 +27,7 @@ namespace AWHKConfigShared {
     {
     };
 
-    public ref class ServiceController
+    public ref class ServiceController sealed
     {
     public:
 
