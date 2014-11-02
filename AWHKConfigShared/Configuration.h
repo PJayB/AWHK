@@ -69,24 +69,4 @@ namespace AWHKConfigShared {
             void set( bool v );
         };
 	};
-    
-    public ref class ServiceController
-    {
-    public:
-
-        property bool IsLoaded { 
-            bool get() { 
-                return internalIsLoaded(); 
-            } 
-        };
-
-        void Suspend();
-        void Resume();
-        void ReloadConfiguration();
-        void Unload();
-
-    private:
-
-        bool internalIsLoaded();
-    };
 }
