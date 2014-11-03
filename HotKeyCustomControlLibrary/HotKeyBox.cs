@@ -500,9 +500,6 @@ namespace HotKeyCustomControlLibrary
             {
                 UpdateDisplayWithStoredValues();
             }
-
-            //displayBox.SelectionStart = displayBox.Text.Length;
-            //displayBox.SelectionLength = 0;
         }
 
         public void Clear()
