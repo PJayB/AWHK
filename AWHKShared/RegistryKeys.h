@@ -31,8 +31,8 @@
 #define AWHK_REG_FINE_X			        L"FineX"
 #define AWHK_REG_FINE_Y			        L"FineY"
 
-#define AWKH_REG_HELP_COMBO		        L"Help"
-#define AWKH_REG_CFG_COMBO  	        L"Config"
+#define AWKH_REG_HELP_COMBO		        L"HelpKey"
+#define AWKH_REG_CFG_COMBO  	        L"ConfigKey"
 
 #define AWHK_REG_RESIZE_LEFT		    L"ResizeLeft"
 #define AWHK_REG_RESIZE_RIGHT		    L"ResizeRight"
@@ -71,7 +71,7 @@
 #define AWHK_REG_SESSION_LOAD_9         L"SessionLoad9"
 
 #define AWHK_REG_MEDIA_PREV             L"MediaPrev"
-#define AWHK_REG_MEDIA_NEXT             L"MediaPrev"
+#define AWHK_REG_MEDIA_NEXT             L"MediaNext"
 #define AWHK_REG_MEDIA_PLAY             L"MediaPlay"
 #define AWHK_REG_MEDIA_PAUSE            L"MediaPause"
 #define AWHK_REG_MEDIA_PLAY_PAUSE       L"MediaPlayPause"
@@ -87,6 +87,13 @@ DWORD GetRegistryDefaultValue( LPCWSTR strKey );
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue );
 BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, DWORD dwTrigger, DWORD dwModifiers );
+
+BOOL DefaultRegistryDword( LPCWSTR strName, DWORD* pOut );
+BOOL DefaultRegistryQword( LPCWSTR strName, LONGLONG* pOut );
+BOOL DefaultRegistryBool( LPCWSTR strName, BOOL* pOut );
+BOOL DefaultRegistryVKey( LPCWSTR strName, DWORD* pOut );
+BOOL DefaultRegistryKeyMod( LPCWSTR strName, DWORD* pOut );
+BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers );
 
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut );
 BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut );

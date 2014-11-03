@@ -14,8 +14,8 @@
       x:Name="moveKeysPage"
 	  Title="MoveKeysPage" Loaded="Page_Loaded">
     <Page.Resources>
-        <CustomControls:ModifierKeysSymbolConverter x:Key="ModifierKeysSymbolConverter"/>
-        <CustomControls:ModifierKeysIntConverter x:Key="ModifierKeysIntConverter"/>
+        <HotKeyControls:ModifierKeysSymbolConverter x:Key="ModifierKeysSymbolConverter"/>
+        <HotKeyControls:ModifierKeysIntConverter x:Key="ModifierKeysIntConverter"/>
         <DataTemplate x:Key="ModifierSymbolsConverterDataTemplate">
             <TextBlock Text="{Binding Converter={StaticResource ModifierKeysSymbolConverter}, Mode=OneWay}"/>
         </DataTemplate>
@@ -98,6 +98,7 @@
                 <System:Int32>4</System:Int32>
             </ComboBox>
         </Grid>
+        <!--
         <Grid Style="{StaticResource SeparatorMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -110,7 +111,6 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <!-- Resize keys -->
             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
             Resize Window Left
             </TextBlock>
@@ -118,7 +118,7 @@
                 Grid.Row="0" Grid.Column="0" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding ResizeLeft, Mode=TwoWay}"/>
+                KeyCombo="{Binding ResizeLeft, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
             Resize Window Right
             </TextBlock>
@@ -126,7 +126,7 @@
                 Grid.Row="0" Grid.Column="1" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding ResizeRight, Mode=TwoWay}"/>
+                KeyCombo="{Binding ResizeRight, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
             Resize Window Up
             </TextBlock>
@@ -134,7 +134,7 @@
                 Grid.Row="0" Grid.Column="2" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding ResizeUp, Mode=TwoWay}"/>
+                KeyCombo="{Binding ResizeUp, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center">
             Resize Window Down
             </TextBlock>
@@ -142,7 +142,7 @@
                 Grid.Row="0" Grid.Column="3" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding ResizeDown, Mode=TwoWay}"/>
+                KeyCombo="{Binding ResizeDown, Mode=TwoWay}"/>
         </Grid>
         <Grid Style="{StaticResource SeparatorMargin}">
             <Grid.RowDefinitions>
@@ -156,7 +156,6 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <!-- Move keys -->
             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
             Move Window Left
             </TextBlock>
@@ -164,7 +163,7 @@
                 Grid.Row="0" Grid.Column="0" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding MoveLeft, Mode=TwoWay}"/>
+                KeyCombo="{Binding MoveLeft, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
             Move Window Right
             </TextBlock>
@@ -172,7 +171,7 @@
                 Grid.Row="0" Grid.Column="1" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding MoveRight, Mode=TwoWay}"/>
+                KeyCombo="{Binding MoveRight, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
             Move Window Up
             </TextBlock>
@@ -180,7 +179,7 @@
                 Grid.Row="0" Grid.Column="2" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding MoveUp, Mode=TwoWay}"/>
+                KeyCombo="{Binding MoveUp, Mode=TwoWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center">
             Move Window Down
             </TextBlock>
@@ -188,8 +187,8 @@
                 Grid.Row="0" Grid.Column="3" 
                 Style="{StaticResource HotKeyBox}" 
                 DisableAlt="True" DisableControl="True" DisableShift="True" DisableWindows="True"
-                Trigger="{Binding MoveDown, Mode=TwoWay}"/>
+                KeyCombo="{Binding MoveDown, Mode=TwoWay}"/>
 
-        </Grid>
+        </Grid>-->
     </StackPanel>
 </Page>

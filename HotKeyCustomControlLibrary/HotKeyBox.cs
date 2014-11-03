@@ -123,22 +123,82 @@ namespace HotKeyCustomControlLibrary
         }
     }
 
+    public class ModifierKeysIntConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (ModifierKeys)value;
+        }
+    }
+
+    public class ModifierKeysSymbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ModifierKeySymbols.CreateSymbolString((ModifierKeys)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string)
+            {
+                return ModifierKeySymbols.GetKeysFromSymbols((string)value);
+            }
+            else if (value is ModifierKeys || value is Int32)
+            {
+                return (ModifierKeys)value;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+
+    public class HotKeyComboSymbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            HotKeyCombo keyView = (HotKeyCombo)value;
+            return ModifierKeySymbols.CreateSymbolString(
+                keyView.Modifiers, 
+                keyView.Trigger);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public struct HotKeyCombo
+    {
+        public HotKeyCombo(ModifierKeys mods, Key trigger)
+        {
+            Trigger = trigger;
+            Modifiers = mods;
+        }
+
+        public Key Trigger;
+        public ModifierKeys Modifiers;
+    }
+
     public class HotKeyBox : Control
     {
         private TextBox displayBox;
         private bool hasFocus;
         private Key? previewTrigger;
 
-        public Key? Trigger
+        public HotKeyCombo? KeyCombo
         {
-            get { return base.GetValue(TriggerProperty) as Key?; }
-            set { base.SetValue(TriggerProperty, value); }
-        }
-
-        public ModifierKeys? Modifiers
-        {
-            get { return base.GetValue(ModifiersProperty) as ModifierKeys?; }
-            set { base.SetValue(ModifiersProperty, value); }
+            get { return base.GetValue(KeyComboProperty) as HotKeyCombo?; }
+            set { base.SetValue(KeyComboProperty, value); }
         }
 
         public ModifierKeys? DisabledModifiers
@@ -147,6 +207,33 @@ namespace HotKeyCustomControlLibrary
             set { base.SetValue(DisabledModifiersProperty, value); }
         }
 
+        public ModifierKeys? Modifiers
+        {
+            get { return KeyCombo.HasValue ? KeyCombo.Value.Modifiers : default(ModifierKeys?); }
+            set
+            {
+                if (KeyCombo != null || value.HasValue)
+                {
+                    KeyCombo = new HotKeyCombo(
+                        value.GetValueOrDefault(),
+                        Trigger.GetValueOrDefault());
+                }
+            }
+        }
+
+        public Key? Trigger
+        {
+            get { return KeyCombo != null ? KeyCombo.Value.Trigger : default(Key?); }
+            set
+            {
+                if (KeyCombo != null || value.HasValue)
+                {
+                    KeyCombo = new HotKeyCombo(
+                        Modifiers.GetValueOrDefault(),
+                        value.GetValueOrDefault());
+                }
+            }
+        }
         public bool HasAlt
         {
             get { return (Modifiers.GetValueOrDefault() & ModifierKeys.Alt) != 0; }
@@ -203,13 +290,13 @@ namespace HotKeyCustomControlLibrary
 
         public int VirtualKey
         {
-            get { return Trigger.HasValue ? KeyInterop.VirtualKeyFromKey(Trigger.Value) : 0; }
+            get { return KeyCombo.HasValue ? KeyInterop.VirtualKeyFromKey(KeyCombo.Value.Trigger) : 0; }
         }
 
-        public static readonly DependencyProperty TriggerProperty =
-            DependencyProperty.Register("Trigger", typeof(Key?), typeof(HotKeyBox));
-        public static readonly DependencyProperty ModifiersProperty =
-            DependencyProperty.Register("Modifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
+        [TypeConverter(typeof(HotKeyComboSymbolConverter))]
+        public static readonly DependencyProperty KeyComboProperty =
+            DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo), typeof(HotKeyBox));
+
         public static readonly DependencyProperty DisabledModifiersProperty =
             DependencyProperty.Register("DisabledModifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
 
@@ -404,8 +491,7 @@ namespace HotKeyCustomControlLibrary
 
         public void Clear()
         {
-            Trigger = null;
-            Modifiers = null;
+            KeyCombo = new HotKeyCombo();
             UpdateDisplay();
         }
     }

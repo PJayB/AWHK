@@ -23,6 +23,8 @@ using namespace System;
 
 namespace AWHKConfigShared {
 
+    using namespace System::Windows::Input;
+
     public ref class ServiceNotRunningException : public Exception
     {
     };
@@ -31,39 +33,42 @@ namespace AWHKConfigShared {
     {
     };
 
-    [Flags] public enum class ModifierKeys
+    public value struct KeyCombo
     {
-        None = 0,
-        Shift = MOD_SHIFT,
-        Control = MOD_CONTROL,
-        Alt = MOD_ALT,
-        Windows = MOD_WIN
-    };
+    public:
+        KeyCombo(ModifierKeys mods, Key trigger)
+        {
+            Key = trigger;
+            Modifiers = mods;
+        }
 
-    public struct KeyCombo
-    {
         ModifierKeys Modifiers;
-        Int32 VKey;
+        Key Key;
     };
     
 	public ref class Configuration sealed
 	{
     public:
 
-        Configuration();
-    
-		bool LoadBool( System::String^ name );
-		Int32 LoadInt( System::String^ name );
-		Int32 LoadVKey( System::String^ name );
-		ModifierKeys LoadModKeys( System::String^ name );
-        KeyCombo LoadKeyCombo( System::String^ name );
-        
-        void Store( System::String^ name, bool v );
-        void Store( System::String^ name, Int32 v );
-        void Store( System::String^ name, ModifierKeys v );
-        void Store( System::String^ name, ModifierKeys mods, Int32 trigger );
+		static bool         DefaultBool( System::String^ name );
+		static Int32        DefaultInt( System::String^ name );
+	    static Key          DefaultKey( System::String^ name );
+		static ModifierKeys DefaultModKeys( System::String^ name );
+        static KeyCombo     DefaultKeyCombo( System::String^ name );
 
-        property bool AutoLogin
+		static bool         LoadBool( System::String^ name );
+		static Int32        LoadInt( System::String^ name );
+	    static Key          LoadKey( System::String^ name );
+		static ModifierKeys LoadModKeys( System::String^ name );
+        static KeyCombo     LoadKeyCombo( System::String^ name );
+        
+        static void         Store( System::String^ name, bool v );
+        static void         Store( System::String^ name, Int32 v );
+        static void         Store( System::String^ name, Key v );
+        static void         Store( System::String^ name, ModifierKeys v );
+        static void         Store( System::String^ name, KeyCombo v );
+
+        static property bool AutoLogin
         {
             bool get();
             void set( bool v );

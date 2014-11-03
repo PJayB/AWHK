@@ -9,13 +9,14 @@ using System.Windows.Input;
 using HotKeyCustomControlLibrary;
 using System.Windows.Data;
 using System.Globalization;
+using AWHKConfigShared;
 
 namespace AWHKConfigApp
 {
     // Translate an AWHKShared exception to a write error
     class ConfigurationWriteException : Exception 
     {
-        public ConfigurationWriteException(AWHKConfigShared.ConfigurationIoException inner) 
+        public ConfigurationWriteException(ConfigurationIoException inner) 
             : base(
                 "Failed to save the configuration settings. Make sure you have permissions to write to the system registry.",
                 inner)
@@ -26,7 +27,7 @@ namespace AWHKConfigApp
     // Translate an AWHKShared exception to a write error
     class ConfigurationReadException : Exception 
     {
-        public ConfigurationReadException(AWHKConfigShared.ConfigurationIoException inner)
+        public ConfigurationReadException(ConfigurationIoException inner)
             : base(
                 "Failed to read the configuration settings. Make sure you have permissions to read from the system registry.",
                 inner)
@@ -63,381 +64,300 @@ namespace AWHKConfigApp
         }
     }    
 
-    public class ModifierKeysSymbolConverter : IValueConverter
+    static class ConfigurationProxy
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public static bool? GetBool(string propertyName)
         {
-            return ModifierKeySymbols.CreateSymbolString((ModifierKeys)value);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is string)
+            try
             {
-                return ModifierKeySymbols.GetKeysFromSymbols((string)value);
+                return AWHKConfigShared.Configuration.LoadBool(propertyName);
             }
-            else if (value is ModifierKeys || value is Int32)
+            catch (ConfigurationIoException)
             {
-                return (ModifierKeys)value;
+                return default(bool?);
+            } 
+        }
+
+        public static void SetBool(string propertyName, bool v)
+        {
+            AWHKConfigShared.Configuration.Store(propertyName, v);
+        }
+
+        public static int? GetInt(string propertyName)
+        {
+            try
+            {
+                return (Int32)AWHKConfigShared.Configuration.LoadInt(propertyName);
             }
-            else
+            catch (ConfigurationIoException)
             {
-                throw new NotImplementedException();
-            }
-        }
-    }
-
-    public class ModifierKeysIntConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (int)value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (ModifierKeys)value;
-        }
-    }
-
-    public class KeyBindingViewSymbolConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            KeyBindingView keyView = value as KeyBindingView;
-            return ModifierKeySymbols.CreateSymbolString(keyView.Modifiers, keyView.Trigger);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class KeyBindingView : INotifyPropertyChanged
-    {
-        private AWHKConfigShared.Configuration _config;
-        private System.Reflection.PropertyInfo _triggerProperty;
-        private System.Reflection.PropertyInfo _modifiersProperty;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        
-        public ModifierKeys Modifiers 
-        {
-            get 
-            {
-                return (ModifierKeys)_modifiersProperty.GetValue(_config);
+                return default(int?);
             }
         }
 
-        public Key Trigger 
+        public static void SetInt(string propertyName, Int32 v)
         {
-            get
+            AWHKConfigShared.Configuration.Store(propertyName, v);
+        }
+
+        // Uses magic to get any key based on the property name
+        public static Key? GetKey(string propertyName)
+        {
+            try
             {
-                return KeyInterop.KeyFromVirtualKey((int)_triggerProperty.GetValue(_config));
+                return AWHKConfigShared.Configuration.LoadKey(propertyName);
+            }
+            catch (ConfigurationIoException)
+            {
+                return default(Key?);
+            } 
+        }
+
+        public static void SetKey(string propertyName, Key v)
+        {
+            AWHKConfigShared.Configuration.Store(propertyName, v);
+        }
+
+        public static ModifierKeys? GetModifiers(string propertyName)
+        {
+            try
+            {
+                return AWHKConfigShared.Configuration.LoadModKeys(propertyName);
+            }
+            catch (ConfigurationIoException)
+            {
+                return default(ModifierKeys?);
             }
         }
 
-        public KeyBindingView(ConfigurationView config, string triggerPropertyName, string modifierPropertyName)
+        public static void SetModifiers(string propertyName, ModifierKeys v)
         {
-            _config = config.Config;
+            AWHKConfigShared.Configuration.Store(propertyName, v);
+        }
 
-            config.PropertyChanged += config_PropertyChanged;
-
-            _triggerProperty = _config.GetType().GetProperty(triggerPropertyName);
-            if (_triggerProperty == null)
+        public static HotKeyCombo GetKeyCombo(string propertyName)
+        {
+            try
             {
-                throw new MissingMemberException("Property '" + triggerPropertyName + "' doesn't exist.");
+                KeyCombo kc = AWHKConfigShared.Configuration.LoadKeyCombo(propertyName);
+                return new HotKeyCombo(kc.Modifiers, kc.Key);
             }
-
-            _modifiersProperty = _config.GetType().GetProperty(modifierPropertyName);
-            if (_modifiersProperty == null)
+            catch (ConfigurationIoException)
             {
-                throw new MissingMemberException("Property '" + modifierPropertyName + "' doesn't exist.");
+                return new HotKeyCombo();
             }
         }
 
-        void config_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        public static void SetKeyCombo(string propertyName, HotKeyCombo v)
         {
-            if (PropertyChanged != null && (e.PropertyName == _triggerProperty.Name || e.PropertyName == _modifiersProperty.Name))
-            {
-                PropertyChanged(sender, e);
-            }
+            if (propertyName == "")
+                throw new MissingFieldException();
+
+            KeyCombo kc = new KeyCombo(v.Modifiers, v.Trigger);
+            AWHKConfigShared.Configuration.Store(propertyName, kc);
         }
     }
 
     public class ConfigurationView : INotifyPropertyChanged
     {
-        private AWHKConfigShared.Configuration _config;
+        #region Lazy auto-set auto-get magic
+        Dictionary<string, HotKeyCombo> _hotKeyMappings = new Dictionary<string, HotKeyCombo>();
+        Dictionary<string, ModifierKeys?> _modifierKeyMappings = new Dictionary<string, ModifierKeys?>();
+        Dictionary<string, Key?> _keyMappings = new Dictionary<string, Key?>();
+        Dictionary<string, bool?> _boolMappings = new Dictionary<string, bool?>();
+        Dictionary<string, int?> _intMappings = new Dictionary<string, int?>();
 
-        public AWHKConfigShared.Configuration Config { get { return _config; } }
-
-        // Set any property
-        public void SetConfig(string propertyName, object value)
+        HotKeyCombo ConvertHotKeyCombo(KeyCombo kc)
         {
-            var prop = this.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
-            }
-
-            prop.SetValue(this, value, null);
+            return new HotKeyCombo(kc.Modifiers, kc.Key);
+        }
+        KeyCombo ConvertHotKeyCombo(HotKeyCombo kc)
+        {
+            return new KeyCombo(kc.Modifiers, kc.Trigger);
         }
 
-        // Does the configuration have a property?
-        public bool HasConfig(string propertyName)
+        void SetHotKeyCombo(HotKeyCombo value, [CallerMemberName] string propertyName = "") 
         {
-            return this.GetType().GetProperty(propertyName) != null;
-        }
+            System.Diagnostics.Debug.Assert(propertyName != "");
 
-        // Get any property
-        public object GetConfig(string propertyName)
-        {
-            var prop = this.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMemberException("Property '" + propertyName + "' doesn't exist.");
-            }
+            //if (value.HasValue)
+                _hotKeyMappings[propertyName] = ConvertHotKeyCombo(
+                    Configuration.DefaultKeyCombo(propertyName));
+            //else
+            //    _hotKeyMappings[propertyName] = value.Value;
 
-            return prop.GetValue(this, null);
-        }
-
-        private bool GetBool([CallerMemberName] String propertyName = "")
-        {
-            return (bool)GetConfig(propertyName);
-        }
-
-        private void SetBool(bool v, [CallerMemberName] String propertyName = "")
-        {
-            SetConfig(propertyName, v);
-            NotifyPropertyChanged();
-        }
-
-        private Int32 GetInt([CallerMemberName] String propertyName = "")
-        {
-            return (Int32)GetConfig(propertyName);
-        }
-
-        private void SetInt(Int32 v, [CallerMemberName] String propertyName = "")
-        {
-            SetConfig(propertyName, v);
-            NotifyPropertyChanged();
-        }
-
-        // Uses magic to get any key based on the property name
-        private Key GetTriggerKey([CallerMemberName] String propertyName = "")
-        {
-            // Get the property
-            var prop = _config.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMethodException();
-            }
-
-            int vkey = (int)prop.GetValue(_config);
-            return KeyInterop.KeyFromVirtualKey(vkey);
-        }
-
-        // Uses magic to get any modifiers based on the property name
-        private ModifierKeys GetModifierKeys([CallerMemberName] String propertyName = "")
-        {
-            // Get the property
-            var prop = _config.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMethodException();
-            }
-
-            return (ModifierKeys) prop.GetValue(_config);
-        }
-
-        // Uses magic to set any key based on the property name
-        private void SetTriggerKey(Key key, [CallerMemberName] String propertyName = "")
-        {
-            // Get the property
-            var prop = _config.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMethodException();
-            }
-
-            prop.SetValue(_config, KeyInterop.VirtualKeyFromKey(key));
             NotifyPropertyChanged(propertyName);
         }
 
-        // Uses magic to set any modifiers based on the property name
-        private void SetModifierKeys(ModifierKeys keys, [CallerMemberName] String propertyName = "")
+        HotKeyCombo GetHotKeyCombo([CallerMemberName] string propertyName = "")
         {
-            // Get the property
-            var prop = _config.GetType().GetProperty(propertyName);
-            if (prop == null)
-            {
-                throw new MissingMethodException();
-            }
+            System.Diagnostics.Debug.Assert(propertyName != "");
 
-            prop.SetValue(_config, (AWHKConfigShared.ModifierKeys) keys);
+            if (_hotKeyMappings.ContainsKey(propertyName))
+                return _hotKeyMappings[propertyName];
+            else
+                return default(HotKeyCombo);
+        }
+
+        void SetModifierKeys(ModifierKeys? value, [CallerMemberName] string propertyName = "")
+        {
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (!value.HasValue)
+                _modifierKeyMappings[propertyName] = Configuration.DefaultModKeys(propertyName);
+            else
+                _modifierKeyMappings[propertyName] = value;
+
             NotifyPropertyChanged(propertyName);
         }
 
-        // General settings
-        public bool RunOnStartUp
+        ModifierKeys? GetModifierKeys([CallerMemberName] string propertyName = "")
         {
-            get { return _config.AutoLogin; }
-            set { _config.AutoLogin = value; NotifyPropertyChanged(); }
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (_modifierKeyMappings.ContainsKey(propertyName))
+                return _modifierKeyMappings[propertyName];
+            else
+                return default(ModifierKeys?);
         }
 
-        // Explicit hotkeys
-        public Key HelpKey
+        void SetKey(Key? value, [CallerMemberName] string propertyName = "")
         {
-            get { return GetTriggerKey(); }
-            set { SetTriggerKey(value); }
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (!value.HasValue)
+                _keyMappings[propertyName] = Configuration.DefaultKey(propertyName);
+            else
+                _keyMappings[propertyName] = value;
+
+            NotifyPropertyChanged(propertyName);
         }
 
-        public ModifierKeys HelpKeyMod
+        Key? GetKey([CallerMemberName] string propertyName = "")
         {
-            get { return GetModifierKeys(); }
-            set { SetModifierKeys(value); }
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (_keyMappings.ContainsKey(propertyName))
+                return _keyMappings[propertyName];
+            else
+                return default(Key?);
         }
 
-        public Key ConfigKey
+        void SetBool(bool? value, [CallerMemberName] string propertyName = "")
         {
-            get { return GetTriggerKey(); }
-            set { SetTriggerKey(value); }
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (!value.HasValue)
+                _boolMappings[propertyName] = Configuration.DefaultBool(propertyName);
+            else
+                _boolMappings[propertyName] = value;
+
+            NotifyPropertyChanged(propertyName);
         }
+
+        bool? GetBool([CallerMemberName] string propertyName = "")
+        {
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (_boolMappings.ContainsKey(propertyName))
+                return _boolMappings[propertyName];
+            else
+                return default(bool?);
+        }
+
+        void SetInt(int? value, [CallerMemberName] string propertyName = "")
+        {
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (!value.HasValue)
+                _intMappings[propertyName] = Configuration.DefaultInt(propertyName);
+            else
+                _intMappings[propertyName] = value;
+
+            NotifyPropertyChanged(propertyName);
+        }
+
+        int? GetInt([CallerMemberName] string propertyName = "")
+        {
+            System.Diagnostics.Debug.Assert(propertyName != "");
+
+            if (_intMappings.ContainsKey(propertyName))
+                return _intMappings[propertyName];
+            else
+                return default(int?);
+        }
+        #endregion
+
+        // These are for conveniently displaying the move and resize ke
+        public HotKeyCombo ResizeLeftView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeLeft.GetValueOrDefault()); } }
+        public HotKeyCombo ResizeRightView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeRight.GetValueOrDefault()); } }
+        public HotKeyCombo ResizeUpView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeUp.GetValueOrDefault()); } }
+        public HotKeyCombo ResizeDownView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeDown.GetValueOrDefault()); } }
+        public HotKeyCombo MoveLeftView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveLeft.GetValueOrDefault()); } }
+        public HotKeyCombo MoveRightView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveRight.GetValueOrDefault()); } }
+        public HotKeyCombo MoveUpView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveUp.GetValueOrDefault()); } }
+        public HotKeyCombo MoveDownView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveDown.GetValueOrDefault()); } }
         
-        public ModifierKeys ConfigKeyMod
-        {
-            get { return GetModifierKeys(); }
-            set { SetModifierKeys(value); }
-        }
-
-        public KeyBindingView HelpKeyView { get; private set; }
-        public KeyBindingView ConfigKeyView { get; private set; }
-        public KeyBindingView ResizeLeftView { get; private set; }
-        public KeyBindingView ResizeRightView { get; private set; }
-        public KeyBindingView ResizeUpView { get; private set; }
-        public KeyBindingView ResizeDownView { get; private set; }
-        public KeyBindingView MoveLeftView { get; private set; }
-        public KeyBindingView MoveRightView { get; private set; }
-        public KeyBindingView MoveUpView { get; private set; }
-        public KeyBindingView MoveDownView { get; private set; }
-
-        // Trigger keys
-        public Key ResizeLeft
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key ResizeRight
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key ResizeUp
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key ResizeDown
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key MoveLeft
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key MoveRight
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key MoveUp
-        {
-            get { return GetTriggerKey(); } 
-            set { SetTriggerKey(value); }
-        }
-        public Key MoveDown
-        {
-            get { return GetTriggerKey(); }
-            set { SetTriggerKey(value); }
-        }
-
-        // Modifier keys
-        public ModifierKeys BaseKeyMod
-        {
-            get { return GetModifierKeys(); }
-            set { SetModifierKeys(value); }
-        }
-
-        public ModifierKeys FineKeyMod
-        {
-            get { return GetModifierKeys(); }
-            set { SetModifierKeys(value); }
-        }
-
-        public ModifierKeys GrabKeyMod
-        {
-            get { return GetModifierKeys(); }
-            set { SetModifierKeys(value); }
-        }
-
-        // Grid settings
-        public bool AllowSnapToOthers
-        {
-            get { return GetBool(); }
-            set { SetBool(value); }
-        }
-        public int GridX
-        {
-            get { return GetInt(); }
-            set { SetInt(value); }
-        }
-        public int GridY
-        {
-            get { return GetInt(); }
-            set { SetInt(value); }
-        }
-        public int FineX
-        {
-            get { return GetInt(); }
-            set { SetInt(value); }
-        }
-        public int FineY
-        {
-            get { return GetInt(); }
-            set { SetInt(value); }
-        }
-
-        // Session settings
-
-        // Media hotkeys
-
+        // Explicit hotkeys
+        public HotKeyCombo HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo ConfigKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionSave9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo SessionLoad9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaPrev { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaNext { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaPlay { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaPlayPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaVolumeUp { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo MediaVolumeDown { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public Key? ResizeLeft { get { return GetKey(); } set { SetKey(value); } }
+        public Key? ResizeRight { get { return GetKey(); } set { SetKey(value); } }
+        public Key? ResizeUp { get { return GetKey(); } set { SetKey(value); } }
+        public Key? ResizeDown { get { return GetKey(); } set { SetKey(value); } }
+        public Key? MoveLeft { get { return GetKey(); } set { SetKey(value); } }
+        public Key? MoveRight { get { return GetKey(); } set { SetKey(value); } }
+        public Key? MoveUp { get { return GetKey(); } set { SetKey(value); } }
+        public Key? MoveDown { get { return GetKey(); } set { SetKey(value); } }
+        public ModifierKeys? MoveMod { get { return GetModifierKeys(); } set { SetModifierKeys(value); } }
+        public ModifierKeys? NextMod { get { return GetModifierKeys(); } set { SetModifierKeys(value); } }
+        public ModifierKeys? FineMod { get { return GetModifierKeys(); } set { SetModifierKeys(value); } }
+        public bool? AllowSnapToOthers { get { return GetBool(); } set { SetBool(value); } }
+        public int? GridX { get { return GetInt(); } set { SetInt(value); } }
+        public int? GridY { get { return GetInt(); } set { SetInt(value); } }
+        public int? FineX { get { return GetInt(); } set { SetInt(value); } }
+        public int? FineY { get { return GetInt(); } set { SetInt(value); } }
+        public bool RunOnStartUp { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         // constructor creates default settings
         public ConfigurationView()
         {
-            _config = new AWHKConfigShared.Configuration();
-
-            HelpKeyView = new KeyBindingView(this, "HelpKey", "HelpKeyMod");
-            ConfigKeyView = new KeyBindingView(this, "ConfigKey", "ConfigKeyMod");
-            ResizeLeftView = new KeyBindingView(this, "ResizeLeft", "BaseKeyMod");
-            ResizeRightView = new KeyBindingView(this, "ResizeRight", "BaseKeyMod");
-            ResizeUpView = new KeyBindingView(this, "ResizeUp", "BaseKeyMod");
-            ResizeDownView = new KeyBindingView(this, "ResizeDown", "BaseKeyMod");
-            MoveLeftView = new KeyBindingView(this, "MoveLeft", "BaseKeyMod");
-            MoveRightView = new KeyBindingView(this, "MoveRight", "BaseKeyMod");
-            MoveUpView = new KeyBindingView(this, "MoveUp", "BaseKeyMod");
-            MoveDownView = new KeyBindingView(this, "MoveDown", "BaseKeyMod");
+            Load();
         }
 
         // This method is called by the Set accessor of each property. 
         // The CallerMemberName attribute that is applied to the optional propertyName 
         // parameter causes the property name of the caller to be substituted as an argument. 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        private void NotifyPropertyChanged(String propertyName)
         {
             if (PropertyChanged != null)
             {
@@ -448,28 +368,23 @@ namespace AWHKConfigApp
         // May throw an exception if properties fail validation
         public void Save()
         {
-            /*
-             * 
-             * TODO: validate these assumptions
-             * 
-             * 	
-            // We MUST have a move key mod (otherwise what's the point?)
-	        if ( moveKeyMod )
-		        cfg->MoveKeyMod = moveKeyMod;
-
-	        // The two other modifiers must be different
-	        if ( !fineKeyMod || ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod ) )
-		        cfg->FineKeyMod = fineKeyMod;
-	        if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
-		        cfg->NextKeyMod = nextKeyMod;
-            */
-
             // Save the settings:
             try
             {
-                _config.Save();
+                Configuration.AutoLogin = RunOnStartUp;
+
+                foreach (var kvp in _hotKeyMappings)
+                    ConfigurationProxy.SetKeyCombo(kvp.Key, kvp.Value);
+                foreach (var kvp in _keyMappings)
+                    ConfigurationProxy.SetKey(kvp.Key, kvp.Value.GetValueOrDefault());
+                foreach (var kvp in _modifierKeyMappings)
+                    ConfigurationProxy.SetModifiers(kvp.Key, kvp.Value.GetValueOrDefault());
+                foreach (var kvp in _boolMappings)
+                    ConfigurationProxy.SetBool(kvp.Key, kvp.Value.GetValueOrDefault());
+                foreach (var kvp in _intMappings)
+                    ConfigurationProxy.SetInt(kvp.Key, kvp.Value.GetValueOrDefault());
             }
-            catch (AWHKConfigShared.ConfigurationIoException ex)
+            catch (ConfigurationIoException ex)
             {
                 // Failed to save settings.
                 throw new ConfigurationWriteException(ex);
@@ -482,14 +397,39 @@ namespace AWHKConfigApp
         // Resets the configuration
         public void Load()
         {
-            try
+            // Throw away our intermediate settings by clearing down the dictionaries
+            _hotKeyMappings.Clear();
+            _keyMappings.Clear();
+            _modifierKeyMappings.Clear();
+            _boolMappings.Clear();
+            _intMappings.Clear();
+            
+            // Re-cache all the settings
+
+            RunOnStartUp = Configuration.AutoLogin;
+
+            foreach (var prop in GetType().GetProperties())
             {
-                _config.Load();
-            }
-            catch (AWHKConfigShared.ConfigurationIoException ex)
-            {
-                // Failed to read settings.
-                throw new ConfigurationReadException(ex);
+                if (!prop.CanWrite)
+                    continue;
+
+                try
+                {
+                    if (prop.PropertyType == typeof(HotKeyCombo))
+                        prop.SetValue(this, ConfigurationProxy.GetKeyCombo(prop.Name));
+                    else if (prop.PropertyType == typeof(ModifierKeys?))
+                        prop.SetValue(this, ConfigurationProxy.GetModifiers(prop.Name));
+                    else if (prop.PropertyType == typeof(Key?))
+                        prop.SetValue(this, ConfigurationProxy.GetKey(prop.Name));
+                    else if (prop.PropertyType == typeof(bool?))
+                        prop.SetValue(this, ConfigurationProxy.GetBool(prop.Name));
+                    else if (prop.PropertyType == typeof(int?))
+                        prop.SetValue(this, ConfigurationProxy.GetInt(prop.Name));
+                }
+                catch (ConfigurationIoException)
+                {
+                    // Failed to read a setting - just ignore.
+                }
             }
 
             // Notify all settings have changed

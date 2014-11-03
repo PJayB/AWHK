@@ -34,8 +34,8 @@
         <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowSnapToOthers, Mode=TwoWay}"/>
         <CustomControls:GridSetupControl 
             Grid.Row="1" Grid.Column="0" Margin="0,0,7,15" x:Name="gridCoarse"
-            NumCols="{Binding CoarseGridCols, Mode=TwoWay}"
-            NumRows="{Binding CoarseGridRows, Mode=TwoWay}">
+            NumCols="{Binding GridX, Mode=TwoWay}"
+            NumRows="{Binding GridY, Mode=TwoWay}">
             <CustomControls:GridSetupControl.Cols>
                 <System:Int32>3</System:Int32>
                 <System:Int32>4</System:Int32>
@@ -52,8 +52,8 @@
         </CustomControls:GridSetupControl>
         <CustomControls:GridSetupControl 
             Grid.Row="1" Grid.Column="1" Margin="7,0,0,15" x:Name="gridFine" 
-            NumCols="{Binding FineGridCols, Mode=TwoWay}" 
-            NumRows="{Binding FineGridRows, Mode=TwoWay}">
+            NumCols="{Binding FineX, Mode=TwoWay}" 
+            NumRows="{Binding FineY, Mode=TwoWay}">
             <CustomControls:GridSetupControl.Cols>
                 <System:Int32>8</System:Int32>
                 <System:Int32>16</System:Int32>
