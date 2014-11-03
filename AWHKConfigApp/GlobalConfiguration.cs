@@ -286,17 +286,61 @@ namespace AWHKConfigApp
             else
                 return default(int?);
         }
+
+        HotKeyCombo GetHotKeyComboMoveModifiers(string propertyName)
+        {
+            ModifierKeys? mods = GetModifierKeys("MoveMod");
+            Key? trigger = GetKey(propertyName);
+            return new HotKeyCombo(mods.GetValueOrDefault(), trigger.GetValueOrDefault());
+        }
+
+        void SetHotKeyComboMoveModifiers(string propertyName, HotKeyCombo hk)
+        {
+            SetKey(hk.Trigger, propertyName);
+        }
         #endregion
 
         // These are for conveniently displaying the move and resize ke
-        public HotKeyCombo ResizeLeftView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeLeft.GetValueOrDefault()); } }
-        public HotKeyCombo ResizeRightView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeRight.GetValueOrDefault()); } }
-        public HotKeyCombo ResizeUpView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeUp.GetValueOrDefault()); } }
-        public HotKeyCombo ResizeDownView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), ResizeDown.GetValueOrDefault()); } }
-        public HotKeyCombo MoveLeftView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveLeft.GetValueOrDefault()); } }
-        public HotKeyCombo MoveRightView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveRight.GetValueOrDefault()); } }
-        public HotKeyCombo MoveUpView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveUp.GetValueOrDefault()); } }
-        public HotKeyCombo MoveDownView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveDown.GetValueOrDefault()); } }
+        public HotKeyCombo ResizeLeftView 
+        { 
+            get { return GetHotKeyComboMoveModifiers("ResizeLeft"); }
+            set { SetHotKeyComboMoveModifiers("ResizeLeft", value); }
+        }
+        public HotKeyCombo ResizeRightView
+        { 
+            get { return GetHotKeyComboMoveModifiers("ResizeRight"); }
+            set { SetHotKeyComboMoveModifiers("ResizeRight", value); }
+        }
+        public HotKeyCombo ResizeUpView
+        {
+            get { return GetHotKeyComboMoveModifiers("ResizeUp"); }
+            set { SetHotKeyComboMoveModifiers("ResizeUp", value); }
+        }
+        public HotKeyCombo ResizeDownView
+        {
+            get { return GetHotKeyComboMoveModifiers("ResizeDown"); }
+            set { SetHotKeyComboMoveModifiers("ResizeDown", value); }
+        }
+        public HotKeyCombo MoveLeftView
+        {
+            get { return GetHotKeyComboMoveModifiers("MoveLeft"); }
+            set { SetHotKeyComboMoveModifiers("MoveLeft", value); }
+        }
+        public HotKeyCombo MoveRightView
+        {
+            get { return GetHotKeyComboMoveModifiers("MoveRight"); }
+            set { SetHotKeyComboMoveModifiers("MoveRight", value); }
+        }
+        public HotKeyCombo MoveUpView 
+        {
+            get { return GetHotKeyComboMoveModifiers("MoveUp"); }
+            set { SetHotKeyComboMoveModifiers("MoveUp", value); }
+        }
+        public HotKeyCombo MoveDownView
+        {
+            get { return GetHotKeyComboMoveModifiers("MoveDown"); }
+            set { SetHotKeyComboMoveModifiers("MoveDown", value); }
+        }
         
         // Explicit hotkeys
         public HotKeyCombo? HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }

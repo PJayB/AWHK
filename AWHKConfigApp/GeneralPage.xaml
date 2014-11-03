@@ -34,12 +34,10 @@
             <!-- Help key binding -->
             <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE11B; Open Help" FontFamily="Segoe UI Symbol"/>
             <HotKeyControls:HotKeyBox Grid.Row="0" Grid.Column="1" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding HelpKey, Mode=TwoWay}"/>
-            <!---->
 
             <!-- Config key binding -->
             <TextBlock Grid.Row="1" Grid.Column="0" Text="&#xE115; Open Configuration Dialog" FontFamily="Segoe UI Symbol"/>
-            <!--<HotKeyControls:HotKeyBox Grid.Row="1" Grid.Column="1" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding ConfigKey, Mode=TwoWay}"/>
-            -->
+            <HotKeyControls:HotKeyBox Grid.Row="1" Grid.Column="1" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding ConfigKey, Mode=TwoWay}"/>
         </Grid>
     </StackPanel>
 </Page>

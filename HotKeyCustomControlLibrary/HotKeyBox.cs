@@ -209,13 +209,15 @@ namespace HotKeyCustomControlLibrary
 
         public ModifierKeys? Modifiers
         {
-            get { return KeyCombo.HasValue ? KeyCombo.Value.Modifiers : default(ModifierKeys?); }
+            get { return KeyCombo.HasValue
+                ? KeyCombo.Value.Modifiers & ~DisabledModifiers.GetValueOrDefault()
+                : default(ModifierKeys?); }
             private set
             {
                 if (KeyCombo != null || value.HasValue)
                 {
                     KeyCombo = new HotKeyCombo(
-                        value.GetValueOrDefault(),
+                        value.GetValueOrDefault() & ~DisabledModifiers.GetValueOrDefault(),
                         Trigger.GetValueOrDefault());
                 }
             }
@@ -477,10 +479,13 @@ namespace HotKeyCustomControlLibrary
 
         private void UpdateDisplayWithStoredValues()
         {
+            if (displayBox == null)
+                return; // Too early.
+
             if (KeyCombo.HasValue)
             {
                 displayBox.Text = ModifierKeySymbols.CreateSymbolString(
-                    KeyCombo.GetValueOrDefault().Modifiers,
+                    KeyCombo.GetValueOrDefault().Modifiers & ~DisabledModifiers.GetValueOrDefault(),
                     KeyCombo.GetValueOrDefault().Trigger);
             }
             else
