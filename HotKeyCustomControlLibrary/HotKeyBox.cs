@@ -210,7 +210,7 @@ namespace HotKeyCustomControlLibrary
         public ModifierKeys? Modifiers
         {
             get { return KeyCombo.HasValue ? KeyCombo.Value.Modifiers : default(ModifierKeys?); }
-            set
+            private set
             {
                 if (KeyCombo != null || value.HasValue)
                 {
@@ -224,7 +224,7 @@ namespace HotKeyCustomControlLibrary
         public Key? Trigger
         {
             get { return KeyCombo != null ? KeyCombo.Value.Trigger : default(Key?); }
-            set
+            private set
             {
                 if (KeyCombo != null || value.HasValue)
                 {
@@ -282,21 +282,20 @@ namespace HotKeyCustomControlLibrary
             set { DisabledModifiers = ModifierKeyState.Set(DisabledModifiers, ModifierKeys.Windows, value); }
         }
 
+        public int VirtualKey
+        {
+            get { return KeyCombo.HasValue ? KeyInterop.VirtualKeyFromKey(KeyCombo.Value.Trigger) : 0; }
+        }
+
         public event RoutedEventHandler HotKeyCommitted
         {
             add { AddHandler(CommitEvent, value); }
             remove { RemoveHandler(CommitEvent, value); }
         }
 
-        public int VirtualKey
-        {
-            get { return KeyCombo.HasValue ? KeyInterop.VirtualKeyFromKey(KeyCombo.Value.Trigger) : 0; }
-        }
-
-        [TypeConverter(typeof(HotKeyComboSymbolConverter))]
         public static readonly DependencyProperty KeyComboProperty =
-            DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo), typeof(HotKeyBox));
-
+            DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo?), typeof(HotKeyBox));
+        
         public static readonly DependencyProperty DisabledModifiersProperty =
             DependencyProperty.Register("DisabledModifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
 
@@ -383,8 +382,7 @@ namespace HotKeyCustomControlLibrary
             if (WindowsIsAllowed() && IsWindowsKeyDown())
                 mods |= ModifierKeys.Windows;
 
-            Modifiers = mods;
-            Trigger = k;
+            KeyCombo = new HotKeyCombo(mods, k);
 
             // Raise the event
             RaiseEvent(new RoutedEventArgs(CommitEvent));
@@ -413,8 +411,8 @@ namespace HotKeyCustomControlLibrary
                 (isAlt && AltIsAllowed()) ||
                 (isSys && WindowsIsAllowed()))
             {
-                if (Trigger.HasValue && !Keyboard.IsKeyDown(Trigger.Value))
-                    Trigger = null;
+                //if (Trigger.HasValue && !Keyboard.IsKeyDown(Trigger.Value))
+                //    Trigger = null;
             }
             else if (!isShift && !isCtrl && !isAlt)
             {
@@ -452,11 +450,11 @@ namespace HotKeyCustomControlLibrary
 
         private void UpdateDisplayWithStoredValues()
         {
-            if (Trigger.HasValue)
+            if (KeyCombo.HasValue)
             {
                 displayBox.Text = ModifierKeySymbols.CreateSymbolString(
-                    Modifiers.GetValueOrDefault(),
-                    Trigger.GetValueOrDefault());
+                    KeyCombo.GetValueOrDefault().Modifiers,
+                    KeyCombo.GetValueOrDefault().Trigger);
             }
             else
             {

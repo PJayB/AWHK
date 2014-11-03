@@ -7,8 +7,9 @@
       mc:Ignorable="d" 
       d:DesignHeight="580" d:DesignWidth="580"
 	Title="GeneralPage">
-    
+
     <Page.Resources>
+        <HotKeyControls:HotKeyComboSymbolConverter x:Key="HotKeyComboSymbolConverter"/>
         <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
             <Setter Property="Margin" Value="0,0,0,7"/>
         </Style>

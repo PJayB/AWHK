@@ -176,20 +176,20 @@ namespace AWHKConfigApp
             return new KeyCombo(kc.Modifiers, kc.Trigger);
         }
 
-        void SetHotKeyCombo(HotKeyCombo value, [CallerMemberName] string propertyName = "") 
+        void SetHotKeyCombo(HotKeyCombo? value, [CallerMemberName] string propertyName = "") 
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
-            //if (value.HasValue)
+            if (value.HasValue)
                 _hotKeyMappings[propertyName] = ConvertHotKeyCombo(
                     Configuration.DefaultKeyCombo(propertyName));
-            //else
-            //    _hotKeyMappings[propertyName] = value.Value;
+            else
+                _hotKeyMappings[propertyName] = value.Value;
 
             NotifyPropertyChanged(propertyName);
         }
 
-        HotKeyCombo GetHotKeyCombo([CallerMemberName] string propertyName = "")
+        HotKeyCombo? GetHotKeyCombo([CallerMemberName] string propertyName = "")
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
@@ -299,35 +299,35 @@ namespace AWHKConfigApp
         public HotKeyCombo MoveDownView { get { return new HotKeyCombo(MoveMod.GetValueOrDefault(), MoveDown.GetValueOrDefault()); } }
         
         // Explicit hotkeys
-        public HotKeyCombo HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo ConfigKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionSave9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo SessionLoad9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaPrev { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaNext { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaPlay { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaPlayPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaVolumeUp { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo MediaVolumeDown { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? ConfigKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionSave9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? SessionLoad9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaPrev { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaNext { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaPlay { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaPlayPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaVolumeUp { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaVolumeDown { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public Key? ResizeLeft { get { return GetKey(); } set { SetKey(value); } }
         public Key? ResizeRight { get { return GetKey(); } set { SetKey(value); } }
         public Key? ResizeUp { get { return GetKey(); } set { SetKey(value); } }
@@ -351,7 +351,6 @@ namespace AWHKConfigApp
         // constructor creates default settings
         public ConfigurationView()
         {
-            Load();
         }
 
         // This method is called by the Set accessor of each property. 
@@ -415,7 +414,7 @@ namespace AWHKConfigApp
 
                 try
                 {
-                    if (prop.PropertyType == typeof(HotKeyCombo))
+                    if (prop.PropertyType == typeof(HotKeyCombo?))
                         prop.SetValue(this, ConfigurationProxy.GetKeyCombo(prop.Name));
                     else if (prop.PropertyType == typeof(ModifierKeys?))
                         prop.SetValue(this, ConfigurationProxy.GetModifiers(prop.Name));

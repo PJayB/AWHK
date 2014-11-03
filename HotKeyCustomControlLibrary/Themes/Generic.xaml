@@ -4,8 +4,7 @@
     xmlns:local="clr-namespace:HotKeyCustomControlLibrary">
     <Style TargetType="{x:Type local:HotKeyBox}">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
-        <Setter Property="Trigger" Value="{x:Null}"/>
-        <Setter Property="Modifiers" Value="{x:Null}"/>
+        <Setter Property="KeyCombo" Value="{x:Null}"/>
         <Setter Property="DisabledModifiers" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>

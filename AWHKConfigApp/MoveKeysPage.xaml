@@ -62,7 +62,7 @@
             </TextBlock>
             <ComboBox Grid.Row="0" Grid.Column="1" 
                   x:Name="cmbMoveResizeMod" Style="{DynamicResource KeyCombo}"
-                  SelectedValue="{Binding BaseKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
+                  SelectedValue="{Binding MoveMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
                 <System:Int32>0</System:Int32>
                 <System:Int32>1</System:Int32>
                 <System:Int32>12</System:Int32>
@@ -77,7 +77,7 @@
             </TextBlock>
             <ComboBox Grid.Row="1" Grid.Column="1" 
                   x:Name="cmbFineMod" Style="{DynamicResource KeyCombo}"
-                  SelectedValue="{Binding FineKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
+                  SelectedValue="{Binding FineMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
                 <System:Int32>0</System:Int32>
                 <System:Int32>1</System:Int32>
                 <System:Int32>2</System:Int32>
@@ -91,7 +91,7 @@
             </TextBlock>
             <ComboBox Grid.Row="2" Grid.Column="1" 
                   x:Name="cmbGrabMod" Style="{DynamicResource KeyCombo}"
-                  SelectedValue="{Binding GrabKeyMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
+                  SelectedValue="{Binding NextMod, Converter={StaticResource ModifierKeysIntConverter},Mode=TwoWay}">
                 <System:Int32>0</System:Int32>
                 <System:Int32>1</System:Int32>
                 <System:Int32>2</System:Int32>
