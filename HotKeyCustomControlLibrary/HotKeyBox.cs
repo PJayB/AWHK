@@ -294,7 +294,16 @@ namespace HotKeyCustomControlLibrary
         }
 
         public static readonly DependencyProperty KeyComboProperty =
-            DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo?), typeof(HotKeyBox));
+            DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo?), typeof(HotKeyBox), new PropertyMetadata(propertyChangedCallback));
+
+        private static void propertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HotKeyBox hkb = (HotKeyBox)d;
+            if (hkb != null)
+            {
+                hkb.UpdateDisplay();
+            }
+        }
         
         public static readonly DependencyProperty DisabledModifiersProperty =
             DependencyProperty.Register("DisabledModifiers", typeof(ModifierKeys?), typeof(HotKeyBox));
