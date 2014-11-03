@@ -192,8 +192,8 @@ namespace HotKeyCustomControlLibrary
     public class HotKeyBox : Control
     {
         private TextBox displayBox;
-        private bool hasFocus;
         private Key? previewTrigger;
+        private bool previewing;
 
         public HotKeyCombo? KeyCombo
         {
@@ -331,14 +331,14 @@ namespace HotKeyCustomControlLibrary
         private void OnKeyboardGotFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             Keyboard.Focus(displayBox);
-            hasFocus = true;
             previewTrigger = null;
+            previewing = false;
         }
 
         private void OnLostKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
         {
-            hasFocus = false;
             previewTrigger = null;
+            previewing = false;
         }
 
         private bool IsAnyModKeyDown()
@@ -369,6 +369,22 @@ namespace HotKeyCustomControlLibrary
             return Keyboard.IsKeyDown(Key.LWin) || Keyboard.IsKeyDown(Key.RWin);
         }
 
+        private ModifierKeys GetModifierKeysDown()
+        {
+            return (IsAltKeyDown() ? ModifierKeys.Alt : ModifierKeys.None)
+                | (IsControlKeyDown() ? ModifierKeys.Control : ModifierKeys.None)
+                | (IsShiftKeyDown() ? ModifierKeys.Shift : ModifierKeys.None)
+                | (IsWindowsKeyDown() ? ModifierKeys.Windows : ModifierKeys.None);
+        }
+
+        private ModifierKeys GetAllowedModifierKeysDown()
+        {
+            return ((IsAltKeyDown() && !DisableAlt) ? ModifierKeys.Alt : ModifierKeys.None)
+                | ((IsControlKeyDown() && !DisableControl) ? ModifierKeys.Control : ModifierKeys.None)
+                | ((IsShiftKeyDown() && !DisableShift) ? ModifierKeys.Shift : ModifierKeys.None)
+                | ((IsWindowsKeyDown() && !DisableWindows) ? ModifierKeys.Windows : ModifierKeys.None);
+        }
+
         private void CommitHotKey(Key k)
         {
             ModifierKeys mods = ModifierKeys.None;
@@ -396,6 +412,11 @@ namespace HotKeyCustomControlLibrary
             if (key == Key.Tab)
                 return;
 
+            if (previewing == false)
+                previewTrigger = null;
+
+            previewing = true;
+
             bool isShift = (key == Key.LeftShift || key == Key.RightShift);
             bool isCtrl = (key == Key.LeftCtrl || key == Key.RightCtrl);
             bool isAlt = (key == Key.LeftAlt || key == Key.RightAlt);
@@ -405,18 +426,10 @@ namespace HotKeyCustomControlLibrary
             {
                 Clear();
             }
-            else if (
-                (isShift && ShiftIsAllowed()) || 
-                (isCtrl && ControlIsAllowed()) || 
-                (isAlt && AltIsAllowed()) ||
-                (isSys && WindowsIsAllowed()))
-            {
-                //if (Trigger.HasValue && !Keyboard.IsKeyDown(Trigger.Value))
-                //    Trigger = null;
-            }
             else if (!isShift && !isCtrl && !isAlt)
             {
-                CommitHotKey(key);
+                previewTrigger = key;
+                CommitHotKey(previewTrigger.Value);
             }
 
             e.Handled = true;
@@ -425,6 +438,11 @@ namespace HotKeyCustomControlLibrary
 
         private void OnPreviewKeyUp(object sender, KeyEventArgs e)
         {
+            if (!IsAnyModKeyDown())
+            {
+                previewing = false;
+            }
+
             UpdateDisplay();
         }
 
@@ -466,15 +484,15 @@ namespace HotKeyCustomControlLibrary
 
         private void UpdateDisplayWithPreviewValues()
         {
-            ModifierKeys showKeys = Modifiers.GetValueOrDefault() & ~DisabledModifiers.GetValueOrDefault();
+            ModifierKeys showKeys = GetAllowedModifierKeysDown();
             displayBox.Text = ModifierKeySymbols.CreateSymbolString(
                 showKeys,
-                Trigger.GetValueOrDefault());
+                previewTrigger.GetValueOrDefault());
         }
 
         private void UpdateDisplay()
         {
-            if (hasFocus && (IsAnyModKeyDown() || previewTrigger.HasValue))
+            if (previewing)
             {
                 UpdateDisplayWithPreviewValues();
             }
@@ -483,8 +501,8 @@ namespace HotKeyCustomControlLibrary
                 UpdateDisplayWithStoredValues();
             }
 
-            displayBox.SelectionStart = displayBox.Text.Length;
-            displayBox.SelectionLength = 0;
+            //displayBox.SelectionStart = displayBox.Text.Length;
+            //displayBox.SelectionLength = 0;
         }
 
         public void Clear()

@@ -181,10 +181,10 @@ namespace AWHKConfigApp
             System.Diagnostics.Debug.Assert(propertyName != "");
 
             if (value.HasValue)
+                _hotKeyMappings[propertyName] = value.Value;
+            else
                 _hotKeyMappings[propertyName] = ConvertHotKeyCombo(
                     Configuration.DefaultKeyCombo(propertyName));
-            else
-                _hotKeyMappings[propertyName] = value.Value;
 
             NotifyPropertyChanged(propertyName);
         }
@@ -203,10 +203,10 @@ namespace AWHKConfigApp
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
-            if (!value.HasValue)
-                _modifierKeyMappings[propertyName] = Configuration.DefaultModKeys(propertyName);
-            else
+            if (value.HasValue)
                 _modifierKeyMappings[propertyName] = value;
+            else
+                _modifierKeyMappings[propertyName] = Configuration.DefaultModKeys(propertyName);
 
             NotifyPropertyChanged(propertyName);
         }
@@ -225,10 +225,10 @@ namespace AWHKConfigApp
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
-            if (!value.HasValue)
-                _keyMappings[propertyName] = Configuration.DefaultKey(propertyName);
-            else
+            if (value.HasValue)
                 _keyMappings[propertyName] = value;
+            else
+                _keyMappings[propertyName] = Configuration.DefaultKey(propertyName);
 
             NotifyPropertyChanged(propertyName);
         }
@@ -247,10 +247,10 @@ namespace AWHKConfigApp
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
-            if (!value.HasValue)
-                _boolMappings[propertyName] = Configuration.DefaultBool(propertyName);
-            else
+            if (value.HasValue)
                 _boolMappings[propertyName] = value;
+            else
+                _boolMappings[propertyName] = Configuration.DefaultBool(propertyName);
 
             NotifyPropertyChanged(propertyName);
         }
@@ -269,10 +269,10 @@ namespace AWHKConfigApp
         {
             System.Diagnostics.Debug.Assert(propertyName != "");
 
-            if (!value.HasValue)
-                _intMappings[propertyName] = Configuration.DefaultInt(propertyName);
-            else
+            if (value.HasValue)
                 _intMappings[propertyName] = value;
+            else
+                _intMappings[propertyName] = Configuration.DefaultInt(propertyName);
 
             NotifyPropertyChanged(propertyName);
         }
