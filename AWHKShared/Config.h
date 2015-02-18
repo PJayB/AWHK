@@ -55,9 +55,6 @@ struct AWHK_APP_CONFIG
 	AWHK_CURSOR_KEYS	ResizeKeys;
 	AWHK_CURSOR_KEYS	MoveKeys;
 
-	AWHK_KEY_COMBO      SessionSave[10];
-    AWHK_KEY_COMBO      SessionLoad[10];
-
     AWHK_KEY_COMBO      MediaPrev;
     AWHK_KEY_COMBO      MediaNext;
     AWHK_KEY_COMBO      MediaPlay;

@@ -70,28 +70,6 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadRegistryVKey	( AWHK_REG_MOVE_UP		    , &cfg->MoveKeys.UpKey );
 	LoadRegistryVKey	( AWHK_REG_MOVE_DOWN	    , &cfg->MoveKeys.DownKey );
 
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_0   , &cfg->SessionSave[0] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_1   , &cfg->SessionSave[1] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_2   , &cfg->SessionSave[2] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_3   , &cfg->SessionSave[3] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_4   , &cfg->SessionSave[4] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_5   , &cfg->SessionSave[5] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_6   , &cfg->SessionSave[6] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_7   , &cfg->SessionSave[7] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_8   , &cfg->SessionSave[8] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_SAVE_9   , &cfg->SessionSave[9] );
-
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_0   , &cfg->SessionLoad[0] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_1   , &cfg->SessionLoad[1] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_2   , &cfg->SessionLoad[2] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_3   , &cfg->SessionLoad[3] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_4   , &cfg->SessionLoad[4] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_5   , &cfg->SessionLoad[5] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_6   , &cfg->SessionLoad[6] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_7   , &cfg->SessionLoad[7] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_8   , &cfg->SessionLoad[8] );
-    LoadKeyCombo        ( AWHK_REG_SESSION_LOAD_9   , &cfg->SessionLoad[9] );
-
     LoadKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
     LoadKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );
     LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY       , &cfg->MediaPlay );
@@ -142,28 +120,6 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 	StoreRegistryDword	( AWHK_REG_MOVE_RIGHT	    , cfg->MoveKeys.RightKey );
 	StoreRegistryDword	( AWHK_REG_MOVE_UP		    , cfg->MoveKeys.UpKey );
 	StoreRegistryDword	( AWHK_REG_MOVE_DOWN	    , cfg->MoveKeys.DownKey );
-
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_0   , &cfg->SessionSave[0] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_1   , &cfg->SessionSave[1] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_2   , &cfg->SessionSave[2] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_3   , &cfg->SessionSave[3] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_4   , &cfg->SessionSave[4] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_5   , &cfg->SessionSave[5] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_6   , &cfg->SessionSave[6] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_7   , &cfg->SessionSave[7] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_8   , &cfg->SessionSave[8] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_SAVE_9   , &cfg->SessionSave[9] );
-
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_0   , &cfg->SessionLoad[0] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_1   , &cfg->SessionLoad[1] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_2   , &cfg->SessionLoad[2] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_3   , &cfg->SessionLoad[3] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_4   , &cfg->SessionLoad[4] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_5   , &cfg->SessionLoad[5] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_6   , &cfg->SessionLoad[6] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_7   , &cfg->SessionLoad[7] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_8   , &cfg->SessionLoad[8] );
-    SaveKeyCombo        ( AWHK_REG_SESSION_LOAD_9   , &cfg->SessionLoad[9] );
 
     SaveKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
     SaveKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );

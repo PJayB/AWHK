@@ -345,26 +345,6 @@ namespace AWHKConfigApp
         // Explicit hotkeys
         public HotKeyCombo? HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? ConfigKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionSave9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad0 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad1 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad2 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad3 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad4 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad5 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad6 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad7 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad8 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? SessionLoad9 { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaPrev { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaNext { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaPlay { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
