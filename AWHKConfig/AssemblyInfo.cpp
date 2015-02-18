@@ -56,4 +56,6 @@ using namespace System::Security::Permissions;
 
 [assembly:CLSCompliantAttribute(true)];
 
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
+//warning C4947: 'RequestMinimum' : marked as obsolete
+//Assembly level declarative security is obsolete and is no longer enforced by the CLR by default. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.
+//[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
