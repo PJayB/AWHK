@@ -94,9 +94,6 @@
       <DependentUpon>MediaPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ScreenGrabber.cs" />
-    <Compile Include="SessionsPage.xaml.cs">
-      <DependentUpon>SessionsPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VerticalDirectionHelpIcon.xaml.cs">
       <DependentUpon>VerticalDirectionHelpIcon.xaml</DependentUpon>
     </Compile>
@@ -137,10 +134,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MoveKeysPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SessionsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
