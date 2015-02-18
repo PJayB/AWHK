@@ -437,7 +437,7 @@ namespace HotKeyCustomControlLibrary
             {
                 Clear();
             }
-            else if (!isShift && !isCtrl && !isAlt)
+            else if (!isShift && !isCtrl && !isAlt && !isSys)
             {
                 previewTrigger = key;
                 CommitHotKey(previewTrigger.Value);
