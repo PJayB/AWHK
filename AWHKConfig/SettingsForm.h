@@ -713,7 +713,7 @@ namespace AWHKConfig {
 
 			// TODO: validate these!
 			cfg.MoveKeyMod = dwBaseMods;
-			cfg.GrabKeyMod = dwAdjMods;
+			cfg.NextKeyMod = dwAdjMods;
 			cfg.FineKeyMod = dwFineMods;
 
 			SaveConfiguration( &cfg );
