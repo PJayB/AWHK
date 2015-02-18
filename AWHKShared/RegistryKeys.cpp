@@ -36,8 +36,8 @@ static const DEFAULT_KEY_VALUE c_DefaultValues[] =
     { AWHK_REG_FINE_X,              32 },
     { AWHK_REG_FINE_Y,              16 },
 
-    { AWKH_REG_HELP_COMBO,          MAKE_KEY_COMBO( MOD_ALT, VK_F1 ) },
-    { AWKH_REG_CFG_COMBO,           MAKE_KEY_COMBO( MOD_ALT, VK_F2 ) },
+    { AWKH_REG_HELP_COMBO,          AWHK_MAKE_HOTKEY( MOD_ALT, VK_F1 ) },
+    { AWKH_REG_CFG_COMBO,           AWHK_MAKE_HOTKEY( MOD_ALT, VK_F2 ) },
 
     { AWHK_REG_RESIZE_LEFT,         VK_LEFT },
     { AWHK_REG_RESIZE_RIGHT,        VK_RIGHT },
@@ -55,33 +55,32 @@ static const DEFAULT_KEY_VALUE c_DefaultValues[] =
 
     { AWHK_REG_MEDIA_PREV,          0 },
     { AWHK_REG_MEDIA_NEXT,          0 },
-    { AWHK_REG_MEDIA_PLAY,          0 },
-    { AWHK_REG_MEDIA_PAUSE,         0 },
+    { AWHK_REG_MEDIA_STOP,          0 },
     { AWHK_REG_MEDIA_PLAY_PAUSE,    0 },
     { AWHK_REG_MEDIA_VOLUME_UP,     0 },
     { AWHK_REG_MEDIA_VOLUME_DOWN,   0 },
 
-    { AWHK_REG_SESSION_SAVE_0,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F1 ) },
-    { AWHK_REG_SESSION_SAVE_1,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F2 ) },
-    { AWHK_REG_SESSION_SAVE_2,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F3 ) },
-    { AWHK_REG_SESSION_SAVE_3,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F4 ) },
-    { AWHK_REG_SESSION_SAVE_4,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F5 ) },
-    { AWHK_REG_SESSION_SAVE_5,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F6 ) },
-    { AWHK_REG_SESSION_SAVE_6,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F7 ) },
-    { AWHK_REG_SESSION_SAVE_7,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F8 ) },
-    { AWHK_REG_SESSION_SAVE_8,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F9 ) },
-    { AWHK_REG_SESSION_SAVE_9,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F10 ) },
+    { AWHK_REG_SESSION_SAVE_0,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F1 ) },
+    { AWHK_REG_SESSION_SAVE_1,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F2 ) },
+    { AWHK_REG_SESSION_SAVE_2,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F3 ) },
+    { AWHK_REG_SESSION_SAVE_3,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F4 ) },
+    { AWHK_REG_SESSION_SAVE_4,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F5 ) },
+    { AWHK_REG_SESSION_SAVE_5,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F6 ) },
+    { AWHK_REG_SESSION_SAVE_6,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F7 ) },
+    { AWHK_REG_SESSION_SAVE_7,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F8 ) },
+    { AWHK_REG_SESSION_SAVE_8,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F9 ) },
+    { AWHK_REG_SESSION_SAVE_9,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F10 ) },
 
-    { AWHK_REG_SESSION_LOAD_0,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F1 ) },
-    { AWHK_REG_SESSION_LOAD_1,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F2 ) },
-    { AWHK_REG_SESSION_LOAD_2,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F3 ) },
-    { AWHK_REG_SESSION_LOAD_3,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F4 ) },
-    { AWHK_REG_SESSION_LOAD_4,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F5 ) },
-    { AWHK_REG_SESSION_LOAD_5,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F6 ) },
-    { AWHK_REG_SESSION_LOAD_6,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F7 ) },
-    { AWHK_REG_SESSION_LOAD_7,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F8 ) },
-    { AWHK_REG_SESSION_LOAD_8,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F9 ) },
-    { AWHK_REG_SESSION_LOAD_9,      MAKE_KEY_COMBO( MOD_CONTROL | MOD_ALT, VK_F10 ) },
+    { AWHK_REG_SESSION_LOAD_0,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F1 ) },
+    { AWHK_REG_SESSION_LOAD_1,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F2 ) },
+    { AWHK_REG_SESSION_LOAD_2,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F3 ) },
+    { AWHK_REG_SESSION_LOAD_3,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F4 ) },
+    { AWHK_REG_SESSION_LOAD_4,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F5 ) },
+    { AWHK_REG_SESSION_LOAD_5,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F6 ) },
+    { AWHK_REG_SESSION_LOAD_6,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F7 ) },
+    { AWHK_REG_SESSION_LOAD_7,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F8 ) },
+    { AWHK_REG_SESSION_LOAD_8,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F9 ) },
+    { AWHK_REG_SESSION_LOAD_9,      AWHK_MAKE_HOTKEY( MOD_CONTROL | MOD_ALT, VK_F10 ) },
 
     { NULL, 0 }
 };
@@ -135,14 +134,14 @@ BOOL DefaultRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
     return GetRegistryDefaultValue( strName, pOut );
 }
 
-BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers )
+BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers )
 {
     DWORD dwPacked = 0;
     if ( !GetRegistryDefaultValue( strComboName, &dwPacked ) )
         return FALSE;
 
-    *pdwTrigger = GET_TRIGGER_KEY( dwPacked );
-    *pdwModifiers = GET_MODIFIER_KEYS( dwPacked );
+    *pusTrigger = AWHK_GET_TRIGGER_KEY( dwPacked );
+    *pusModifiers = AWHK_GET_MODIFIER_KEYS( dwPacked );
     return TRUE;
 }
 
@@ -262,7 +261,7 @@ BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
 	return TRUE;
 }
 
-BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers )
+BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers )
 {
     DWORD dwPacked = 0;
     if ( !LoadRegistryDword( strComboName, &dwPacked ) )
@@ -272,8 +271,8 @@ BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwMo
     if ( dwPacked == 0 )
         return TRUE;
 
-    DWORD dwTrigger = GET_TRIGGER_KEY( dwPacked );
-    DWORD dwModifiers = GET_MODIFIER_KEYS( dwPacked );
+    DWORD dwTrigger = AWHK_GET_TRIGGER_KEY( dwPacked );
+    DWORD dwModifiers = AWHK_GET_MODIFIER_KEYS( dwPacked );
 
     // Sanity check
     if ( dwTrigger > 0xFF )
@@ -282,8 +281,8 @@ BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwMo
 	if ( dwModifiers > dwAllKeys )
 		return FALSE;
 
-    *pdwTrigger = dwTrigger;
-    *pdwModifiers = dwModifiers;
+    *pusTrigger = (USHORT) dwTrigger;
+    *pusModifiers = (USHORT) dwModifiers;
     return TRUE;
 }
 
@@ -339,9 +338,9 @@ BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
 	return ret == ERROR_SUCCESS;
 }
 
-BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, DWORD dwTrigger, DWORD dwModifiers )
+BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, USHORT usTrigger, USHORT usModifiers )
 {
-    DWORD dwPacked = MAKE_KEY_COMBO( dwModifiers, dwTrigger );
+    DWORD dwPacked = AWHK_MAKE_HOTKEY( usModifiers, usTrigger );
 
     return StoreRegistryDword( strComboName, dwPacked );
 }

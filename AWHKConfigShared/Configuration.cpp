@@ -80,8 +80,8 @@ namespace AWHKConfigShared {
 
 	KeyCombo Configuration::DefaultKeyCombo( System::String^ name )
     {
-        DWORD mods = 0;
-        DWORD trigger = 0;
+        USHORT mods = 0;
+        USHORT trigger = 0;
 
         pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
         if (!DefaultRegistryKeyCombo( nameC, &trigger, &mods ))
@@ -142,8 +142,8 @@ namespace AWHKConfigShared {
 
 	KeyCombo Configuration::LoadKeyCombo( System::String^ name )
     {
-        DWORD mods = 0;
-        DWORD trigger = 0;
+        USHORT mods = 0;
+        USHORT trigger = 0;
 
         pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
         if (!LoadRegistryKeyCombo( nameC, &trigger, &mods ))
@@ -197,7 +197,7 @@ namespace AWHKConfigShared {
     void Configuration::Store( System::String^ name, KeyCombo v )
     {
         pin_ptr<const wchar_t> nameC = PtrToStringChars( name );
-        if (!StoreRegistryKeyCombo( nameC, (DWORD) KeyInterop::VirtualKeyFromKey( v.Key ), (DWORD) v.Modifiers ))
+        if (!StoreRegistryKeyCombo( nameC, (USHORT) KeyInterop::VirtualKeyFromKey( v.Key ), (USHORT) v.Modifiers ))
         {
             throw gcnew ConfigurationIoException();
         }

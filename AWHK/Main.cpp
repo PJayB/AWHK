@@ -28,6 +28,7 @@
 
 #include "SupportModule.h"
 #include "WindowSnap.h"
+#include "MediaKeys.h"
 #include "..\AWHKShared\Config.h"
 #include "..\AWHKShared\IPC.h"
 #include "..\AWHKShared\SupportFile.h"
@@ -215,32 +216,40 @@ void ConfigureWindowSnapParams(
 BOOL HandleHotKey(
 	const AWHK_APP_STATE* state,
 	const AWHK_APP_CONFIG* cfg,
-	USHORT vKey,
-	USHORT mods )
+	AWHK_KEY_COMBO key )
 {
 	// Deal with system keys
-	if ( vKey == cfg->HelpCombo.Trigger &&
-		 mods == cfg->HelpCombo.Modifiers )
-	{
+	if ( key == cfg->HelpCombo )
 		return ShowWebHelp();
-	}
-	if ( vKey == cfg->ConfigCombo.Trigger &&
-		 mods == cfg->ConfigCombo.Modifiers )
-	{
+	else if ( key == cfg->ConfigCombo )
 		return ShowControlPanel( state );
-	}
+    else if ( key == cfg->MediaPlayPause )
+        return MediaPlayPause();
+    else if ( key == cfg->MediaStop )
+        return MediaStop();
+    else if ( key == cfg->MediaNext )
+        return MediaNextTrack();
+    else if ( key == cfg->MediaPrev )
+        return MediaPrevTrack();
+    else if ( key == cfg->MediaMute )
+        return MediaMute();
+    else if ( key == cfg->MediaVolumeDown )
+        return MediaVolumeDown();
+    else if ( key == cfg->MediaVolumeUp )
+        return MediaVolumeUp();
+    
 
 	WINDOW_SNAP_PARAMS params;
 	ConfigureWindowSnapParams(
 		cfg,
-		mods,
+		key.Modifiers,
 		&params );
 
 	// Which set of arrow keys are we using?
-	DIRECTION arrowKeys = DirectionFromVKey( &cfg->ResizeKeys, vKey );
+	DIRECTION arrowKeys = DirectionFromVKey( &cfg->ResizeKeys, key.Trigger );
 	if ( arrowKeys == DIR_UNKNOWN )
 	{
-		arrowKeys = DirectionFromVKey( &cfg->MoveKeys, vKey );
+		arrowKeys = DirectionFromVKey( &cfg->MoveKeys, key.Trigger );
 		if ( arrowKeys == DIR_UNKNOWN )
 			return FALSE;
 
@@ -279,7 +288,7 @@ DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, DWORD keyMod, DWORD 
 	assert( hotkeyCount > 0 );
 	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
 
-	pKeys[hotkeyCount - 1] = MAKELONG( keyMod, vKey );
+	pKeys[hotkeyCount - 1] = AWHK_MAKE_HOTKEY( keyMod, vKey );
 	if ( ::RegisterHotKey( NULL, hotkeyCount, keyMod, vKey ) )
 		return 1 << (hotkeyCount - 1);
 	else
@@ -293,7 +302,7 @@ DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, const AWHK_KEY_COMBO
 	assert( hotkeyCount > 0 );
 	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
 
-	pKeys[hotkeyCount - 1] = MAKELONG( pCombo->Modifiers, pCombo->Trigger );
+	pKeys[hotkeyCount - 1] = pCombo->dwBits;
 	if ( ::RegisterHotKey( NULL, hotkeyCount, pCombo->Modifiers, pCombo->Trigger ) )
 		return 1 << (hotkeyCount - 1);
 	else
@@ -359,6 +368,13 @@ BOOL RegisterExtraHotKeys(
 
 	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->HelpCombo );
 	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->ConfigCombo );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaPlayPause );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaStop );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaNext );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaPrev );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaMute );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaVolumeUp );
+	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaVolumeDown );
 
 	pKeys->dwKeyBits = dwKeyBits;
 	pKeys->HotKeyCount = hotKeyCount;
@@ -438,8 +454,8 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 			{
 				if ( ( pKeySet->dwKeyBits & ( 1 << i ) ) == 0 )
 				{
-					DWORD dwVKey = HIWORD( pKeySet->pdwRegisteredKeys[i] );
-					DWORD dwMod = LOWORD( pKeySet->pdwRegisteredKeys[i] );
+					DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pKeySet->pdwRegisteredKeys[i] );
+					DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pKeySet->pdwRegisteredKeys[i] );
 
 					LPCWSTR strVKey = GetVKeyString( dwVKey );
 					if ( !strVKey )
@@ -565,11 +581,15 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			break;
 		case WM_HOTKEY:
 			{
-				HandleHotKey(
+				BOOL bOK = HandleHotKey(
 					appState,
 					appCfg,
-					HIWORD( msg.lParam ), 
-					LOWORD( msg.lParam ) );
+					CreateKeyCombo( msg.lParam ) );
+#ifdef _DEBUG
+                assert( bOK );
+#else
+                (void) bOK;
+#endif
 				break;
 			}
 			break;
@@ -595,6 +615,7 @@ int CALLBACK WinMain(
 		return -1;
 
 	AWHK_APP_STATE appState;
+    ZeroMemory( &appState, sizeof(appState) );
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = ::GetCurrentThreadId();
 	appState.ControlPanelOpen = FALSE;
@@ -607,6 +628,7 @@ int CALLBACK WinMain(
 	CreateIPC( &appState.Comms );
 
 	AWHK_APP_CONFIG appCfg;
+    ZeroMemory( &appCfg, sizeof(appCfg) );
 	LoadConfiguration( &appCfg );
 
 	RegisterHotKeysAndWarn(

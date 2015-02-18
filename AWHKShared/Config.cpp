@@ -21,10 +21,6 @@
 #include "Config.h"
 #include "RegistryKeys.h"
 
-AWHK_APP_CONFIG::AWHK_APP_CONFIG()
-{
-}
-
 BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
 	DWORD gridVal = 0;
@@ -71,9 +67,8 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadRegistryVKey	( AWHK_REG_MOVE_DOWN	    , &cfg->MoveKeys.DownKey );
 
     LoadKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY       , &cfg->MediaPlay );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_PAUSE      , &cfg->MediaPause );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaNext );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
     LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
     LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
     LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
@@ -124,8 +119,7 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 
     SaveKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
     SaveKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_PLAY       , &cfg->MediaPlay );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_PAUSE      , &cfg->MediaPause );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
     SaveKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
     SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
     SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );

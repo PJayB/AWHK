@@ -347,8 +347,7 @@ namespace AWHKConfigApp
         public HotKeyCombo? ConfigKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaPrev { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaNext { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? MediaPlay { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
-        public HotKeyCombo? MediaPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaStop { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaPlayPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaVolumeUp { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaVolumeDown { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }

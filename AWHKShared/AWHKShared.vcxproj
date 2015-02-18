@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="AutoLogin.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Hotkey.h" />
     <ClInclude Include="IPC.h" />
     <ClInclude Include="RegistryKeys.h" />
     <ClInclude Include="stdafx.h" />

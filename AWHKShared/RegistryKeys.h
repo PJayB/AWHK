@@ -72,33 +72,28 @@
 
 #define AWHK_REG_MEDIA_PREV             L"MediaPrev"
 #define AWHK_REG_MEDIA_NEXT             L"MediaNext"
-#define AWHK_REG_MEDIA_PLAY             L"MediaPlay"
-#define AWHK_REG_MEDIA_PAUSE            L"MediaPause"
+#define AWHK_REG_MEDIA_STOP             L"MediaStop"
 #define AWHK_REG_MEDIA_PLAY_PAUSE       L"MediaPlayPause"
 #define AWHK_REG_MEDIA_VOLUME_UP        L"MediaVolumeUp"
 #define AWHK_REG_MEDIA_VOLUME_DOWN      L"MediaVolumeDown"
 #define AWHK_REG_MEDIA_MUTE             L"MediaMute"
 
-#define MAKE_KEY_COMBO( mods, trigger ) MAKELONG( mods, trigger )
-#define GET_TRIGGER_KEY( packed ) HIWORD( packed )
-#define GET_MODIFIER_KEYS( packed) LOWORD( packed )
-
 DWORD GetRegistryDefaultValue( LPCWSTR strKey );
 
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue );
-BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, DWORD dwTrigger, DWORD dwModifiers );
+BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, USHORT usTrigger, USHORT usModifiers );
 
 BOOL DefaultRegistryDword( LPCWSTR strName, DWORD* pOut );
 BOOL DefaultRegistryQword( LPCWSTR strName, LONGLONG* pOut );
 BOOL DefaultRegistryBool( LPCWSTR strName, BOOL* pOut );
 BOOL DefaultRegistryVKey( LPCWSTR strName, DWORD* pOut );
 BOOL DefaultRegistryKeyMod( LPCWSTR strName, DWORD* pOut );
-BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers );
+BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers );
 
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut );
 BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut );
 BOOL LoadRegistryBool( LPCWSTR strName, BOOL* pOut );
 BOOL LoadRegistryVKey( LPCWSTR strName, DWORD* pOut );
 BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut );
-BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, DWORD* pdwTrigger, DWORD* pdwModifiers );
+BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers );

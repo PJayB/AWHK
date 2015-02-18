@@ -43,3 +43,5 @@ namespace std {
 }
 
 #include <Windows.h>
+
+#include "../AWHKShared/Hotkey.h"

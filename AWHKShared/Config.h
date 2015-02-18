@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "Hotkey.h"
+
 struct AWHK_CURSOR_KEYS
 {
 	DWORD				LeftKey;
@@ -27,16 +29,8 @@ struct AWHK_CURSOR_KEYS
 	DWORD				DownKey;
 };
 
-struct AWHK_KEY_COMBO
-{
-    DWORD               Trigger;
-    DWORD               Modifiers;
-};
-
 struct AWHK_APP_CONFIG
 {
-	AWHK_APP_CONFIG();
-
 	BOOL				AllowSnapToOthers;
 	DWORD				MaxEdgeSearchSize;
 
@@ -57,8 +51,7 @@ struct AWHK_APP_CONFIG
 
     AWHK_KEY_COMBO      MediaPrev;
     AWHK_KEY_COMBO      MediaNext;
-    AWHK_KEY_COMBO      MediaPlay;
-    AWHK_KEY_COMBO      MediaPause;
+    AWHK_KEY_COMBO      MediaStop;
     AWHK_KEY_COMBO      MediaPlayPause;
     AWHK_KEY_COMBO      MediaVolumeUp;
     AWHK_KEY_COMBO      MediaVolumeDown;
@@ -67,6 +60,4 @@ struct AWHK_APP_CONFIG
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );
 BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg );
-
-
 
