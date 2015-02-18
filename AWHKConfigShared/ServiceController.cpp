@@ -18,7 +18,7 @@ namespace AWHKConfigShared {
             throw gcnew ServiceNotRunningException();
         }
 
-        WriteMessageIPC( &ipc, IPC_MSG_QUIT );
+        WriteMessageIPC( &ipc, IPC_MSG_RELOAD_CONFIG );
         CloseIPC( &ipc );
     }
 
@@ -30,7 +30,7 @@ namespace AWHKConfigShared {
             throw gcnew ServiceNotRunningException();
         }
 
-        WriteMessageIPC( &ipc, IPC_MSG_RELOAD_CONFIG );
+        WriteMessageIPC( &ipc, IPC_MSG_QUIT );
         CloseIPC( &ipc );
     }
 

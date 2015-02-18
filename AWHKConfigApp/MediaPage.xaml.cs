@@ -24,5 +24,29 @@ namespace AWHKConfigApp
         {
             InitializeComponent();
         }
+
+        private void HotKeyBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                new AWHKConfigShared.ServiceController().Resume();
+            }
+            catch (AWHKConfigShared.ServiceNotRunningException)
+            {
+                // We can ignore this.
+            }
+        }
+
+        private void HotKeyBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                new AWHKConfigShared.ServiceController().Suspend();
+            }
+            catch (AWHKConfigShared.ServiceNotRunningException)
+            {
+                // We can ignore this.
+            }
+        }
     }
 }
