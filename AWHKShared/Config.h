@@ -62,6 +62,7 @@ struct AWHK_APP_CONFIG
     AWHK_KEY_COMBO      MediaPlayPause;
     AWHK_KEY_COMBO      MediaVolumeUp;
     AWHK_KEY_COMBO      MediaVolumeDown;
+    AWHK_KEY_COMBO      MediaMute;
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );

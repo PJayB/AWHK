@@ -77,6 +77,7 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
     LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
     LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
     LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
 
 	DWORD moveKeyMod = cfg->MoveKeyMod;
 	DWORD fineKeyMod = cfg->FineKeyMod;
@@ -128,6 +129,7 @@ BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
     SaveKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
     SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
     SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
 	
 	StoreRegistryDword	( AWHK_REG_MOVE_KEY_MOD     , cfg->MoveKeyMod );
 	StoreRegistryDword	( AWHK_REG_NEXT_KEY_MOD     , cfg->NextKeyMod );

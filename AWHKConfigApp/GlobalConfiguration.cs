@@ -352,6 +352,7 @@ namespace AWHKConfigApp
         public HotKeyCombo? MediaPlayPause { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaVolumeUp { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public HotKeyCombo? MediaVolumeDown { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
+        public HotKeyCombo? MediaMute { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
         public Key? ResizeLeft { get { return GetKey(); } set { SetKey(value); } }
         public Key? ResizeRight { get { return GetKey(); } set { SetKey(value); } }
         public Key? ResizeUp { get { return GetKey(); } set { SetKey(value); } }

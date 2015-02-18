@@ -3,11 +3,67 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:HotKeyControls="clr-namespace:HotKeyCustomControlLibrary;assembly=HotKeyCustomControlLibrary"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
+      d:DesignHeight="580" d:DesignWidth="580"
 	Title="MediaPage">
 
-    <Grid>
-        
-    </Grid>
+    <Page.Resources>
+        <HotKeyControls:HotKeyComboSymbolConverter x:Key="HotKeyComboSymbolConverter"/>
+        <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="Margin" Value="0,0,0,7"/>
+        </Style>
+    </Page.Resources>
+
+    <StackPanel>
+        <Grid Margin="0,25,0,7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <!-- Key bindings -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE213;/&#xE214;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Play/Pause" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="0" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaPlayPause, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="&#xE102;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="Play" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="1" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaPlay, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="&#xE103;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="Pause" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="2" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaPause, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="&#xE101;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="Next Track" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="3" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaNext, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="&#xE100;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="Previous Track" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="4" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaPrev, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="&#xE15D;&#xE109;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="Volume Up" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="5" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaVolumeUp, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="&#xE15D;&#xE108;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="Volume Down" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="6" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaVolumeDown, Mode=TwoWay}"/>
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="&#xE198;" FontFamily="Segoe UI Symbol"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="Mute" FontFamily="Segoe UI Symbol"/>
+            <HotKeyControls:HotKeyBox Grid.Row="7" Grid.Column="2" Style="{StaticResource SeparatorMargin}" KeyCombo="{Binding MediaMute, Mode=TwoWay}"/>
+        </Grid>
+    </StackPanel>
 </Page>

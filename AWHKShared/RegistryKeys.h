@@ -77,6 +77,7 @@
 #define AWHK_REG_MEDIA_PLAY_PAUSE       L"MediaPlayPause"
 #define AWHK_REG_MEDIA_VOLUME_UP        L"MediaVolumeUp"
 #define AWHK_REG_MEDIA_VOLUME_DOWN      L"MediaVolumeDown"
+#define AWHK_REG_MEDIA_MUTE             L"MediaMute"
 
 #define MAKE_KEY_COMBO( mods, trigger ) MAKELONG( mods, trigger )
 #define GET_TRIGGER_KEY( packed ) HIWORD( packed )
