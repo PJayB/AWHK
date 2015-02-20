@@ -440,7 +440,6 @@ LPCWSTR GetKeyModString( DWORD keyMod )
 #undef KEYMOD
 };
 
-// TODO: we'll need to expand this as we open up more options
 LPCWSTR GetVKeyString( DWORD keyMod )
 {
 #define KEYMOD(x)	case VK_##x: return TEXT(#x)
@@ -469,27 +468,43 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 		LPWSTR strCursor = strKeysFailed;
 		LPCWSTR strEnd = strKeysFailed + sizeof(strKeysFailed) / sizeof(*strKeysFailed);
 
-		WCHAR strTmp[2];
+        GetLastError();
 
 		for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
 		{
 			const AWHK_HOTKEY_SET* pKeySet = &pKeys->KeySets[k];
 			for ( LONG i = 0; i < pKeySet->HotKeyCount; ++i )
 			{
-				if ( ( pKeySet->qwKeyBits & ( 1ULL << i ) ) == 0 )
+				if ( ( pKeySet->qwKeyBits & ( 1ULL << i ) ) == 0 && 
+                       pKeySet->pdwRegisteredKeys[i] != 0 )
 				{
 					DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pKeySet->pdwRegisteredKeys[i] );
 					DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pKeySet->pdwRegisteredKeys[i] );
 
-					LPCWSTR strVKey = GetVKeyString( dwVKey );
-					if ( !strVKey )
+                    WCHAR strVKey[256];
+                    INT strLen = ::GetKeyNameText( 
+                        (::MapVirtualKey( dwVKey, 0 ) << 16) | (1UL << 24), 
+                        strVKey, _countof(strVKey) );
+                    if ( strLen == 0 )
 					{
-						swprintf_s(
-							strTmp,
-							sizeof( strTmp ) / sizeof( *strTmp ),
-							L"%c",
-							dwVKey );
-						strVKey = strTmp;
+                        DWORD dwLastError = GetLastError();
+
+                        if ( isprint(dwVKey) )
+                        {
+						    swprintf_s(
+							    strVKey,
+							    _countof(strVKey),
+							    L"%c (0x%08X)",
+							    dwVKey, dwLastError );
+                        }
+                        else
+                        {
+						    swprintf_s(
+							    strVKey,
+							    _countof(strVKey),
+							    L"0x%X (0x%08X)",
+							    dwVKey, dwLastError );
+                        }
 					}
 
 					strCursor += swprintf_s(
@@ -513,10 +528,9 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 			sizeof( strMsg ) / sizeof( WCHAR ),
 			L"Some keys failed to register. Please check the following keys in the settings:\n\n"
 			L"%s\n\n"
-			L"(Debugging stuff:\n"
-            L"   Extra: #%d 0x%064X\n"
-            L"   Resize: #%d 0x%064X\n"
-            L"   Move: #%d 0x%064X)",
+            L"%d Extra: 0x%llX\n"
+            L"%d Resize: 0x%llX\n"
+            L"%d Move: 0x%llX",
 			strKeysFailed,
 			pKeys->ExtraKeys.HotKeyCount,
 			pKeys->ExtraKeys.qwKeyBits,
