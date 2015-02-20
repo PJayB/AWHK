@@ -187,6 +187,29 @@ namespace HotKeyCustomControlLibrary
 
         public Key Trigger;
         public ModifierKeys Modifiers;
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                HotKeyCombo combo;
+                if (obj.GetType().Equals(typeof(HotKeyCombo?)))
+                    combo = ((HotKeyCombo?)obj).Value;
+                else
+                    combo = (HotKeyCombo)obj;
+                return combo.Modifiers == this.Modifiers &&
+                       combo.Trigger == this.Trigger;
+            }
+            catch (NullReferenceException) { return false; }
+            catch (InvalidCastException) { return false; }
+        }
+
+        public override int GetHashCode()
+        {
+            int mods = (int)Modifiers;
+            int trigger = (int)Trigger;
+            return (mods & 0xFFFF) | ((trigger & 0xFFFF) << 16);
+        }
     }
 
     public class HotKeyBox : Control
