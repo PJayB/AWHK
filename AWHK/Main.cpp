@@ -480,31 +480,20 @@ BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 				{
 					DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pKeySet->pdwRegisteredKeys[i] );
 					DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pKeySet->pdwRegisteredKeys[i] );
+					UINT uScanCode = ::MapVirtualKey( dwVKey, 0 );
 
-                    WCHAR strVKey[256];
-                    INT strLen = ::GetKeyNameText( 
-                        (::MapVirtualKey( dwVKey, 0 ) << 16) | (1UL << 24), 
+                    WCHAR strVKey[256] = {0};
+                    ::GetKeyNameText( 
+                        uScanCode << 16, 
                         strVKey, _countof(strVKey) );
-                    if ( strLen == 0 )
+                    if ( wcslen(strVKey) == 0 )
 					{
                         DWORD dwLastError = GetLastError();
-
-                        if ( isprint(dwVKey) )
-                        {
-						    swprintf_s(
-							    strVKey,
-							    _countof(strVKey),
-							    L"%c (0x%08X)",
-							    dwVKey, dwLastError );
-                        }
-                        else
-                        {
-						    swprintf_s(
-							    strVKey,
-							    _countof(strVKey),
-							    L"0x%X (0x%08X)",
-							    dwVKey, dwLastError );
-                        }
+						swprintf_s(
+							strVKey,
+							_countof(strVKey),
+							L"0x%X (0x%08X)",
+							dwVKey, dwLastError );
 					}
 
 					strCursor += swprintf_s(
