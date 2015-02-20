@@ -43,7 +43,7 @@ struct AWHK_REGISTER_STATUS
     HRESULT         Reason;
 };
 
-struct AWHK_REGISTER_INFO
+struct AWHK_REGISTRATION
 {
     LONG            RegisteredCount;
     LONG            AttemptCount;
@@ -53,18 +53,18 @@ struct AWHK_REGISTER_INFO
 
 struct AWHK_APP_STATE
 {
-	HINSTANCE		hInstance;
-	DWORD			dwMainThreadID;
-	IPC				Comms;
+	HINSTANCE		    hInstance;
+	DWORD			    dwMainThreadID;
+	IPC				    Comms;
 
-	UINT			MsgOpenControlPanel;
-	UINT			MsgControlPanelClosed;
-	UINT			MsgReloadConfig;
-    UINT            MsgSuspend;
-    UINT            MsgResume;
+	UINT			    MsgOpenControlPanel;
+	UINT			    MsgControlPanelClosed;
+	UINT			    MsgReloadConfig;
+    UINT                MsgSuspend;
+    UINT                MsgResume;
 
-	volatile BOOL	ControlPanelOpen;
-	LONG            HotKeyCount;
+	volatile BOOL	    ControlPanelOpen;
+	AWHK_REGISTRATION   Registration;
 };
 
 DIRECTION DirectionFromVKey( 
@@ -290,7 +290,7 @@ BOOL OpenSupportControlPanel( const AWHK_APP_STATE* pState )
     return TRUE;
 }
 
-void RegisterHotKeyAtIndex( DWORD keyMod, DWORD vKey, AWHK_REGISTER_INFO* pKeyStatus )
+void RegisterHotKeyAtIndex( DWORD keyMod, DWORD vKey, AWHK_REGISTRATION* pKeyStatus )
 {
 	assert( pKeyStatus->AttemptCount < AWHK_MAX_HOTKEYS );
 
@@ -317,7 +317,7 @@ void RegisterHotKeyAtIndex( DWORD keyMod, DWORD vKey, AWHK_REGISTER_INFO* pKeySt
     }
 }
 
-void RegisterHotKeyAtIndex( const AWHK_KEY_COMBO* pCombo, AWHK_REGISTER_INFO* pKeyStatus )
+void RegisterHotKeyAtIndex( const AWHK_KEY_COMBO* pCombo, AWHK_REGISTRATION* pKeyStatus )
 {
     RegisterHotKeyAtIndex( pCombo->Modifiers, pCombo->Trigger, pKeyStatus );
 }
@@ -325,7 +325,7 @@ void RegisterHotKeyAtIndex( const AWHK_KEY_COMBO* pCombo, AWHK_REGISTER_INFO* pK
 void RegisterArrowKeys( 
 	const AWHK_APP_CONFIG* cfg,
 	const AWHK_CURSOR_KEYS* pArrowKeys,
-	AWHK_REGISTER_INFO* pKeyStatus )
+	AWHK_REGISTRATION* pKeyStatus )
 {
 	DWORD dwMoveKeyMod = cfg->MoveKeyMod;
 	DWORD dwFineKeyMod = cfg->MoveKeyMod | cfg->FineKeyMod;
@@ -364,7 +364,7 @@ void RegisterArrowKeys(
 
 void RegisterExtraHotKeys( 
 	const AWHK_APP_CONFIG* cfg,
-	AWHK_REGISTER_INFO* pKeyStatus )
+	AWHK_REGISTRATION* pKeyStatus )
 {
 	RegisterHotKeyAtIndex( &cfg->HelpCombo,         pKeyStatus );
 	RegisterHotKeyAtIndex( &cfg->ConfigCombo,       pKeyStatus );
@@ -379,7 +379,7 @@ void RegisterExtraHotKeys(
 
 void RegisterHotKeys( 
 	const AWHK_APP_CONFIG* cfg,
-	AWHK_REGISTER_INFO* pKeyStatus )
+	AWHK_REGISTRATION* pKeyStatus )
 {
 	RegisterExtraHotKeys( cfg, pKeyStatus );
 
@@ -430,7 +430,7 @@ LPCWSTR HResultToString( HRESULT hr, LPWSTR buf, DWORD bufSize )
     return buf;
 }
 
-void ShowRegistrationFailures( const AWHK_REGISTER_INFO* pKeyState )
+void ShowRegistrationFailures( const AWHK_REGISTRATION* pKeyState )
 {
     // TODO: pass this to the listeners instead
     if ( pKeyState->ErrorCount == 0 )
@@ -490,25 +490,25 @@ void ShowRegistrationFailures( const AWHK_REGISTER_INFO* pKeyState )
 
 void RegisterHotKeysAndWarn( AWHK_APP_STATE* appState, const AWHK_APP_CONFIG* cfg )
 {
-    AWHK_REGISTER_INFO keyStatus;
-    ZeroMemory( &keyStatus, sizeof(keyStatus) );
+    ZeroMemory( &appState->Registration, sizeof(appState->Registration) );
 
-	RegisterHotKeys( cfg, &keyStatus );
+	RegisterHotKeys( cfg, &appState->Registration );
 
-    if ( keyStatus.ErrorCount > 0 )
+    if ( appState->Registration.ErrorCount > 0 )
     {
-        ShowRegistrationFailures( &keyStatus );
+        ShowRegistrationFailures( &appState->Registration );
     }
-
-    appState->HotKeyCount = keyStatus.RegisteredCount;
 }
 
-void UnregisterHotkeys( LONG* count )
+void UnregisterHotkeys( AWHK_REGISTRATION* pReg )
 {
-	while ( (*count)-- > 0 )
+    LONG count = pReg->RegisteredCount;
+	while ( count-- > 0 )
 	{
-		::UnregisterHotKey( NULL, *count );
+		::UnregisterHotKey( NULL, count );
 	}
+
+    ZeroMemory( pReg, sizeof(*pReg) );
 }
 
 int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
@@ -533,7 +533,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 		if ( msg.message == appState->MsgReloadConfig )
 		{
-			UnregisterHotkeys( &appState->HotKeyCount );
+			UnregisterHotkeys( &appState->Registration );
 
 			// Reload the settings
 			LoadConfiguration( appCfg );
@@ -548,7 +548,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
         // The control panel can suspend and resume the functionality without quitting the application
         if ( msg.message == appState->MsgSuspend )
         {
-            UnregisterHotkeys( &appState->HotKeyCount );
+            UnregisterHotkeys( &appState->Registration );
             continue;
         }
         if ( msg.message == appState->MsgResume )
@@ -628,7 +628,7 @@ int CALLBACK WinMain(
 
 	int ret = MessageLoop( &appState, &appCfg );
 
-	UnregisterHotkeys( &appState.HotKeyCount );
+	UnregisterHotkeys( &appState.Registration );
 
 	CloseIPC( &appState.Comms );
 
