@@ -440,23 +440,6 @@ LPCWSTR GetKeyModString( DWORD keyMod )
 #undef KEYMOD
 };
 
-LPCWSTR GetVKeyString( DWORD keyMod )
-{
-#define KEYMOD(x)	case VK_##x: return TEXT(#x)
-	switch (keyMod)
-	{
-	KEYMOD(LEFT);
-	KEYMOD(RIGHT);
-	KEYMOD(UP);
-	KEYMOD(DOWN);
-	KEYMOD(F1);
-	KEYMOD(F2);
-	default: 
-		return nullptr;
-	}
-#undef KEYMOD
-};
-
 BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
 {
 	static_assert( sizeof( pKeys->KeySets ) > sizeof( AWHK_HOTKEY_SET ), "You messed up, bro." );
