@@ -386,19 +386,15 @@ BOOL RegisterHotKeys(
 	const AWHK_APP_CONFIG* cfg, 
 	AWHK_HOTKEYS* pKeys )
 {
-	if ( !RegisterExtraHotKeys( cfg, &pKeys->ExtraKeys ) )
-		return FALSE;
+	BOOL bRet = RegisterExtraHotKeys( cfg, &pKeys->ExtraKeys ) )
 
 	if ( !cfg->MoveKeyMod )
-		return TRUE;
+		return bRet;
 
-	if ( !RegisterArrowKeys( cfg, &cfg->ResizeKeys, &pKeys->ResizeKeys ) )
-		return FALSE;
-	
-	if ( !RegisterArrowKeys( cfg, &cfg->MoveKeys, &pKeys->MoveKeys ) )
-		return FALSE;
+	bRet &= RegisterArrowKeys( cfg, &cfg->ResizeKeys, &pKeys->ResizeKeys ) )
+	bRet &= RegisterArrowKeys( cfg, &cfg->MoveKeys, &pKeys->MoveKeys ) )
 
-	return TRUE;
+	return bRet;
 }
 
 LPCWSTR GetKeyModString( DWORD keyMod )
