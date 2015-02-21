@@ -341,6 +341,45 @@ namespace AWHKConfigApp
             get { return GetHotKeyComboMoveModifiers("MoveDown"); }
             set { SetHotKeyComboMoveModifiers("MoveDown", value); }
         }
+
+        public bool IsHotKeyInUse(HotKeyCombo combo)
+        {
+            foreach (var prop in this.GetType().GetProperties())
+            {
+                if ( (
+                        prop.PropertyType.Equals(typeof(HotKeyCombo)) ||
+                        prop.PropertyType.Equals(typeof(HotKeyCombo?))
+                    ) && combo.Equals(prop.GetValue(this)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool ValidateNoDuplicateKeys()
+        {
+            HashSet<HotKeyCombo> keyCombos = new HashSet<HotKeyCombo>();
+            foreach (var prop in this.GetType().GetProperties())
+            {
+                if (prop.PropertyType.Equals(typeof(HotKeyCombo)) ||
+                    prop.PropertyType.Equals(typeof(HotKeyCombo?)))
+                {
+                    try
+                    {
+                        HotKeyCombo combo = (HotKeyCombo)prop.GetValue(this);
+                        if (keyCombos.Contains(combo))
+                        {
+                            return false;
+                        }
+                        keyCombos.Add(combo);
+                    }
+                    catch (NullReferenceException) { }
+                }
+            }
+
+            return true;
+        }
         
         // Explicit hotkeys
         public HotKeyCombo? HelpKey { get { return GetHotKeyCombo(); } set { SetHotKeyCombo(value); } }
@@ -391,6 +430,12 @@ namespace AWHKConfigApp
         // May throw an exception if properties fail validation
         public void Save()
         {
+            if ( !ValidateNoDuplicateKeys() )
+            {
+                // TODO: throw exception or something
+                return;
+            }
+
             // Save the settings:
             try
             {

@@ -35,39 +35,38 @@
 
 using namespace std;
 
-struct AWHK_HOTKEY_SET
+#define AWHK_MAX_HOTKEYS    64
+#define AWHK_APP_SEM	    L"AWHK_APP_OPEN_SEM" 
+
+struct AWHK_REGISTER_STATUS
 {
-	DWORD			dwKeyBits;
-	LONG			HotKeyCount;
-	DWORD			pdwRegisteredKeys[32];
+    DWORD           dwCombo;
+    HRESULT         Reason;
 };
 
-union AWHK_HOTKEYS
+struct AWHK_REGISTRATION
 {
-	struct 
-	{
-		AWHK_HOTKEY_SET ResizeKeys;
-		AWHK_HOTKEY_SET MoveKeys;
-		AWHK_HOTKEY_SET	ExtraKeys;
-	};
-
-	AWHK_HOTKEY_SET	KeySets[3];
+    LONG            RegisteredCount;
+    LONG            AttemptCount;
+    LONG            ErrorCount;
+    AWHK_REGISTER_STATUS StatusCodes[AWHK_MAX_HOTKEYS];
 };
 
 struct AWHK_APP_STATE
 {
-	HINSTANCE		hInstance;
-	DWORD			dwMainThreadID;
-	IPC				Comms;
+	HINSTANCE		    hInstance;
+	DWORD			    dwMainThreadID;
+    HANDLE              hAppOpenSemaphore;
+	IPC				    Comms;
 
-	UINT			MsgOpenControlPanel;
-	UINT			MsgControlPanelClosed;
-	UINT			MsgReloadConfig;
-    UINT            MsgSuspend;
-    UINT            MsgResume;
+	UINT			    MsgOpenControlPanel;
+	UINT			    MsgControlPanelClosed;
+	UINT			    MsgReloadConfig;
+    UINT                MsgSuspend;
+    UINT                MsgResume;
 
-	volatile BOOL	ControlPanelOpen;
-	AWHK_HOTKEYS	HotKeys;
+	volatile BOOL	    ControlPanelOpen;
+	AWHK_REGISTRATION   Registration;
 };
 
 DIRECTION DirectionFromVKey( 
@@ -88,7 +87,17 @@ DIRECTION DirectionFromVKey(
 
 BOOL IsAppAlreadyOpen()
 {
-	return IPCExists();
+	HANDLE hSyncSem = ::OpenSemaphore(
+		SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	
+		FALSE,
+		AWHK_APP_SEM );
+	if ( hSyncSem )
+	{
+		::CloseHandle( hSyncSem );
+		return TRUE;
+	}
+
+    return FALSE;
 }
 
 BOOL AppAlreadyOpenCheck()
@@ -107,7 +116,7 @@ BOOL AppAlreadyOpenCheck()
 		::MessageBox( 
 			nullptr,
 			AWHK_MAIN_EXE L" is already running.",
-			L"Advanced Windowing HotKeys",
+			APPLICATION_TITLE,
 			MB_OK | MB_ICONSTOP );
 
 		return TRUE;
@@ -278,132 +287,124 @@ void AsyncControlPanelClosedCallback(
 
 BOOL OpenSupportControlPanel( const AWHK_APP_STATE* pState )
 {
-	return ShowSettingsDialogAsync(
+	if ( !ShowSettingsDialogAsync(
 		(ASYNC_FORM_CLOSED_PROC) AsyncControlPanelClosedCallback,
-		(LPVOID) pState );
+		(LPVOID) pState ) )
+    {
+        ::MessageBox( NULL, 
+			APPLICATION_TITLE L" was unable to open the control panel. Please verify your installation.",
+			APPLICATION_TITLE,
+			MB_ICONERROR | MB_OK );
+
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
-DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, DWORD keyMod, DWORD vKey )
+void RegisterHotKeyAtIndex( DWORD keyMod, DWORD vKey, AWHK_REGISTRATION* pKeyStatus )
 {
-	assert( hotkeyCount > 0 );
-	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
+	assert( pKeyStatus->AttemptCount < AWHK_MAX_HOTKEYS );
 
-	pKeys[hotkeyCount - 1] = AWHK_MAKE_HOTKEY( keyMod, vKey );
-	if ( ::RegisterHotKey( NULL, hotkeyCount, keyMod, vKey ) )
-		return 1 << (hotkeyCount - 1);
-	else
-	{
-		return 0;
-	}
+    AWHK_REGISTER_STATUS* pResult = &pKeyStatus->StatusCodes[pKeyStatus->AttemptCount++];
+
+	pResult->dwCombo = AWHK_MAKE_HOTKEY( keyMod, vKey );
+    if ( keyMod == 0 && vKey == 0 )
+    {
+        // Not bound
+        pResult->Reason = S_FALSE;
+        return;
+    }
+
+    ::SetLastError( ERROR_SUCCESS );
+	if ( ::RegisterHotKey( NULL, pKeyStatus->RegisteredCount, keyMod, vKey ) )
+    {
+        pKeyStatus->RegisteredCount++;
+		pResult->Reason = S_OK;
+    }
+    else
+    {
+        pKeyStatus->ErrorCount++;
+        pResult->Reason = HRESULT_FROM_WIN32( ::GetLastError() );
+    }
 }
 
-DWORD RegisterHotKey_SetBit( DWORD* pKeys, INT hotkeyCount, const AWHK_KEY_COMBO* pCombo )
+void RegisterHotKeyAtIndex( const AWHK_KEY_COMBO* pCombo, AWHK_REGISTRATION* pKeyStatus )
 {
-	assert( hotkeyCount > 0 );
-	assert( hotkeyCount <= 8 * sizeof( DWORD ) );
-
-	pKeys[hotkeyCount - 1] = pCombo->dwBits;
-	if ( ::RegisterHotKey( NULL, hotkeyCount, pCombo->Modifiers, pCombo->Trigger ) )
-		return 1 << (hotkeyCount - 1);
-	else
-	{
-		return 0;
-	}
+    RegisterHotKeyAtIndex( pCombo->Modifiers, pCombo->Trigger, pKeyStatus );
 }
 
-BOOL RegisterArrowKeys( 
+void RegisterArrowKeys( 
 	const AWHK_APP_CONFIG* cfg,
 	const AWHK_CURSOR_KEYS* pArrowKeys,
-	AWHK_HOTKEY_SET* pKeys )
+	AWHK_REGISTRATION* pKeyStatus )
 {
-	DWORD dwKeyBits = 0;
-	LONG hotKeyCount = 0;
-
 	DWORD dwMoveKeyMod = cfg->MoveKeyMod;
 	DWORD dwFineKeyMod = cfg->MoveKeyMod | cfg->FineKeyMod;
 	DWORD dwSoloKeyMod = cfg->MoveKeyMod | cfg->NextKeyMod;
 	DWORD dwAllKeyMods = cfg->MoveKeyMod | cfg->FineKeyMod | cfg->NextKeyMod;
 
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->LeftKey );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->RightKey );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->UpKey );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwMoveKeyMod, pArrowKeys->DownKey );
+	RegisterHotKeyAtIndex( dwMoveKeyMod, pArrowKeys->LeftKey, pKeyStatus );
+	RegisterHotKeyAtIndex( dwMoveKeyMod, pArrowKeys->RightKey, pKeyStatus );
+	RegisterHotKeyAtIndex( dwMoveKeyMod, pArrowKeys->UpKey, pKeyStatus );
+	RegisterHotKeyAtIndex( dwMoveKeyMod, pArrowKeys->DownKey, pKeyStatus );
 
 	if ( cfg->FineKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->LeftKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->RightKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->UpKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwFineKeyMod, pArrowKeys->DownKey );
+		RegisterHotKeyAtIndex( dwFineKeyMod, pArrowKeys->LeftKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwFineKeyMod, pArrowKeys->RightKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwFineKeyMod, pArrowKeys->UpKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwFineKeyMod, pArrowKeys->DownKey, pKeyStatus );
 	}
 
 	if ( cfg->NextKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->LeftKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->RightKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->UpKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwSoloKeyMod, pArrowKeys->DownKey );
+		RegisterHotKeyAtIndex( dwSoloKeyMod, pArrowKeys->LeftKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwSoloKeyMod, pArrowKeys->RightKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwSoloKeyMod, pArrowKeys->UpKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwSoloKeyMod, pArrowKeys->DownKey, pKeyStatus );
 	}
 
 	if ( cfg->FineKeyMod | cfg->NextKeyMod )
 	{
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->LeftKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->RightKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->UpKey );
-		dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, dwAllKeyMods, pArrowKeys->DownKey );
+		RegisterHotKeyAtIndex( dwAllKeyMods, pArrowKeys->LeftKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwAllKeyMods, pArrowKeys->RightKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwAllKeyMods, pArrowKeys->UpKey, pKeyStatus );
+		RegisterHotKeyAtIndex( dwAllKeyMods, pArrowKeys->DownKey, pKeyStatus );
 	}
-
-	pKeys->dwKeyBits = dwKeyBits;
-	pKeys->HotKeyCount = hotKeyCount;
-
-	return dwKeyBits == ( ( 1UL << hotKeyCount ) - 1 );
 }
 
-BOOL RegisterExtraHotKeys( 
-	const AWHK_APP_CONFIG* cfg, 
-	AWHK_HOTKEY_SET* pKeys )
+void RegisterExtraHotKeys( 
+	const AWHK_APP_CONFIG* cfg,
+	AWHK_REGISTRATION* pKeyStatus )
 {
-	DWORD dwKeyBits = 0;
-	LONG hotKeyCount = 0;
-
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->HelpCombo );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->ConfigCombo );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaPlayPause );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaStop );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaNext );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaPrev );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaMute );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaVolumeUp );
-	dwKeyBits |= RegisterHotKey_SetBit( pKeys->pdwRegisteredKeys, ++hotKeyCount, &cfg->MediaVolumeDown );
-
-	pKeys->dwKeyBits = dwKeyBits;
-	pKeys->HotKeyCount = hotKeyCount;
-
-	return dwKeyBits == ( ( 1UL << hotKeyCount ) - 1 );
+	RegisterHotKeyAtIndex( &cfg->HelpCombo,         pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->ConfigCombo,       pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaPlayPause,    pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaStop,         pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaNext,         pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaPrev,         pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaMute,         pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaVolumeUp,     pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->MediaVolumeDown,   pKeyStatus );
 }
 
-BOOL RegisterHotKeys( 
-	const AWHK_APP_CONFIG* cfg, 
-	AWHK_HOTKEYS* pKeys )
+void RegisterHotKeys( 
+	const AWHK_APP_CONFIG* cfg,
+	AWHK_REGISTRATION* pKeyStatus )
 {
-	if ( !RegisterExtraHotKeys( cfg, &pKeys->ExtraKeys ) )
-		return FALSE;
+	RegisterExtraHotKeys( cfg, pKeyStatus );
 
 	if ( !cfg->MoveKeyMod )
-		return TRUE;
+		return;
 
-	if ( !RegisterArrowKeys( cfg, &cfg->ResizeKeys, &pKeys->ResizeKeys ) )
-		return FALSE;
-	
-	if ( !RegisterArrowKeys( cfg, &cfg->MoveKeys, &pKeys->MoveKeys ) )
-		return FALSE;
-
-	return TRUE;
+	RegisterArrowKeys( cfg, &cfg->ResizeKeys, pKeyStatus );
+	RegisterArrowKeys( cfg, &cfg->MoveKeys, pKeyStatus );
 }
 
 LPCWSTR GetKeyModString( DWORD keyMod )
 {
-#define KEYMOD(x)	case MOD_##x: return TEXT(#x)
+#define KEYMOD(x)	case MOD_##x: return TEXT(#x) TEXT(" ")
 	switch (keyMod)
 	{
 	KEYMOD(ALT);
@@ -411,114 +412,115 @@ LPCWSTR GetKeyModString( DWORD keyMod )
 	KEYMOD(SHIFT);
 	KEYMOD(WIN);
 	default: 
-		return L"-";
+		return L"";
 	}
 #undef KEYMOD
 };
 
-// TODO: we'll need to expand this as we open up more options
-LPCWSTR GetVKeyString( DWORD keyMod )
+LPCWSTR HResultToString( HRESULT hr, LPWSTR buf, DWORD bufSize )
 {
-#define KEYMOD(x)	case VK_##x: return TEXT(#x)
-	switch (keyMod)
-	{
-	KEYMOD(LEFT);
-	KEYMOD(RIGHT);
-	KEYMOD(UP);
-	KEYMOD(DOWN);
-	KEYMOD(F1);
-	KEYMOD(F2);
-	default: 
-		return nullptr;
-	}
-#undef KEYMOD
-};
+    INT len = (INT) ::FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		hr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		buf,
+		bufSize,
+		nullptr);
+    if (len == 0)
+    {
+        swprintf_s( buf, bufSize, L"Unknown error." );
+        return buf;
+    }
 
-BOOL RegisterHotKeysAndWarn( const AWHK_APP_CONFIG* cfg, AWHK_HOTKEYS* pKeys )
-{
-	static_assert( sizeof( pKeys->KeySets ) > sizeof( AWHK_HOTKEY_SET ), "You messed up, bro." );
-	static_assert( ( sizeof( pKeys->KeySets ) % sizeof( AWHK_HOTKEY_SET ) ) == 0, "You messed up, bro." );
+    // Strip newlines and periods from the end of the string.
+    for ( INT i = len-1; i > 0 && (buf[i] == L'\n' || buf[i] == L'\r' || buf[i] == L'.'); --i )
+    {
+        buf[i] = 0;
+    }
 
-	if ( !RegisterHotKeys( cfg, pKeys ) )
-	{
-		WCHAR strKeysFailed[1024] = {0};
-		LPWSTR strCursor = strKeysFailed;
-		LPCWSTR strEnd = strKeysFailed + sizeof(strKeysFailed) / sizeof(*strKeysFailed);
-
-		WCHAR strTmp[2];
-
-		for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
-		{
-			const AWHK_HOTKEY_SET* pKeySet = &pKeys->KeySets[k];
-			for ( LONG i = 0; i < pKeySet->HotKeyCount; ++i )
-			{
-				if ( ( pKeySet->dwKeyBits & ( 1 << i ) ) == 0 )
-				{
-					DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pKeySet->pdwRegisteredKeys[i] );
-					DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pKeySet->pdwRegisteredKeys[i] );
-
-					LPCWSTR strVKey = GetVKeyString( dwVKey );
-					if ( !strVKey )
-					{
-						swprintf_s(
-							strTmp,
-							sizeof( strTmp ) / sizeof( *strTmp ),
-							L"%c",
-							dwVKey );
-						strVKey = strTmp;
-					}
-
-					strCursor += swprintf_s(
-						strCursor, 
-						strEnd - strCursor,
-						L"%04X %04X:\t%s\t%s\t%s\t%s\t%s\n",
-						dwMod, 
-						dwVKey,
-						GetKeyModString( dwMod & MOD_ALT ),
-						GetKeyModString( dwMod & MOD_SHIFT ),
-						GetKeyModString( dwMod & MOD_CONTROL ),
-						GetKeyModString( dwMod & MOD_WIN ),
-						strVKey );
-				}
-			}
-		}
-
-		WCHAR strMsg[1024];
-		swprintf_s(
-			strMsg,
-			sizeof( strMsg ) / sizeof( WCHAR ),
-			L"Some keys failed to register. Please check the following keys in the settings:\n\n"
-			L"%s\n\n"
-			L"(Debugging stuff: Count: %d %d %d, dwKeyBits: 0x%08X 0x%08X 0x%08X)",
-			strKeysFailed,
-			pKeys->ExtraKeys.HotKeyCount,
-			pKeys->ExtraKeys.dwKeyBits,
-			pKeys->ResizeKeys.HotKeyCount,
-			pKeys->ResizeKeys.dwKeyBits,
-			pKeys->MoveKeys.HotKeyCount,
-			pKeys->MoveKeys.dwKeyBits );
-
-		::MessageBox( NULL, 
-			strMsg,
-			L"Advanced Window HotKeys",
-			MB_ICONERROR | MB_OK );
-
-		return FALSE;
-	}
-
-	return TRUE;
+    return buf;
 }
 
-void UnregisterHotkeys( AWHK_HOTKEYS* pKeys )
+void ShowRegistrationFailures( const AWHK_REGISTRATION* pKeyState )
 {
-	for ( SIZE_T k = 0; k < sizeof( pKeys->KeySets ) / sizeof( AWHK_HOTKEY_SET ); ++k )
+    // TODO: pass this to the listeners instead
+    if ( pKeyState->ErrorCount == 0 )
+        return;
+
+    WCHAR strHR[256] = {0};
+	WCHAR strMsg[2048] = {0};
+	LPCWSTR strEnd = strMsg + _countof(strMsg);
+	LPWSTR strCursor = strMsg;
+
+	strCursor += swprintf_s(
+		strMsg,
+		_countof(strMsg),
+		L"Some keys failed to register. Please check the following keys in the settings:\n\n" );
+
+	for ( LONG k = 0; k < pKeyState->AttemptCount; ++k )
 	{
-		for ( LONG i = 0; i < pKeys->KeySets[k].HotKeyCount; ++i )
+		const AWHK_REGISTER_STATUS* pStatus = &pKeyState->StatusCodes[k];
+
+        if ( FAILED( pStatus->Reason ) )
 		{
-			if ( pKeys->KeySets[k].dwKeyBits & ( 1 << i ) )
-				::UnregisterHotKey( NULL, i + 1 );
+			DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pStatus->dwCombo );
+			DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pStatus->dwCombo );
+			UINT uScanCode = ::MapVirtualKey( dwVKey, 0 );
+
+            WCHAR strVKey[64] = {0};
+            ::GetKeyNameText( 
+                uScanCode << 16, 
+                strVKey, _countof(strVKey) );
+            if ( wcslen(strVKey) == 0 )
+			{
+				swprintf_s(
+					strVKey,
+					_countof(strVKey),
+					L"0x%X",
+					dwVKey );
+			}
+
+			strCursor += swprintf_s(
+				strCursor, 
+				strEnd - strCursor,
+				L"%s%s%s%s%s: %s.\n",
+				GetKeyModString( dwMod & MOD_ALT ),
+				GetKeyModString( dwMod & MOD_SHIFT ),
+				GetKeyModString( dwMod & MOD_CONTROL ),
+				GetKeyModString( dwMod & MOD_WIN ),
+				strVKey,
+                HResultToString( pStatus->Reason, strHR, _countof(strHR) ) );
 		}
 	}
+
+	::MessageBox( NULL, 
+		strMsg,
+		APPLICATION_TITLE,
+		MB_ICONERROR | MB_OK );
+}
+
+void RegisterHotKeysAndWarn( AWHK_APP_STATE* appState, const AWHK_APP_CONFIG* cfg )
+{
+    ZeroMemory( &appState->Registration, sizeof(appState->Registration) );
+
+	RegisterHotKeys( cfg, &appState->Registration );
+
+    if ( appState->Registration.ErrorCount > 0 )
+    {
+        ShowRegistrationFailures( &appState->Registration );
+    }
+}
+
+void UnregisterHotkeys( AWHK_REGISTRATION* pReg )
+{
+    LONG count = pReg->RegisteredCount;
+	while ( count-- > 0 )
+	{
+		::UnregisterHotKey( NULL, count );
+	}
+
+    ZeroMemory( pReg, sizeof(*pReg) );
 }
 
 int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
@@ -530,8 +532,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 		if ( msg.message == appState->MsgOpenControlPanel &&
 			 !appState->ControlPanelOpen )
 		{
-			appState->ControlPanelOpen = TRUE;
-			OpenSupportControlPanel( appState );
+			appState->ControlPanelOpen = OpenSupportControlPanel( appState );
 			continue;
 		}
 
@@ -544,13 +545,13 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 		if ( msg.message == appState->MsgReloadConfig )
 		{
-			UnregisterHotkeys( &appState->HotKeys );
+			UnregisterHotkeys( &appState->Registration );
 
 			// Reload the settings
 			LoadConfiguration( appCfg );
 			RegisterHotKeysAndWarn( 
-				appCfg,
-				&appState->HotKeys );
+                appState,
+				appCfg );
 
 			appState->ControlPanelOpen = FALSE;
 			continue;
@@ -559,15 +560,15 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
         // The control panel can suspend and resume the functionality without quitting the application
         if ( msg.message == appState->MsgSuspend )
         {
-            UnregisterHotkeys( &appState->HotKeys );
+            UnregisterHotkeys( &appState->Registration );
             continue;
         }
         if ( msg.message == appState->MsgResume )
         {
             // Silent reload here.
-			RegisterHotKeys( 
-				appCfg,
-				&appState->HotKeys );
+			RegisterHotKeysAndWarn( 
+				appState,
+				appCfg );
 
             continue;
         }
@@ -625,23 +626,36 @@ int CALLBACK WinMain(
 	appState.MsgSuspend = ::RegisterWindowMessage( L"AWHKSuspendMsg" );
 	appState.MsgResume = ::RegisterWindowMessage( L"AWHKResumeMsg" );
 
-	CreateIPC( &appState.Comms );
+    // Open the application semaphore
+	SECURITY_ATTRIBUTES sa;
+	sa.bInheritHandle = FALSE;
+	sa.lpSecurityDescriptor = nullptr;
+	sa.nLength = sizeof( sa );
+
+    appState.hAppOpenSemaphore = ::CreateSemaphore(
+		&sa,
+		0,
+		MAXINT32,
+		AWHK_APP_SEM );
+
+    // Host the interprocess communication ringbuffer
+    CreateIPC( &appState.Comms );
 
 	AWHK_APP_CONFIG appCfg;
     ZeroMemory( &appCfg, sizeof(appCfg) );
 	LoadConfiguration( &appCfg );
 
 	RegisterHotKeysAndWarn(
-		&appCfg,
-		&appState.HotKeys );
+        &appState,
+		&appCfg );
 
 	StartIPCThread( &appState );
 
 	int ret = MessageLoop( &appState, &appCfg );
 
-	UnregisterHotkeys( &appState.HotKeys );
-
+	UnregisterHotkeys( &appState.Registration );
 	CloseIPC( &appState.Comms );
+    CloseHandle( appState.hAppOpenSemaphore );
 
 	return ret;
 }

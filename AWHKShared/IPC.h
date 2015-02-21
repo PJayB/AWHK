@@ -19,6 +19,87 @@
 
 #pragma once
 
+enum AWHK_CLIENT_MESSAGE_ID
+{
+    AWHK_CLIENT_CONNECT,            // The client is active and requests updates from the server
+    AWHK_CLIENT_DISCONNECT,         // The client is no longer active; unsubscribe from updates
+    AWHK_CLIENT_RELOAD_CONFIG,      // Ask the server to reload the configuration from the registry
+    AWHK_CLIENT_QUIT_SERVER,        // Instruct the server to unload
+    AWHK_CLIENT_SUSPEND,            // Unbind temporarily
+    AWHK_CLIENT_RESUME              // Rebind after Suspend
+};
+
+struct AWHK_CLIENT_MESSAGE
+{
+    HINSTANCE hInstance;
+    UINT uMessage;
+};
+
+enum AWHK_SERVER_CLIENT_MESSAGE_ID
+{
+    AWHK_SERVER_QUIT,               // The server is shutting down
+    AWHK_SERVER_NEW_CONFIG,         // The server just successfully loaded a new config
+    AWHK_SERVER_CONFIG_ERROR,       // The server just failed to load a config
+    AWHK_SERVER_KEY_ERROR,          // The server failed to bind a specific key
+    AWHK_SERVER_KEY_BOUND,          // The server bound a key
+    AWHK_SERVER_KEY_UNBOUND,        // The server unbound a key
+};
+
+struct AWHK_SERVER_CONFIG_MESSAGE
+{
+    HRESULT hErrorCode;
+};
+
+struct AWHK_SERVER_KEY_MESSAGE
+{
+    DWORD   dwKeyCombo;
+    HRESULT hErrorCode;
+    UINT    uActionLength;
+    WCHAR   szAction[1];
+};
+
+struct AWHK_SERVER_MESSAGE
+{
+    UINT uMessage;
+    UINT uMessageSize;
+    union
+    {
+        AWHK_SERVER_CONFIG_MESSAGE Config;
+        AWHK_SERVER_KEY_MESSAGE Key;
+    };
+};
+
+
+
+
+struct AWHK_IPC;
+
+HRESULT CreateInterprocessStream(
+    _In_z_ LPCWSTR szName,
+    _In_ UINT uRingBufferSize,
+    _Out_ AWHK_IPC** ppIPC );
+
+HRESULT OpenInterprocessStream(
+    _In_z_ LPCWSTR szName,
+    _Out_ AWHK_IPC** ppIPC );
+
+HRESULT WriteInterprocessStream(
+    _In_ AWHK_IPC* pIPC,
+    _In_reads_(dataSize) LPCVOID* pData,
+    _In_ UINT dataSize );
+
+HRESULT ReadInterprocessStream(
+    _In_ AWHK_IPC* pIPC,
+    _Out_writes_(*pDataSize) LPVOID* pData,
+    _Out_ UINT* pDataSize );
+
+HRESULT CloseInterprocessStream(
+    _In_ AWHK_IPC* pIPC );
+
+
+
+
+
 struct IPC
 {
 	HANDLE hFileMapping;
