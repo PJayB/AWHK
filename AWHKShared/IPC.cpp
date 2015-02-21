@@ -24,29 +24,34 @@
 #include <strsafe.h>
 
 #define AWHK_IPC_IO_GRANULARITY 256
+#define AWHK_IPC_SPINLOCK_COUNT 10000
 
 struct AWHK_IPC_RING
 {
-    volatile UINT RingBufferSize;
-    volatile UINT WriteOffset;
-    volatile UINT ReadOffset;
-    volatile UINT Count;
+    volatile UINT64 WriteCursor;
+    volatile UINT64 ReadCursor;
+    volatile UINT   RingBufferSize;
+    volatile UINT   Count;
 };
 
 struct AWHK_IPC
 {
-    LPCWSTR NotifySemaphoreName;
     LPCWSTR MappedFileName;
     LPCWSTR WriteLockName;
+    LPCWSTR WriteEventName;
+    LPCWSTR ReadLockName;
+    LPCWSTR ReadEventName;
     AWHK_IPC_RING* pRing;
     BYTE*   pBuffer;
     BYTE*   pMessageRing;
     HANDLE  hWriteLock;
-    HANDLE  hNotifySemaphore;
-    HANDLE  hBufferLock;
+    HANDLE  hWriteEvent;
+    HANDLE  hReadLock;
+    HANDLE  hReadEvent;
     HANDLE  hMappedFile;
-    UINT    uMappedFileSize;
-    UINT    uIOGranularity;
+    UINT    MappedFileSize;
+    UINT    RingBufferSize;
+    UINT    IOGranularity;
     BOOL    bIsServer;
 };
 
@@ -88,7 +93,9 @@ HRESULT CreateInterprocessStream(
     ZeroMemory( pIPC, sizeof(pIPC) );
 
     pIPC->WriteLockName = JoinString( szName, L"_writelock" );
-    pIPC->NotifySemaphoreName = JoinString( szName, L"_notify" );
+    pIPC->WriteEventName = JoinString( szName, L"_write" );
+    pIPC->ReadLockName = JoinString( szName, L"_readlock" );
+    pIPC->ReadEventName = JoinString( szName, L"_read" );
     pIPC->MappedFileName = JoinString( szName, L"_mmap" );
 
 	SECURITY_ATTRIBUTES sa;
@@ -108,23 +115,48 @@ HRESULT CreateInterprocessStream(
 		return HRESULT_FROM_WIN32( GetLastError() );
     }
 
-	pIPC->hNotifySemaphore = ::CreateSemaphore(
+	pIPC->hWriteEvent = ::CreateEvent(
 		&sa,
-		0,
-		MAXINT32,
-		pIPC->NotifySemaphoreName );
-	if ( !pIPC->hNotifySemaphore )
+		FALSE,
+        FALSE,
+    	pIPC->WriteEventName );
+	if ( !pIPC->hWriteEvent )
     {
         CloseInterprocessStream( pIPC );
 		return HRESULT_FROM_WIN32( GetLastError() );
     }
+
+	pIPC->hReadLock = ::CreateMutex(
+		&sa,
+		TRUE,
+    	pIPC->ReadLockName );
+	if ( !pIPC->hReadLock || 
+         GetLastError() == ERROR_ALREADY_EXISTS || 
+         GetLastError() == ERROR_ACCESS_DENIED )
+    {
+        CloseInterprocessStream( pIPC );
+		return HRESULT_FROM_WIN32( GetLastError() );
+    }
+
+	pIPC->hReadEvent = ::CreateEvent(
+		&sa,
+		FALSE,
+        FALSE,
+    	pIPC->ReadEventName );
+	if ( !pIPC->hReadEvent )
+    {
+        CloseInterprocessStream( pIPC );
+		return HRESULT_FROM_WIN32( GetLastError() );
+    }
+
+    UINT uTotalBufferSize = uRingBufferSize + sizeof(AWHK_IPC_RING);
 
     pIPC->hMappedFile = ::CreateFileMapping(
 		(HANDLE) -1,
 		nullptr,
 		PAGE_READWRITE,
 		0,
-		uRingBufferSize,
+		uTotalBufferSize,
 		pIPC->MappedFileName );
 	if ( !pIPC->hMappedFile )
 	{
@@ -136,19 +168,20 @@ HRESULT CreateInterprocessStream(
 		pIPC->hMappedFile,
 		FILE_MAP_WRITE | FILE_MAP_READ,
 		0, 0,
-		uRingBufferSize );
+		uTotalBufferSize );
     if ( pIPC->pRing == nullptr )
     {
         CloseInterprocessStream( pIPC );
 		return HRESULT_FROM_WIN32( GetLastError() );
 	}
 
-    ZeroMemory( pIPC->pRing, uRingBufferSize );
-    pIPC->pRing->RingBufferSize = uRingBufferSize - sizeof(AWHK_IPC_RING);
+    ZeroMemory( pIPC->pRing, uTotalBufferSize );
+    pIPC->pRing->RingBufferSize = uRingBufferSize;
     pIPC->pRing->Count = 0;
     pIPC->pBuffer = ( (BYTE*) pIPC->pRing ) + sizeof(AWHK_IPC_RING);
-    pIPC->uIOGranularity = AWHK_IPC_IO_GRANULARITY;
-    pIPC->uMappedFileSize = uRingBufferSize;
+    pIPC->IOGranularity = AWHK_IPC_IO_GRANULARITY;
+    pIPC->MappedFileSize = uTotalBufferSize;
+    pIPC->RingBufferSize = uRingBufferSize;
     pIPC->bIsServer = TRUE;
 
     *ppIPC = pIPC;
@@ -168,7 +201,9 @@ HRESULT OpenInterprocessStream(
     ZeroMemory( pIPC, sizeof(pIPC) );
 
     pIPC->WriteLockName = JoinString( szName, L"_writelock" );
-    pIPC->NotifySemaphoreName = JoinString( szName, L"_notify" );
+    pIPC->WriteEventName = JoinString( szName, L"_write" );
+    pIPC->ReadLockName = JoinString( szName, L"_readlock" );
+    pIPC->ReadEventName = JoinString( szName, L"_read" );
     pIPC->MappedFileName = JoinString( szName, L"_mmap" );
 
 	pIPC->hWriteLock = ::OpenMutex(
@@ -181,11 +216,31 @@ HRESULT OpenInterprocessStream(
 		return HRESULT_FROM_WIN32( GetLastError() );
     }
 
-	pIPC->hNotifySemaphore = ::OpenSemaphore(
-		SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,
+	pIPC->hWriteEvent = ::OpenEvent(
+		SYNCHRONIZE | EVENT_MODIFY_STATE,
 		FALSE,
-		pIPC->NotifySemaphoreName );
-	if ( !pIPC->hNotifySemaphore )
+		pIPC->WriteEventName );
+	if ( !pIPC->hWriteEvent )
+    {
+        CloseInterprocessStream( pIPC );
+		return HRESULT_FROM_WIN32( GetLastError() );
+    }
+
+	pIPC->hReadLock = ::OpenMutex(
+		SYNCHRONIZE,
+		FALSE,
+    	pIPC->ReadLockName );
+	if ( !pIPC->hReadLock )
+    {
+        CloseInterprocessStream( pIPC );
+		return HRESULT_FROM_WIN32( GetLastError() );
+    }
+
+	pIPC->hReadEvent = ::OpenEvent(
+		SYNCHRONIZE | EVENT_MODIFY_STATE,
+		FALSE,
+		pIPC->ReadEventName );
+	if ( !pIPC->hReadEvent )
     {
         CloseInterprocessStream( pIPC );
 		return HRESULT_FROM_WIN32( GetLastError() );
@@ -215,7 +270,7 @@ HRESULT OpenInterprocessStream(
     // Cache some of the ringbuffer properties
 	__try
 	{
-        pIPC->uMappedFileSize = pTmpRing->RingBufferSize + sizeof(AWHK_IPC_RING);
+        pIPC->MappedFileSize = pTmpRing->RingBufferSize + sizeof(AWHK_IPC_RING);
 	}
 	__except(::GetExceptionCode()==EXCEPTION_IN_PAGE_ERROR ?
 	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -230,8 +285,8 @@ HRESULT OpenInterprocessStream(
         pIPC->hMappedFile,
         FILE_MAP_WRITE | FILE_MAP_READ,
         0, 0, 
-        pIPC->uMappedFileSize );
-    if ( pIPC->pRing )
+        pIPC->MappedFileSize );
+    if ( pIPC->pRing == nullptr )
     {
         CloseInterprocessStream( pIPC );
 		return HRESULT_FROM_WIN32( GetLastError() );
@@ -251,18 +306,18 @@ HRESULT CloseInterprocessStream( AWHK_IPC* pIPC )
 
     if ( pIPC->bIsServer && 
          pIPC->hWriteLock && 
-         pIPC->hNotifySemaphore &&
+         pIPC->hWriteEvent &&
          pIPC->hMappedFile )
     {
         // Wait for clients to release their write lock on the ringbuffer
         WaitForSingleObject( pIPC->hWriteLock, INFINITE );
 
         // Clear the mapping
-        ZeroMemory( pIPC->hMappedFile, pIPC->uMappedFileSize );
+        ZeroMemory( pIPC->hMappedFile, pIPC->MappedFileSize );
         ReleaseMutex( pIPC->hWriteLock );
 
         // Notify listeners there's data there
-        ReleaseSemaphore( pIPC->hNotifySemaphore, 1, nullptr );
+        SetEvent( pIPC->hWriteEvent );
     }
 
     if ( pIPC->pRing )
@@ -270,17 +325,23 @@ HRESULT CloseInterprocessStream( AWHK_IPC* pIPC )
 
     if ( pIPC->WriteLockName != nullptr )
         delete [] pIPC->WriteLockName;
-    if ( pIPC->NotifySemaphoreName != nullptr )
-        delete [] pIPC->NotifySemaphoreName;
+    if ( pIPC->WriteEventName != nullptr )
+        delete [] pIPC->WriteEventName;
+    if ( pIPC->ReadLockName != nullptr )
+        delete [] pIPC->ReadLockName;
+    if ( pIPC->ReadEventName != nullptr )
+        delete [] pIPC->ReadEventName;
     if ( pIPC->MappedFileName != nullptr )
         delete [] pIPC->MappedFileName;
 
-    if ( pIPC->hBufferLock != nullptr )
-        CloseHandle( pIPC->hBufferLock );
-    if ( pIPC->hNotifySemaphore != nullptr )
-        CloseHandle( pIPC->hNotifySemaphore );
+    if ( pIPC->hWriteEvent != nullptr )
+        CloseHandle( pIPC->hWriteEvent );
+    if ( pIPC->hReadEvent != nullptr )
+        CloseHandle( pIPC->hReadEvent );
     if ( pIPC->hWriteLock != nullptr )
         CloseHandle( pIPC->hWriteLock );
+    if ( pIPC->hReadLock != nullptr )
+        CloseHandle( pIPC->hReadLock );
     if ( pIPC->hMappedFile != nullptr )
         CloseHandle( pIPC->hMappedFile );
 
@@ -288,115 +349,181 @@ HRESULT CloseInterprocessStream( AWHK_IPC* pIPC )
     return S_OK;
 }
 
+static inline void WriteSpinlock( 
+    AWHK_IPC* pIPC,
+    UINT64 writeCursor )
+{
+    UINT spin = AWHK_IPC_SPINLOCK_COUNT;
+    UINT64 readCursor = pIPC->pRing->ReadCursor;
+    UINT ringBufferSize = pIPC->RingBufferSize;
+
+    // Spin while in case the data is going to come in very soon
+    while ( writeCursor - readCursor > ringBufferSize && spin-- > 0 )
+    {
+        SwitchToThread(); // Give up our quantum
+        readCursor = pIPC->pRing->ReadCursor;
+    }
+
+    // Switch to a very slow wait 
+    if ( writeCursor - pIPC->pRing->ReadCursor > ringBufferSize )
+    {
+        WaitForSingleObject( pIPC->hReadEvent, INFINITE );
+        assert( writeCursor - pIPC->pRing->ReadCursor <= ringBufferSize );
+    }
+}
+
+
+
+
+
 HRESULT WriteInterprocessStream(
     _In_ AWHK_IPC* pIPC,
-    _In_reads_(dataSize) LPCVOID* pData,
+    _In_reads_(dataSize) LPCVOID pData,
     _In_ UINT dataSize )
 {
     if ( dataSize == 0 )
     {
         // Just release the semaphore and quit
-        ::ReleaseSemaphore( pIPC->hNotifySemaphore, 1, nullptr );
+        ::SetEvent( pIPC->hWriteEvent );
         return S_OK;
     }
 
-    UINT numPackets = ( dataSize + pIPC->uIOGranularity - 1 ) / pIPC->uIOGranularity;
-
-
-
-    //
-    // TODO: wait for the ring to become empty enough
-    // TODO: wrap the ring if we're about to overflow
-    // TODO: thread safety when wrapping
-    // 
-
-
-
-
+    UINT numPackets = ( dataSize + pIPC->IOGranularity - 1 ) / pIPC->IOGranularity;
+    UINT ringBufferSize = pIPC->RingBufferSize;
+    const BYTE* pSource = (const BYTE*) pData;
+    BYTE* pRingEnd = pIPC->pBuffer + pIPC->RingBufferSize;
+    
     // Lock the ring
     ::WaitForSingleObject( pIPC->hWriteLock, INFINITE );
 
     // Extract the current ring properties
-    AWHK_IPC_RING ring;
 	__try
 	{
-        ring = *pIPC->pRing;
+        UINT64 writeCursor = pIPC->pRing->WriteCursor;
+
+        BYTE* pDest = pIPC->pBuffer + ( writeCursor % pIPC->RingBufferSize );
+
+        while ( dataSize > 0 )
+        {
+            UINT packetSize = min( dataSize, pIPC->IOGranularity );
+
+            // Wait until the memory becomes available
+            WriteSpinlock( pIPC, writeCursor + packetSize );
+
+            // Check for wrap: if we do, split the write
+            if ( pDest + packetSize > pRingEnd )
+            {
+                UINT splitPoint = pRingEnd - pDest;
+                memcpy( pDest, pSource, splitPoint );
+                memcpy( pIPC->pBuffer, pSource + splitPoint, packetSize - splitPoint );
+            }
+            else
+            {
+                memcpy( pDest, pData, packetSize );
+            }
+
+            pSource += packetSize;
+            writeCursor += packetSize;
+
+            // Update the write position so reads can consume the data
+            pIPC->pRing->WriteCursor = writeCursor;
+            ::SetEvent( pIPC->hWriteEvent );
+        }
 	}
 	__except(::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ?
 	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 	{
-		return E_FAIL;
-	}
-
-    const BYTE* pSource = (const BYTE*) pData;
-    BYTE* pDest = pIPC->pBuffer + ring.WriteOffset;
-    BYTE* pRingEnd = pIPC->pBuffer + ring.RingBufferSize;
-
-    // Check for wrap
-    if ( pDest + dataSize > pRingEnd )
-    {
-        ring.WriteOffset = 0;
-        pDest = pIPC->pBuffer;
-        pRingEnd = pDest + dataSize;
-    }
-
-    BYTE* pTarget = pDest;
-
-    while ( dataSize > 0 )
-    {
-        UINT packetSize = min( dataSize, pIPC->uIOGranularity );
-
-	    __try
-	    {
-            // Write the data
-            memcpy( pTarget, pSource, packetSize );
-            pTarget += packetSize;
-            pSource += packetSize;
-	    }
-	    __except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
-	        EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	    {
-		    return E_FAIL;
-	    }
-
-        // Notify the listener that there's data here
-        ::ReleaseSemaphore( pIPC->hNotifySemaphore, 1, nullptr );
-    }
-
-    ring.Count += dataSize;
-
-    // Write the ring properties
-	__try
-	{
-        *pIPC->pRing = ring;
-	}
-	__except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
-	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
+        ReleaseMutex( pIPC->hWriteLock );
 		return E_FAIL;
 	}
 
     // Release the lock
     ReleaseMutex( pIPC->hWriteLock );
-
     return S_OK;
+}
+
+
+
+
+
+
+static inline UINT64 ReadSpinlock( 
+    AWHK_IPC* pIPC,
+    UINT64 readCursor )
+{
+    UINT spin = AWHK_IPC_SPINLOCK_COUNT;
+    while ( readCursor >= pIPC->pRing->WriteCursor && spin-- > 0 )
+    {
+        SwitchToThread();
+    }
+
+    if ( readCursor >= pIPC->pRing->WriteCursor )
+    {
+        WaitForSingleObject( pIPC->hWriteEvent, INFINITE );
+    }
+
+    return pIPC->pRing->WriteCursor;
 }
 
 HRESULT ReadInterprocessStream(
     _In_ AWHK_IPC* pIPC,
-    _Out_writes_(*pDataSize) LPVOID* pData,
-    _Out_ UINT* pDataSize )
+    _Out_writes_(*pDataSize) LPVOID pData,
+    _Out_ UINT dataSize )
 {
+    // Secure the read lock
+    ::WaitForSingleObject( pIPC->hReadLock, INFINITE );
+
+    UINT ioGranularity = pIPC->IOGranularity;
+    UINT ringBufferSize = pIPC->RingBufferSize;
+    BYTE* pBuffer = pIPC->pBuffer;
+    BYTE* pBufferEnd = pBuffer + ringBufferSize;
+
 	__try
 	{
-        
+        UINT64 readCursor = pIPC->pRing->ReadCursor;
+
+        const BYTE* pSrc = pBuffer + ( readCursor % ringBufferSize );
+        BYTE* pDest = (BYTE*) pData;
+        BYTE* pEnd = pDest + dataSize;
+
+        while ( pDest < pEnd )
+        {
+            // Wait until the memory becomes available
+            UINT64 writeCursor = ReadSpinlock( pIPC, readCursor );
+
+            // How much memory is available?
+            UINT available = min( dataSize, min( ioGranularity, (UINT) (writeCursor - readCursor) ) );
+
+            // If we're about to overrun the buffer, split the read
+            if ( pSrc + available > pBufferEnd )
+            {
+                UINT splitPoint = pBufferEnd - pSrc;
+                memcpy( pDest, pSrc, splitPoint );
+                memcpy( pDest + splitPoint, pBuffer, available - splitPoint );
+            }
+            else
+            {
+                memcpy( pDest, pSrc, available );
+            }
+
+            readCursor += available;
+            dataSize -= available;
+            pDest += available;
+
+            // Free it up so writes can resume
+            pIPC->pRing->ReadCursor = readCursor;
+            ::SetEvent( pIPC->hReadEvent );
+        }
 	}
 	__except(::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ?
 	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 	{
+        ::ReleaseMutex( pIPC->hReadLock );
 		return E_FAIL;
 	}
-    return E_NOTIMPL;
+
+    ::ReleaseMutex( pIPC->hReadLock );
+    return S_OK;
 }
 
 

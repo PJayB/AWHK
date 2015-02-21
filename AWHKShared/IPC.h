@@ -85,13 +85,13 @@ HRESULT OpenInterprocessStream(
 
 HRESULT WriteInterprocessStream(
     _In_ AWHK_IPC* pIPC,
-    _In_reads_(dataSize) LPCVOID* pData,
+    _In_reads_(dataSize) LPCVOID pData,
     _In_ UINT dataSize );
 
 HRESULT ReadInterprocessStream(
     _In_ AWHK_IPC* pIPC,
-    _Out_writes_(*pDataSize) LPVOID* pData,
-    _Out_ UINT* pDataSize );
+    _Out_writes_(*pDataSize) LPVOID pData,
+    _Out_ UINT dataSize );
 
 HRESULT CloseInterprocessStream(
     _In_ AWHK_IPC* pIPC );
