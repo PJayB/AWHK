@@ -23,12 +23,14 @@
 
 #include <strsafe.h>
 
+#define AWHK_IPC_IO_GRANULARITY 256
+
 struct AWHK_IPC_RING
 {
     volatile UINT RingBufferSize;
     volatile UINT WriteOffset;
     volatile UINT ReadOffset;
-    volatile BYTE pBuffer[1];
+    volatile UINT Count;
 };
 
 struct AWHK_IPC
@@ -37,12 +39,14 @@ struct AWHK_IPC
     LPCWSTR MappedFileName;
     LPCWSTR WriteLockName;
     AWHK_IPC_RING* pRing;
+    BYTE*   pBuffer;
     BYTE*   pMessageRing;
     HANDLE  hWriteLock;
     HANDLE  hNotifySemaphore;
     HANDLE  hBufferLock;
     HANDLE  hMappedFile;
     UINT    uMappedFileSize;
+    UINT    uIOGranularity;
     BOOL    bIsServer;
 };
 
@@ -141,6 +145,9 @@ HRESULT CreateInterprocessStream(
 
     ZeroMemory( pIPC->pRing, uRingBufferSize );
     pIPC->pRing->RingBufferSize = uRingBufferSize - sizeof(AWHK_IPC_RING);
+    pIPC->pRing->Count = 0;
+    pIPC->pBuffer = ( (BYTE*) pIPC->pRing ) + sizeof(AWHK_IPC_RING);
+    pIPC->uIOGranularity = AWHK_IPC_IO_GRANULARITY;
     pIPC->uMappedFileSize = uRingBufferSize;
     pIPC->bIsServer = TRUE;
 
@@ -205,22 +212,32 @@ HRESULT OpenInterprocessStream(
 		return HRESULT_FROM_WIN32( GetLastError() );
 	}
 
-    // Grab the size of the ringbuffer and remap
-    UINT uRingBufferSize = pTmpRing->RingBufferSize + sizeof(AWHK_IPC_RING);
+    // Cache some of the ringbuffer properties
+	__try
+	{
+        pIPC->uMappedFileSize = pTmpRing->RingBufferSize + sizeof(AWHK_IPC_RING);
+	}
+	__except(::GetExceptionCode()==EXCEPTION_IN_PAGE_ERROR ?
+	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+        CloseInterprocessStream( pIPC );
+		return E_FAIL;
+	}
+
     UnmapViewOfFile( pTmpRing );
 
     pIPC->pRing = (AWHK_IPC_RING*) ::MapViewOfFile(
         pIPC->hMappedFile,
         FILE_MAP_WRITE | FILE_MAP_READ,
         0, 0, 
-        uRingBufferSize );
+        pIPC->uMappedFileSize );
     if ( pIPC->pRing )
     {
         CloseInterprocessStream( pIPC );
 		return HRESULT_FROM_WIN32( GetLastError() );
     }
 
-    pIPC->uMappedFileSize = uRingBufferSize;
+    pIPC->pBuffer = ( (BYTE*) pIPC->pRing ) + sizeof(AWHK_IPC_RING);
     pIPC->bIsServer = FALSE;
 
     *ppIPC = pIPC;
@@ -276,7 +293,93 @@ HRESULT WriteInterprocessStream(
     _In_reads_(dataSize) LPCVOID* pData,
     _In_ UINT dataSize )
 {
-    return E_NOTIMPL;
+    if ( dataSize == 0 )
+    {
+        // Just release the semaphore and quit
+        ::ReleaseSemaphore( pIPC->hNotifySemaphore, 1, nullptr );
+        return S_OK;
+    }
+
+    UINT numPackets = ( dataSize + pIPC->uIOGranularity - 1 ) / pIPC->uIOGranularity;
+
+
+
+    //
+    // TODO: wait for the ring to become empty enough
+    // TODO: wrap the ring if we're about to overflow
+    // TODO: thread safety when wrapping
+    // 
+
+
+
+
+    // Lock the ring
+    ::WaitForSingleObject( pIPC->hWriteLock, INFINITE );
+
+    // Extract the current ring properties
+    AWHK_IPC_RING ring;
+	__try
+	{
+        ring = *pIPC->pRing;
+	}
+	__except(::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ?
+	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return E_FAIL;
+	}
+
+    const BYTE* pSource = (const BYTE*) pData;
+    BYTE* pDest = pIPC->pBuffer + ring.WriteOffset;
+    BYTE* pRingEnd = pIPC->pBuffer + ring.RingBufferSize;
+
+    // Check for wrap
+    if ( pDest + dataSize > pRingEnd )
+    {
+        ring.WriteOffset = 0;
+        pDest = pIPC->pBuffer;
+        pRingEnd = pDest + dataSize;
+    }
+
+    BYTE* pTarget = pDest;
+
+    while ( dataSize > 0 )
+    {
+        UINT packetSize = min( dataSize, pIPC->uIOGranularity );
+
+	    __try
+	    {
+            // Write the data
+            memcpy( pTarget, pSource, packetSize );
+            pTarget += packetSize;
+            pSource += packetSize;
+	    }
+	    __except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
+	        EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	    {
+		    return E_FAIL;
+	    }
+
+        // Notify the listener that there's data here
+        ::ReleaseSemaphore( pIPC->hNotifySemaphore, 1, nullptr );
+    }
+
+    ring.Count += dataSize;
+
+    // Write the ring properties
+	__try
+	{
+        *pIPC->pRing = ring;
+	}
+	__except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
+	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return E_FAIL;
+	}
+
+    // Release the lock
+    ReleaseMutex( pIPC->hWriteLock );
+
+    return S_OK;
 }
 
 HRESULT ReadInterprocessStream(
@@ -284,6 +387,15 @@ HRESULT ReadInterprocessStream(
     _Out_writes_(*pDataSize) LPVOID* pData,
     _Out_ UINT* pDataSize )
 {
+	__try
+	{
+        
+	}
+	__except(::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ?
+	    EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+	{
+		return E_FAIL;
+	}
     return E_NOTIMPL;
 }
 
