@@ -36,6 +36,7 @@
 using namespace std;
 
 #define AWHK_MAX_HOTKEYS    64
+#define AWHK_APP_SEM	    L"AWHK_APP_OPEN_SEM" 
 
 struct AWHK_REGISTER_STATUS
 {
@@ -55,6 +56,7 @@ struct AWHK_APP_STATE
 {
 	HINSTANCE		    hInstance;
 	DWORD			    dwMainThreadID;
+    HANDLE              hAppOpenSemaphore;
 	IPC				    Comms;
 
 	UINT			    MsgOpenControlPanel;
@@ -85,7 +87,17 @@ DIRECTION DirectionFromVKey(
 
 BOOL IsAppAlreadyOpen()
 {
-	return IPCExists();
+	HANDLE hSyncSem = ::OpenSemaphore(
+		SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	
+		FALSE,
+		AWHK_APP_SEM );
+	if ( hSyncSem )
+	{
+		::CloseHandle( hSyncSem );
+		return TRUE;
+	}
+
+    return FALSE;
 }
 
 BOOL AppAlreadyOpenCheck()
@@ -614,7 +626,20 @@ int CALLBACK WinMain(
 	appState.MsgSuspend = ::RegisterWindowMessage( L"AWHKSuspendMsg" );
 	appState.MsgResume = ::RegisterWindowMessage( L"AWHKResumeMsg" );
 
-	CreateIPC( &appState.Comms );
+    // Open the application semaphore
+	SECURITY_ATTRIBUTES sa;
+	sa.bInheritHandle = FALSE;
+	sa.lpSecurityDescriptor = nullptr;
+	sa.nLength = sizeof( sa );
+
+    appState.hAppOpenSemaphore = ::CreateSemaphore(
+		&sa,
+		0,
+		MAXINT32,
+		AWHK_APP_SEM );
+
+    // Host the interprocess communication ringbuffer
+    CreateIPC( &appState.Comms );
 
 	AWHK_APP_CONFIG appCfg;
     ZeroMemory( &appCfg, sizeof(appCfg) );
@@ -629,8 +654,8 @@ int CALLBACK WinMain(
 	int ret = MessageLoop( &appState, &appCfg );
 
 	UnregisterHotkeys( &appState.Registration );
-
 	CloseIPC( &appState.Comms );
+    CloseHandle( appState.hAppOpenSemaphore );
 
 	return ret;
 }

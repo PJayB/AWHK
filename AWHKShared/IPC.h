@@ -24,10 +24,9 @@ enum AWHK_CLIENT_MESSAGE_ID
     AWHK_CLIENT_CONNECT,            // The client is active and requests updates from the server
     AWHK_CLIENT_DISCONNECT,         // The client is no longer active; unsubscribe from updates
     AWHK_CLIENT_RELOAD_CONFIG,      // Ask the server to reload the configuration from the registry
-    AWHK_CLIENT_VALIDATE_CONFIG,    // Ask the server to validate an example configuration
     AWHK_CLIENT_QUIT_SERVER,        // Instruct the server to unload
-    AWHK_CLIENT_UNBIND_ACTION,      // Unbind a specific action
-    AWHK_CLIENT_BIND_ACTION,        // Rebind a specific action
+    AWHK_CLIENT_SUSPEND,            // Unbind temporarily
+    AWHK_CLIENT_RESUME              // Rebind after Suspend
 };
 
 struct AWHK_CLIENT_MESSAGE
@@ -69,6 +68,33 @@ struct AWHK_SERVER_MESSAGE
         AWHK_SERVER_KEY_MESSAGE Key;
     };
 };
+
+
+
+
+struct AWHK_IPC;
+
+HRESULT CreateInterprocessStream(
+    _In_z_ LPCWSTR szName,
+    _In_ UINT uRingBufferSize,
+    _Out_ AWHK_IPC** ppIPC );
+
+HRESULT OpenInterprocessStream(
+    _In_z_ LPCWSTR szName,
+    _Out_ AWHK_IPC** ppIPC );
+
+HRESULT WriteInterprocessStream(
+    _In_ AWHK_IPC* pIPC,
+    _In_reads_(dataSize) LPCVOID* pData,
+    _In_ UINT dataSize );
+
+HRESULT ReadInterprocessStream(
+    _In_ AWHK_IPC* pIPC,
+    _Out_writes_(*pDataSize) LPVOID* pData,
+    _Out_ UINT* pDataSize );
+
+HRESULT CloseInterprocessStream(
+    _In_ AWHK_IPC* pIPC );
 
 
 
