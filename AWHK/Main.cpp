@@ -610,10 +610,14 @@ int test(void* poo)
 {
     AWHK_IPC* pIPC = nullptr;
     OpenInterprocessStream( L"AWHKTEST", &pIPC);
+
+    WCHAR tmp[256];
     
     for (UINT i = 0; i < 4096; ++i)
     {
-        WriteInterprocessStream( pIPC, &i, sizeof(i) );
+        UINT len = swprintf_s( tmp, _countof(tmp), L"%d: Hello, world!\n", i );
+        WriteInterprocessStream( pIPC, &len, sizeof(UINT) );
+        WriteInterprocessStream( pIPC, tmp, len * sizeof(WCHAR) );
     }
 
     CloseInterprocessStream(pIPC);
@@ -635,8 +639,10 @@ int CALLBACK WinMain(
         DWORD j = 0;
         ReadInterprocessStream( pIPC, &j, sizeof(j) );
 
-        WCHAR t[64];
-        swprintf_s( t, _countof(t), L"%d\n", j );
+        WCHAR t[256];
+        ReadInterprocessStream( pIPC, t, j * sizeof(WCHAR) );
+
+        t[j] = 0;
         OutputDebugStringW( t );
     }
 

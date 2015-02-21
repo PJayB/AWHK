@@ -105,7 +105,7 @@ HRESULT CreateInterprocessStream(
 
 	pIPC->hWriteLock = ::CreateMutex(
 		&sa,
-		TRUE,
+		FALSE,
     	pIPC->WriteLockName );
 	if ( !pIPC->hWriteLock || 
          GetLastError() == ERROR_ALREADY_EXISTS || 
@@ -128,7 +128,7 @@ HRESULT CreateInterprocessStream(
 
 	pIPC->hReadLock = ::CreateMutex(
 		&sa,
-		TRUE,
+		FALSE,
     	pIPC->ReadLockName );
 	if ( !pIPC->hReadLock || 
          GetLastError() == ERROR_ALREADY_EXISTS || 
@@ -270,7 +270,7 @@ HRESULT OpenInterprocessStream(
     // Cache some of the ringbuffer properties
 	__try
 	{
-        pIPC->MappedFileSize = pTmpRing->RingBufferSize + sizeof(AWHK_IPC_RING);
+        pIPC->RingBufferSize = pTmpRing->RingBufferSize;
 	}
 	__except(::GetExceptionCode()==EXCEPTION_IN_PAGE_ERROR ?
 	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -280,6 +280,8 @@ HRESULT OpenInterprocessStream(
 	}
 
     UnmapViewOfFile( pTmpRing );
+
+    pIPC->MappedFileSize = pIPC->RingBufferSize + sizeof(AWHK_IPC_RING);
 
     pIPC->pRing = (AWHK_IPC_RING*) ::MapViewOfFile(
         pIPC->hMappedFile,
@@ -293,6 +295,7 @@ HRESULT OpenInterprocessStream(
     }
 
     pIPC->pBuffer = ( (BYTE*) pIPC->pRing ) + sizeof(AWHK_IPC_RING);
+    pIPC->IOGranularity = AWHK_IPC_IO_GRANULARITY;
     pIPC->bIsServer = FALSE;
 
     *ppIPC = pIPC;
@@ -313,7 +316,7 @@ HRESULT CloseInterprocessStream( AWHK_IPC* pIPC )
         WaitForSingleObject( pIPC->hWriteLock, INFINITE );
 
         // Clear the mapping
-        ZeroMemory( pIPC->hMappedFile, pIPC->MappedFileSize );
+        ZeroMemory( pIPC->pRing, pIPC->MappedFileSize );
         ReleaseMutex( pIPC->hWriteLock );
 
         // Notify listeners there's data there
@@ -424,6 +427,7 @@ HRESULT WriteInterprocessStream(
 
             pSource += packetSize;
             writeCursor += packetSize;
+            dataSize -= packetSize;
 
             // Update the write position so reads can consume the data
             pIPC->pRing->WriteCursor = writeCursor;
