@@ -606,73 +606,12 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 	return 0;
 }
 
-int test(void* poo)
-{
-    AWHK_IPC* pIPC = nullptr;
-    OpenInterprocessStream( L"AWHKTEST", &pIPC);
-
-    WCHAR tmp[256];
-    
-    for (UINT i = 0; i < 4096; ++i)
-    {
-        UINT len = swprintf_s( tmp, _countof(tmp), L"%d: Hello, world!\n", i );
-        WriteInterprocessStream( pIPC, &len, sizeof(UINT) );
-        WriteInterprocessStream( pIPC, tmp, len * sizeof(WCHAR) );
-    }
-
-    CloseInterprocessStream(pIPC);
-    return 0;
-}
-
 int CALLBACK WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine,
 	int nCmdShow )
 {
-    AWHK_IPC* pIPC = nullptr;
-    CreateInterprocessStream( L"AWHKTEST", 1024, &pIPC );
-    CreateThread( nullptr, 0, (LPTHREAD_START_ROUTINE) test, nullptr, 0, nullptr );
-
-    for (UINT i = 0; i < 4096; ++i)
-    {
-        DWORD j = 0;
-        ReadInterprocessStream( pIPC, &j, sizeof(j) );
-
-        WCHAR t[256];
-        ReadInterprocessStream( pIPC, t, j * sizeof(WCHAR) );
-
-        t[j] = 0;
-        OutputDebugStringW( t );
-    }
-
-    CloseInterprocessStream(pIPC);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	if ( AppAlreadyOpenCheck() )
 		return -1;
 
