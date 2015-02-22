@@ -90,6 +90,7 @@
     <Compile Include="GridSetupPage.xaml.cs">
       <DependentUpon>GridSetupPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HotkeyValidator.cs" />
     <Compile Include="MediaPage.xaml.cs">
       <DependentUpon>MediaPage.xaml</DependentUpon>
     </Compile>

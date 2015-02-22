@@ -202,4 +202,14 @@ namespace AWHKConfigShared {
             throw gcnew ConfigurationIoException();
         }
     }
+
+    bool Configuration::Test( System::IntPtr hWnd, int id, KeyCombo v )
+    {
+        if ( RegisterHotKey( (HWND) hWnd.ToPointer(), id, (UINT) v.Modifiers, (UINT) KeyInterop::VirtualKeyFromKey( v.Key ) ) )
+        {
+            UnregisterHotKey( (HWND) hWnd.ToPointer(), id );
+            return true;
+        }
+        return false;
+    }
 }

@@ -68,6 +68,8 @@ namespace AWHKConfigShared {
         static void         Store( System::String^ name, ModifierKeys v );
         static void         Store( System::String^ name, KeyCombo v );
 
+        static bool         Test( System::IntPtr hWnd, int id, KeyCombo v );
+
         static property bool AutoLogin
         {
             bool get();

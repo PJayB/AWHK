@@ -218,6 +218,12 @@ namespace HotKeyCustomControlLibrary
         private Key? previewTrigger;
         private bool previewing;
 
+        public bool? Error
+        {
+            get { return base.GetValue(ErrorProperty) as bool?; }
+            set { base.SetValue(ErrorProperty, value); }
+        }
+
         public HotKeyCombo? KeyCombo
         {
             get { return base.GetValue(KeyComboProperty) as HotKeyCombo?; }
@@ -320,6 +326,8 @@ namespace HotKeyCustomControlLibrary
 
         public static readonly DependencyProperty KeyComboProperty =
             DependencyProperty.Register("KeyCombo", typeof(HotKeyCombo?), typeof(HotKeyBox), new PropertyMetadata(propertyChangedCallback));
+        public static readonly DependencyProperty ErrorProperty =
+            DependencyProperty.Register("Error", typeof(bool?), typeof(HotKeyBox), new PropertyMetadata(propertyChangedCallback));
 
         private static void propertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
