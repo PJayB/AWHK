@@ -13,3 +13,5 @@ pack-awhk.sh
 Thumbs.db
 UpgradeLog.xml
 *.psess
+AWHK.VC.db
+.vs/
