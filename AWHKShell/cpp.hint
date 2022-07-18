@@ -1,0 +1,2 @@
+#define AWHKSHELL_API __declspec(dllexport)
+#define AWHKSHELL_API __declspec(dllimport)

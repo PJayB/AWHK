@@ -130,7 +130,7 @@ INT IPCThread( AWHK_APP_STATE* appState )
 	AWHK_IPC_MSG msg;
 	while ( ReadMessageIPC( &appState->Comms, &msg ) )
 	{
-		switch (msg)
+		switch (msg.Code)
 		{
 		case IPC_MSG_QUIT:
 			::PostThreadMessage(
@@ -158,6 +158,16 @@ INT IPCThread( AWHK_APP_STATE* appState )
                 appState->dwMainThreadID,
                 appState->MsgResume,
                 0, 0 );
+			break;
+
+		case IPC_MSG_CLIENT_NEW:
+			OutputDebugString(L"Hello, world!\n");
+			break;
+		case IPC_MSG_CLIENT_GONE:
+			OutputDebugString(L"Goodbye, world!\n");
+			break;
+		case IPC_MSG_CLIENT_UPDATE:
+			OutputDebugString(L"Update, world!\n");
 			break;
 
 		default:
@@ -651,7 +661,38 @@ int CALLBACK WinMain(
 
 	StartIPCThread( &appState );
 
-	int ret = MessageLoop( &appState, &appCfg );
+	int ret = 0;
+
+	// Load the library
+	auto shellLib = LoadLibrary(L"AWHKShell.dll");
+	assert(shellLib);
+
+	auto shellProc = (HOOKPROC)GetProcAddress(shellLib, "ShellProc");
+	assert(shellProc);
+
+	// Register for shell events
+	auto shellHook = SetWindowsHookEx(WH_SHELL, shellProc, shellLib , 0);
+	if (!shellHook)
+	{
+		// Show an error dialog
+		WCHAR strErr[256] = { 0 };
+		HResultToString(GetLastError(), strErr, _countof(strErr));
+		::MessageBox(
+			nullptr,
+			strErr,
+			APPLICATION_TITLE,
+			MB_OK | MB_ICONSTOP);
+
+		// Quit with error code
+		ret = 1;
+	}
+
+	if (ret == 0)
+	{
+		ret = MessageLoop(&appState, &appCfg);
+	}
+
+	UnhookWindowsHookEx(shellHook);
 
 	UnregisterHotkeys( &appState.Registration );
 	CloseIPC( &appState.Comms );

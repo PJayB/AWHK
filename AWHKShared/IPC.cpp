@@ -116,20 +116,20 @@ BOOL IsValidIPC(const AWHK_IPC* ipc)
 		ipc->hMailSlot != INVALID_HANDLE_VALUE;
 }
 
-BOOL WriteMessageIPC(AWHK_IPC* ipc, AWHK_IPC_MSG msg)
+BOOL WriteMessageIPC(const AWHK_IPC* ipc, const AWHK_IPC_MSG* msg)
 {
 	DWORD written = 0;
 	BOOL ok = ::WriteFile(
 		ipc->hMailSlot,
-		&msg,
-		sizeof(msg),
+		msg,
+		sizeof(AWHK_IPC_MSG),
 		&written,
 		nullptr);
 
 	return ok;
 }
 
-BOOL ReadMessageIPC(AWHK_IPC* ipc, AWHK_IPC_MSG* msg)
+BOOL ReadMessageIPC(const AWHK_IPC* ipc, AWHK_IPC_MSG* msg)
 {
 	DWORD read = 0;
 	BOOL ok = ::ReadFile(

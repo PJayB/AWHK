@@ -8,6 +8,13 @@
 
 #include "ServiceController.h"
 
+BOOL WriteMessageIPC(AWHK_IPC* ipc, AWHK_IPC_MSG_CODE code)
+{
+    AWHK_IPC_MSG msg{};
+    msg.Code = code;
+    return WriteMessageIPC(ipc, &msg);
+}
+
 namespace AWHKConfigShared {
 
     void ServiceController::ReloadConfiguration()

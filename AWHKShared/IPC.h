@@ -32,15 +32,27 @@ void CloseIPC(AWHK_IPC* ipc);
 
 BOOL IsValidIPC(const AWHK_IPC* ipc);
 
-enum AWHK_IPC_MSG
+enum AWHK_IPC_MSG_CODE
 {
-	IPC_MSG_RELOAD_CONFIG,
-	IPC_MSG_QUIT,
+    IPC_MSG_RELOAD_CONFIG,
+    IPC_MSG_QUIT,
     IPC_MSG_SUSPEND,
     IPC_MSG_RESUME,
 
-	_MSG_MAX
+    IPC_MSG_CLIENT_NEW,
+    IPC_MSG_CLIENT_UPDATE,
+    IPC_MSG_CLIENT_GONE,
+
+    _IPC_MSG_MAX
 };
 
-BOOL WriteMessageIPC(AWHK_IPC* pIPC, AWHK_IPC_MSG msg);
-BOOL ReadMessageIPC(AWHK_IPC* pIPC, AWHK_IPC_MSG* msg);
+struct AWHK_IPC_MSG
+{
+    AWHK_IPC_MSG_CODE Code;
+    DWORD Data;
+    DWORD lParam;
+    DWORD wParam;
+};
+
+BOOL WriteMessageIPC(const AWHK_IPC* pIPC, const AWHK_IPC_MSG* msg);
+BOOL ReadMessageIPC(const AWHK_IPC* pIPC, AWHK_IPC_MSG* msg);
