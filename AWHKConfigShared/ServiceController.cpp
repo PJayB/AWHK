@@ -12,7 +12,7 @@ namespace AWHKConfigShared {
 
     void ServiceController::ReloadConfiguration()
     {
-        IPC ipc;
+        AWHK_IPC ipc;
         if ( !OpenIPC( &ipc ) )
         {
             throw gcnew ServiceNotRunningException();
@@ -24,7 +24,7 @@ namespace AWHKConfigShared {
 
     void ServiceController::Unload()
     {
-        IPC ipc;
+        AWHK_IPC ipc;
         if ( !OpenIPC( &ipc ) )
         {
             throw gcnew ServiceNotRunningException();
@@ -36,7 +36,7 @@ namespace AWHKConfigShared {
 
     void ServiceController::Suspend()
     {
-        IPC ipc;
+        AWHK_IPC ipc;
         if ( !OpenIPC( &ipc ) )
         {
             throw gcnew ServiceNotRunningException();
@@ -48,7 +48,7 @@ namespace AWHKConfigShared {
 
     void ServiceController::Resume()
     {
-        IPC ipc;
+        AWHK_IPC ipc;
         if ( !OpenIPC( &ipc ) )
         {
             throw gcnew ServiceNotRunningException();
@@ -60,7 +60,7 @@ namespace AWHKConfigShared {
 
     bool ServiceController::internalIsLoaded()
     {
-        IPC ipc;
+        AWHK_IPC ipc;
         if ( OpenIPC( &ipc ) )
         {
             CloseIPC( &ipc );

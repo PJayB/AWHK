@@ -57,7 +57,7 @@ struct AWHK_APP_STATE
 	HINSTANCE		    hInstance;
 	DWORD			    dwMainThreadID;
     HANDLE              hAppOpenSemaphore;
-	IPC				    Comms;
+	AWHK_IPC		    Comms;
 
 	UINT			    MsgOpenControlPanel;
 	UINT			    MsgControlPanelClosed;
