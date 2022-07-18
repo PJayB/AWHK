@@ -128,6 +128,7 @@ BOOL AppAlreadyOpenCheck()
 INT IPCThread( AWHK_APP_STATE* appState )
 {
 	AWHK_IPC_MSG msg;
+	wchar_t foo[256];
 	while ( ReadMessageIPC( &appState->Comms, &msg ) )
 	{
 		switch (msg.Code)
@@ -667,6 +668,17 @@ int CALLBACK WinMain(
 	auto shellLib = LoadLibrary(L"AWHKShell.dll");
 	assert(shellLib);
 
+	// todo:
+	/*
+	Note that custom shell applications do not receive WH_SHELL messages. Therefore,
+	any application that registers itself as the default shell must call the
+	SystemParametersInfo function before it (or any other application) can receive
+	WH_SHELL messages. This function must be called with SPI_SETMINIMIZEDMETRICS
+	and a MINIMIZEDMETRICS structure. Set the iArrange member of this structure to
+	ARW_HIDE.
+
+	https://docs.microsoft.com/en-us/windows/win32/winmsg/about-hooks#wh_shell
+	*/
 	auto shellProc = (HOOKPROC)GetProcAddress(shellLib, "ShellProc");
 	assert(shellProc);
 
