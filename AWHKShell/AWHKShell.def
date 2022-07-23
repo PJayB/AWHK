@@ -1,3 +1,5 @@
 LIBRARY
 EXPORTS
 	ShellProc @1
+	WinEventProc @2
+

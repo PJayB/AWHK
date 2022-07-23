@@ -33,6 +33,8 @@
 #include "..\AWHKShared\IPC.h"
 #include "..\AWHKShared\SupportFile.h"
 
+#include <unordered_set>
+
 using namespace std;
 
 #define AWHK_MAX_HOTKEYS    64
@@ -125,10 +127,36 @@ BOOL AppAlreadyOpenCheck()
 	return FALSE;
 }
 
+LPCWSTR EventCodeToString(DWORD code)
+{
+#define WSTR(x) L##x
+	switch (code)
+	{
+#define EVENTNAME(x) case x: return WSTR(#x);
+#define EVENTRANGE(x,y)
+#	include "EventCodes.h"
+#undef EVENTNAME
+#undef EVENTRANGE
+	}
+
+	// Check to see if it's within a range
+	static wchar_t buf[128];
+#define EVENTNAME(x)
+#define EVENTRANGE(x,y) if (code >= x && code < y) { swprintf_s(buf, _countof(buf), L"%s+0x%x", WSTR(#x), code - x); return buf; }
+#	include "EventCodes.h"
+#undef EVENTNAME
+#undef EVENTRANGE
+
+	swprintf_s(buf, _countof(buf), L"Unknown Event (0x%x)", code);
+#undef WSTR
+	return buf;
+}
+
 INT IPCThread( AWHK_APP_STATE* appState )
 {
 	AWHK_IPC_MSG msg;
 	wchar_t foo[256];
+	std::unordered_set<DWORD> codes;
 	while ( ReadMessageIPC( &appState->Comms, &msg ) )
 	{
 		switch (msg.Code)
@@ -162,13 +190,28 @@ INT IPCThread( AWHK_APP_STATE* appState )
 			break;
 
 		case IPC_MSG_CLIENT_NEW:
-			OutputDebugString(L"Hello, world!\n");
+			if (codes.find(msg.Data) == codes.end())
+			{
+				swprintf_s(foo, _countof(foo), L"Hello, world: 0x%x %zx\n", msg.Data, MAKELONG(msg.lParam, msg.wParam));
+				OutputDebugString(foo);
+				codes.insert(msg.Code);
+			}
 			break;
 		case IPC_MSG_CLIENT_GONE:
-			OutputDebugString(L"Goodbye, world!\n");
+			if (codes.find(msg.Data) == codes.end())
+			{
+				swprintf_s(foo, _countof(foo), L"Goodbye, world: 0x%x %zx\n", msg.Data, MAKELONG(msg.lParam, msg.wParam));
+				OutputDebugString(foo);
+				codes.insert(msg.Data);
+			}
 			break;
 		case IPC_MSG_CLIENT_UPDATE:
-			OutputDebugString(L"Update, world!\n");
+			if (codes.find(msg.Data) == codes.end())
+			{
+				swprintf_s(foo, _countof(foo), L"Update, world: 0x%x %s %zx\n", msg.Data, EventCodeToString(msg.Data), MAKELONG(msg.lParam, msg.wParam));
+				OutputDebugString(foo);
+				codes.insert(msg.Data);
+			}
 			break;
 
 		default:
@@ -682,8 +725,12 @@ int CALLBACK WinMain(
 	auto shellProc = (HOOKPROC)GetProcAddress(shellLib, "ShellProc");
 	assert(shellProc);
 
+	auto eventProc = (WINEVENTPROC)GetProcAddress(shellLib, "WinEventProc");
+	assert(eventProc);
+
 	// Register for shell events
-	auto shellHook = SetWindowsHookEx(WH_SHELL, shellProc, shellLib , 0);
+	/*
+	auto shellHook = SetWindowsHookEx(WH_SHELL, shellProc, shellLib, 0);
 	if (!shellHook)
 	{
 		// Show an error dialog
@@ -698,13 +745,27 @@ int CALLBACK WinMain(
 		// Quit with error code
 		ret = 1;
 	}
+	*/
+	auto shellHook = SetWinEventHook(
+		EVENT_MIN,
+		EVENT_MAX,
+		shellLib,
+		eventProc,
+		0, 0,
+		WINEVENT_INCONTEXT | WINEVENT_SKIPOWNPROCESS);
+	assert(shellHook);
 
 	if (ret == 0)
 	{
 		ret = MessageLoop(&appState, &appCfg);
 	}
 
-	UnhookWindowsHookEx(shellHook);
+	/*
+	if (shellHook)
+	{
+		UnhookWindowsHookEx(shellHook);
+	}
+	*/
 
 	UnregisterHotkeys( &appState.Registration );
 	CloseIPC( &appState.Comms );

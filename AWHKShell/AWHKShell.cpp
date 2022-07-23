@@ -22,3 +22,21 @@ AWHKSHELL_API LRESULT CALLBACK ShellProc(
 	WriteMessageIPC(&g_IPC, &msg);
 	return CallNextHookEx(nullptr, nCode, wParam, lParam);
 }
+
+AWHKSHELL_API void CALLBACK WinEventProc(
+	HWINEVENTHOOK hWinEventHook,
+	DWORD event,
+	HWND hwnd,
+	LONG idObject,
+	LONG idChild,
+	DWORD idEventThread,
+	DWORD dwmsEventTime
+)
+{
+	AWHK_IPC_MSG msg{};
+	msg.Code = IPC_MSG_CLIENT_UPDATE;
+	msg.wParam = HIWORD(hwnd);
+	msg.lParam = LOWORD(hwnd);
+	msg.Data = event;
+	WriteMessageIPC(&g_IPC, &msg);
+}

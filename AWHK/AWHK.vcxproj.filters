@@ -33,6 +33,9 @@
     <ClInclude Include="MediaKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventCodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
