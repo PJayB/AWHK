@@ -22,3 +22,8 @@ ToDo
 - More consistency (doesn't work for some windows, e.g. Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Defer repaint to improve performance?
+- Put configuration in a file, not in the Registry
+- Focus-stealing prevention
+- Put child message boxes/windows inside parent process window rect by default
+- Auto-allocate regions of screen real-estate to new windows
+- Borders
