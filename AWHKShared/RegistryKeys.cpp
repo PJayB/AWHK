@@ -20,30 +20,109 @@
 #include "stdafx.h"
 #include "RegistryKeys.h"
 
-BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
+struct DEFAULT_KEY_VALUE
 {
-	HKEY hKey;
-	if ( ::RegCreateKey(
-		HKEY_CURRENT_USER,
-		AWHK_REG_KEY,
-		&hKey ) != ERROR_SUCCESS )
-	{
-		return FALSE;
-	}
+    LPCWSTR Name;
+    DWORD Value;
+};
 
-	DWORD dwValueSize = sizeof( DWORD );
-	LONG ret = ::RegSetValueEx(
-		hKey,
-		strName,
-		0,
-		REG_DWORD,
-		(BYTE*) &dwValue, 
-		dwValueSize );
-	
-	::RegCloseKey( hKey );
+static const DEFAULT_KEY_VALUE c_DefaultValues[] =
+{
+    { AWHK_REG_ALLOW_SNAP,          TRUE },
+    { AWHK_REG_EDGE_SEARCH,         128 },
 
-	return ret == ERROR_SUCCESS;
+    { AWHK_REG_GRID_X,              8 },
+    { AWHK_REG_GRID_Y,              4 },
+    { AWHK_REG_FINE_X,              32 },
+    { AWHK_REG_FINE_Y,              16 },
+
+    { AWKH_REG_HELP_COMBO,          AWHK_MAKE_HOTKEY( MOD_ALT, VK_F1 ) },
+    { AWKH_REG_CFG_COMBO,           AWHK_MAKE_HOTKEY( MOD_ALT, VK_F2 ) },
+
+    { AWHK_REG_RESIZE_LEFT,         VK_LEFT },
+    { AWHK_REG_RESIZE_RIGHT,        VK_RIGHT },
+    { AWHK_REG_RESIZE_UP,           VK_UP },
+    { AWHK_REG_RESIZE_DOWN,         VK_DOWN },
+
+    { AWHK_REG_MOVE_LEFT,           'A' },
+    { AWHK_REG_MOVE_RIGHT,          'D' },
+    { AWHK_REG_MOVE_UP,             'W' },
+    { AWHK_REG_MOVE_DOWN,           'S' },
+
+    { AWHK_REG_MOVE_KEY_MOD,        MOD_ALT },
+    { AWHK_REG_NEXT_KEY_MOD,        MOD_CONTROL },
+    { AWHK_REG_FINE_KEY_MOD,        MOD_SHIFT },
+
+    { AWHK_REG_MEDIA_PREV,          0 },
+    { AWHK_REG_MEDIA_NEXT,          0 },
+    { AWHK_REG_MEDIA_STOP,          0 },
+    { AWHK_REG_MEDIA_PLAY_PAUSE,    0 },
+    { AWHK_REG_MEDIA_VOLUME_UP,     0 },
+    { AWHK_REG_MEDIA_VOLUME_DOWN,   0 },
+
+    { NULL, 0 }
+};
+
+BOOL GetRegistryDefaultValue( LPCWSTR strKey, DWORD* pOut )
+{
+    for ( const DEFAULT_KEY_VALUE* key = c_DefaultValues;
+          key->Name;
+          key++ )
+    {
+        if ( wcscmp( key->Name, strKey ) == 0 )
+        {
+            *pOut = key->Value;
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
+
+BOOL DefaultRegistryDword( LPCWSTR strName, DWORD* pOut )
+{
+    return GetRegistryDefaultValue( strName, pOut );
+}
+
+BOOL DefaultRegistryQword( LPCWSTR strName, LONGLONG* pOut )
+{
+    DWORD v = 0;
+    if ( !GetRegistryDefaultValue( strName, &v ) )
+        return FALSE;
+    *pOut = v;
+    return TRUE;
+}
+
+BOOL DefaultRegistryBool( LPCWSTR strName, BOOL* pOut )
+{
+    DWORD v = 0;
+    if ( !GetRegistryDefaultValue( strName, &v ) )
+        return FALSE;
+    *pOut = (v != FALSE);
+    return TRUE;
+}
+
+BOOL DefaultRegistryVKey( LPCWSTR strName, DWORD* pOut )
+{
+    return GetRegistryDefaultValue( strName, pOut );
+}
+
+BOOL DefaultRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
+{
+    return GetRegistryDefaultValue( strName, pOut );
+}
+
+BOOL DefaultRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers )
+{
+    DWORD dwPacked = 0;
+    if ( !GetRegistryDefaultValue( strComboName, &dwPacked ) )
+        return FALSE;
+
+    *pusTrigger = AWHK_GET_TRIGGER_KEY( dwPacked );
+    *pusModifiers = AWHK_GET_MODIFIER_KEYS( dwPacked );
+    return TRUE;
+}
+
 
 BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 {
@@ -61,6 +140,34 @@ BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 		*pOut = (DWORD) dwValue;
 		return TRUE;
 	}
+
+    return GetRegistryDefaultValue( strName, pOut );
+}
+
+BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut )
+{
+	LONGLONG qwValue = 0;
+	DWORD dwValueSize = sizeof( LONGLONG );
+	if ( ::RegGetValue( 
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		strName,
+		RRF_RT_QWORD,
+		nullptr,
+		&qwValue, 
+		&dwValueSize ) == ERROR_SUCCESS )
+	{
+		*pOut = (LONGLONG) qwValue;
+		return TRUE;
+	}
+
+    DWORD dwDefault = 0;
+    if ( GetRegistryDefaultValue( strName, &dwDefault ) )
+    {
+        *pOut = dwDefault;
+        return TRUE;
+    }
+
 	return FALSE;
 }
 
@@ -75,7 +182,9 @@ BOOL LoadRegistryBool( LPCWSTR strName, BOOL* pOut )
 	}
 
 	if ( dwValue != 0 && dwValue != 1 )
+    {
 		return FALSE;
+    }
 
 	*pOut = dwValue == 1;
 	return TRUE;
@@ -128,4 +237,88 @@ BOOL LoadRegistryKeyMod( LPCWSTR strName, DWORD* pOut )
 	*pOut = dwValue;
 
 	return TRUE;
+}
+
+BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pusModifiers )
+{
+    DWORD dwPacked = 0;
+    if ( !LoadRegistryDword( strComboName, &dwPacked ) )
+        return FALSE;
+
+    // If it's zero it hasn't been set yet
+    if ( dwPacked == 0 )
+        return TRUE;
+
+    DWORD dwTrigger = AWHK_GET_TRIGGER_KEY( dwPacked );
+    DWORD dwModifiers = AWHK_GET_MODIFIER_KEYS( dwPacked );
+
+    // Sanity check
+    if ( dwTrigger > 0xFF )
+        return FALSE;
+	DWORD dwAllKeys = MOD_ALT | MOD_CONTROL | MOD_SHIFT | MOD_WIN;
+	if ( dwModifiers > dwAllKeys )
+		return FALSE;
+
+    *pusTrigger = (USHORT) dwTrigger;
+    *pusModifiers = (USHORT) dwModifiers;
+    return TRUE;
+}
+
+
+
+BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
+{
+	HKEY hKey;
+	if ( ::RegCreateKey(
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		&hKey ) != ERROR_SUCCESS )
+	{
+		return FALSE;
+	}
+
+	DWORD dwValueSize = sizeof( DWORD );
+	LONG ret = ::RegSetValueEx(
+		hKey,
+		strName,
+		0,
+		REG_DWORD,
+		(BYTE*) &dwValue, 
+		dwValueSize );
+	
+	::RegCloseKey( hKey );
+
+	return ret == ERROR_SUCCESS;
+}
+
+BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
+{
+	HKEY hKey;
+	if ( ::RegCreateKey(
+		HKEY_CURRENT_USER,
+		AWHK_REG_KEY,
+		&hKey ) != ERROR_SUCCESS )
+	{
+		return FALSE;
+	}
+
+	DWORD dwValueSize = sizeof( LONGLONG );
+	LONG ret = ::RegSetValueEx(
+		hKey,
+		strName,
+		0,
+		REG_QWORD,
+		(BYTE*) &qwValue, 
+		dwValueSize );
+	
+	::RegCloseKey( hKey );
+
+	return ret == ERROR_SUCCESS;
+}
+
+BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, USHORT usTrigger, USHORT usModifiers )
+{
+    DWORD dwPacked = AWHK_MAKE_HOTKEY( usModifiers, usTrigger );
+
+    return StoreRegistryDword( strComboName, dwPacked );
 }

@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "Hotkey.h"
+
 struct AWHK_CURSOR_KEYS
 {
 	DWORD				LeftKey;
@@ -29,10 +31,7 @@ struct AWHK_CURSOR_KEYS
 
 struct AWHK_APP_CONFIG
 {
-	AWHK_APP_CONFIG();
-
 	BOOL				AllowSnapToOthers;
-
 	DWORD				MaxEdgeSearchSize;
 
 	DWORD				GridX;
@@ -40,17 +39,23 @@ struct AWHK_APP_CONFIG
 	DWORD				FineX;
 	DWORD				FineY;
 
-	DWORD				HelpKey;
-	DWORD				HelpKeyMod;
-	DWORD				ConfigKey;
-	DWORD				ConfigKeyMod;
-
-	AWHK_CURSOR_KEYS	ResizeKeys;
-	AWHK_CURSOR_KEYS	MoveKeys;
+	AWHK_KEY_COMBO      HelpCombo;
+	AWHK_KEY_COMBO      ConfigCombo;
 
 	DWORD				MoveKeyMod;
 	DWORD				NextKeyMod;
 	DWORD				FineKeyMod;
+
+	AWHK_CURSOR_KEYS	ResizeKeys;
+	AWHK_CURSOR_KEYS	MoveKeys;
+
+    AWHK_KEY_COMBO      MediaPrev;
+    AWHK_KEY_COMBO      MediaNext;
+    AWHK_KEY_COMBO      MediaStop;
+    AWHK_KEY_COMBO      MediaPlayPause;
+    AWHK_KEY_COMBO      MediaVolumeUp;
+    AWHK_KEY_COMBO      MediaVolumeDown;
+    AWHK_KEY_COMBO      MediaMute;
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );

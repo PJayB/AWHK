@@ -1,0 +1,73 @@
+﻿<Page x:Class="AWHKConfigApp.GridSetupPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:CustomControls="clr-namespace:AWHKConfigApp"
+      xmlns:AWHK="clr-namespace:AWHKConfigApp"
+      xmlns:System="clr-namespace:System;assembly=mscorlib" 
+      x:Name="gridPage" 
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="512"
+	  Title="GridSetupPage">
+    <Page.Resources>
+        <Style x:Key="SeparatorMargin" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="Margin" Value="0,0,0,7"/>
+        </Style>
+        <AWHK:ConfigurationView x:Key="config"/>
+    </Page.Resources>
+    <Page.DataContext>
+        <Binding Source="{StaticResource config}"/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="chkSnap" Content="Enable snapping to other windows" Style="{DynamicResource SeparatorMargin}" IsChecked="{Binding AllowSnapToOthers, Mode=TwoWay}"/>
+        <CustomControls:GridSetupControl 
+            Grid.Row="1" Grid.Column="0" Margin="0,0,7,15" x:Name="gridCoarse"
+            NumCols="{Binding GridX, Mode=TwoWay}"
+            NumRows="{Binding GridY, Mode=TwoWay}">
+            <CustomControls:GridSetupControl.Cols>
+                <System:Int32>3</System:Int32>
+                <System:Int32>4</System:Int32>
+                <System:Int32>8</System:Int32>
+                <System:Int32>16</System:Int32>
+            </CustomControls:GridSetupControl.Cols>
+            <CustomControls:GridSetupControl.Rows>
+                <System:Int32>2</System:Int32>
+                <System:Int32>3</System:Int32>
+                <System:Int32>4</System:Int32>
+                <System:Int32>8</System:Int32>
+                <System:Int32>16</System:Int32>
+            </CustomControls:GridSetupControl.Rows>
+        </CustomControls:GridSetupControl>
+        <CustomControls:GridSetupControl 
+            Grid.Row="1" Grid.Column="1" Margin="7,0,0,15" x:Name="gridFine" 
+            NumCols="{Binding FineX, Mode=TwoWay}" 
+            NumRows="{Binding FineY, Mode=TwoWay}">
+            <CustomControls:GridSetupControl.Cols>
+                <System:Int32>8</System:Int32>
+                <System:Int32>16</System:Int32>
+                <System:Int32>32</System:Int32>
+                <System:Int32>64</System:Int32>
+                <System:Int32>128</System:Int32>
+            </CustomControls:GridSetupControl.Cols>
+            <CustomControls:GridSetupControl.Rows>
+                <System:Int32>8</System:Int32>
+                <System:Int32>16</System:Int32>
+                <System:Int32>32</System:Int32>
+                <System:Int32>64</System:Int32>
+                <System:Int32>128</System:Int32>
+            </CustomControls:GridSetupControl.Rows>
+        </CustomControls:GridSetupControl>
+    </Grid>
+</Page>

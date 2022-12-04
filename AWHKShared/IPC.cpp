@@ -19,9 +19,10 @@
 
 #include "stdafx.h"
 #include "IPC.h"
+#include "Version.h"
 
-#define AWHK_IPC_SEM	L"AWHK_IPC_SEM"
-#define AWHK_IPC_FILE	L"AWHK_IPC_MMF"
+#define AWHK_IPC_SEM		(L"AWHK_IPC_SEM_" AWHK_VERSION_STRING) 
+#define AWHK_IPC_MAILSLOT	(L"\\\\.\\mailslot\\AWHK_IPC_" AWHK_VERSION_STRING) 
 
 struct AWHK_IPC_DATA
 {
@@ -29,64 +30,34 @@ struct AWHK_IPC_DATA
 	DWORD		dwMessage;
 };
 
+BOOL OpenIPCOrDie(AWHK_IPC* ipc);
+
 BOOL IPCExists()
 {
-	HANDLE hSyncSem = ::OpenSemaphore(
-		SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	
-		FALSE,
-		AWHK_IPC_SEM );
-	if ( hSyncSem )
+	AWHK_IPC tmp{};
+	if (OpenIPCOrDie(&tmp))
 	{
-		::CloseHandle( hSyncSem );
-		return TRUE;
-	}
-
-	HANDLE hFileMapping = ::OpenFileMapping(
-		FILE_MAP_WRITE | FILE_MAP_READ,
-		FALSE,
-		AWHK_IPC_FILE );
-	if ( hFileMapping )
-	{
-		::CloseHandle( hFileMapping );
+		CloseIPC(&tmp);
 		return TRUE;
 	}
 
 	return FALSE;
 }
 
-BOOL MapIPC( IPC* ipc, DWORD dwAccess )
+BOOL OpenIPCOrDie(AWHK_IPC* ipc)
 {
-	return ( ipc->pMemory = (AWHK_IPC_DATA*) ::MapViewOfFile(
-		ipc->hFileMapping,
-		dwAccess,
-		0, 0,
-		sizeof( AWHK_IPC_DATA ) ) ) != NULL;
-}
-
-BOOL OpenIPCOrDie( IPC* ipc )
-{
-	::ZeroMemory( ipc, sizeof( IPC ) );
-
-	ipc->hSyncSem = ::OpenSemaphore(
-		SYNCHRONIZE | SEMAPHORE_MODIFY_STATE,	
-		FALSE,
-		AWHK_IPC_SEM );
-	if ( !ipc->hSyncSem )
-		return FALSE;
-
-	DWORD dwAccess = FILE_MAP_WRITE | FILE_MAP_READ;
-	
+	::ZeroMemory( ipc, sizeof(AWHK_IPC) );
+		
 	// Just return it if it was already opened
-	ipc->hFileMapping = ::OpenFileMapping(
-		dwAccess,
-		FALSE,
-		AWHK_IPC_FILE );
-	if ( !ipc->hFileMapping )
-	{
-		return FALSE;
-	}
-
-	if ( !MapIPC( ipc, dwAccess ) )
+	ipc->hMailSlot = ::CreateFile(
+		AWHK_IPC_MAILSLOT,
+		GENERIC_WRITE,
+		FILE_SHARE_READ,
+		(LPSECURITY_ATTRIBUTES) nullptr,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		nullptr);
+	if (ipc->hMailSlot == INVALID_HANDLE_VALUE)
 	{
 		return FALSE;
 	}
@@ -94,7 +65,7 @@ BOOL OpenIPCOrDie( IPC* ipc )
 	return TRUE;
 }
 
-BOOL OpenIPC( IPC* ipc )
+BOOL OpenIPC(AWHK_IPC* ipc)
 {
 	if ( !OpenIPCOrDie( ipc ) )
 	{
@@ -105,36 +76,16 @@ BOOL OpenIPC( IPC* ipc )
 	return TRUE;
 }
 
-BOOL CreateIPCOrDie( IPC* ipc )
+BOOL CreateIPCOrDie(AWHK_IPC* ipc)
 {
-	SECURITY_ATTRIBUTES sa;
-	sa.bInheritHandle = FALSE;
-	sa.lpSecurityDescriptor = nullptr;
-	sa.nLength = sizeof( sa );
+	::ZeroMemory( ipc, sizeof(AWHK_IPC) );
 
-	::ZeroMemory( ipc, sizeof( IPC ) );
-
-	ipc->hSyncSem = ::CreateSemaphore(
-		&sa,
-		0,
-		MAXINT32,
-		AWHK_IPC_SEM );
-	if ( !ipc->hSyncSem )
-		return FALSE;
-
-	ipc->hFileMapping = ::CreateFileMapping(
-		(HANDLE) -1,
-		nullptr,
-		PAGE_READWRITE,
-		0,
-		sizeof( AWHK_IPC_DATA ),
-		AWHK_IPC_FILE );
-	if ( !ipc->hFileMapping )
-	{
-		return FALSE;
-	}
-
-	if ( !MapIPC( ipc, FILE_MAP_ALL_ACCESS ) )
+	ipc->hMailSlot = ::CreateMailslot(
+		AWHK_IPC_MAILSLOT,
+		sizeof(AWHK_IPC_MSG),
+		MAILSLOT_WAIT_FOREVER,
+		(LPSECURITY_ATTRIBUTES) nullptr);
+	if (ipc->hMailSlot == INVALID_HANDLE_VALUE)
 	{
 		return FALSE;
 	}
@@ -142,7 +93,7 @@ BOOL CreateIPCOrDie( IPC* ipc )
 	return TRUE;
 }
 
-BOOL CreateIPC( IPC* ipc )
+BOOL CreateIPC(AWHK_IPC* ipc)
 {
 	if ( !CreateIPCOrDie( ipc ) )
 	{
@@ -152,71 +103,42 @@ BOOL CreateIPC( IPC* ipc )
 	return TRUE;
 }
 
-void CloseIPC( IPC* ipc )
+void CloseIPC(AWHK_IPC* ipc)
 {
-	if ( ipc->pMemory )
-		::UnmapViewOfFile( (LPVOID) ipc->pMemory );
-	if ( ipc->hSyncSem ) 
-		::CloseHandle( ipc->hSyncSem );
-	if ( ipc->hFileMapping )
-		::CloseHandle( ipc->hFileMapping );
-	::ZeroMemory( ipc, sizeof( IPC ) );
+	if ( ipc->hMailSlot )
+		::CloseHandle( ipc->hMailSlot);
+	::ZeroMemory( ipc, sizeof(AWHK_IPC) );
 }
 
-BOOL IsValidIPC( const IPC* ipc )
+BOOL IsValidIPC(const AWHK_IPC* ipc)
 {
-	return ipc->hFileMapping && ipc->hSyncSem;
+	return ipc->hMailSlot &&
+		ipc->hMailSlot != INVALID_HANDLE_VALUE;
 }
 
-BOOL WriteMessageIPC( IPC* ipc, AWHK_IPC_MSG msg )
+BOOL WriteMessageIPC(AWHK_IPC* ipc, AWHK_IPC_MSG msg)
 {
-	__try
-	{
-		ipc->pMemory->cbSize = sizeof( AWHK_IPC_DATA );
-		ipc->pMemory->dwMessage = msg;
-	}
-	__except (::GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? 
-	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		return FALSE;
-	}
+	DWORD written = 0;
+	BOOL ok = ::WriteFile(
+		ipc->hMailSlot,
+		&msg,
+		sizeof(msg),
+		&written,
+		nullptr);
 
-	if ( !::FlushViewOfFile( (LPCVOID) ipc->pMemory, sizeof( AWHK_IPC_DATA ) ) ) 
-	{
-		// TODO: reconsider this?
-		return FALSE;
-	}
-
-	::ReleaseSemaphore(
-		ipc->hSyncSem,
-		1,
-		nullptr );
-
-	return TRUE;
+	return ok;
 }
 
-BOOL ReadMessageIPC( IPC* ipc, AWHK_IPC_MSG* msg )
+BOOL ReadMessageIPC(AWHK_IPC* ipc, AWHK_IPC_MSG* msg)
 {
-	// Block until there's data
-	::WaitForSingleObject(
-		ipc->hSyncSem,
-		INFINITE );
+	DWORD read = 0;
+	BOOL ok = ::ReadFile(
+		ipc->hMailSlot,
+		msg,
+		sizeof(AWHK_IPC_MSG),
+		&read,
+		nullptr);
 
-	__try
-	{
-		DWORD dwSize = ipc->pMemory->cbSize;
-		if ( dwSize != sizeof( AWHK_IPC_DATA ) )
-			return FALSE;
-
-		*msg = (AWHK_IPC_MSG) ipc->pMemory->dwMessage;
-	}
-	__except(::GetExceptionCode()==EXCEPTION_IN_PAGE_ERROR ?
-	EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		// Failed to read from the view.
-		return FALSE;
-	}
-
-	return TRUE;
+	return ok;
 }
 

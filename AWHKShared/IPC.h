@@ -19,30 +19,28 @@
 
 #pragma once
 
-struct IPC
+struct AWHK_IPC
 {
-	HANDLE hFileMapping;
-	HANDLE hSyncSem;
-
-	volatile 
-	struct AWHK_IPC_DATA* pMemory;
+    HANDLE hMailSlot;
 };
 
 BOOL IPCExists();
 
-BOOL CreateIPC( IPC* ipc );
-BOOL OpenIPC( IPC* ipc );
-void CloseIPC( IPC* ipc );
+BOOL CreateIPC(AWHK_IPC* ipc);
+BOOL OpenIPC(AWHK_IPC* ipc);
+void CloseIPC(AWHK_IPC* ipc);
 
-BOOL IsValidIPC( const IPC* ipc );
+BOOL IsValidIPC(const AWHK_IPC* ipc);
 
 enum AWHK_IPC_MSG
 {
 	IPC_MSG_RELOAD_CONFIG,
 	IPC_MSG_QUIT,
+    IPC_MSG_SUSPEND,
+    IPC_MSG_RESUME,
 
 	_MSG_MAX
 };
 
-BOOL WriteMessageIPC( IPC* pIPC, AWHK_IPC_MSG msg );
-BOOL ReadMessageIPC( IPC* pIPC, AWHK_IPC_MSG* msg );
+BOOL WriteMessageIPC(AWHK_IPC* pIPC, AWHK_IPC_MSG msg);
+BOOL ReadMessageIPC(AWHK_IPC* pIPC, AWHK_IPC_MSG* msg);

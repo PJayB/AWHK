@@ -33,6 +33,15 @@
     <ClInclude Include="IPC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AutoLogin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hotkey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -48,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IPC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoLogin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

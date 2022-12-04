@@ -10,5 +10,8 @@ AWHKSetup.exe
 AWHKSetupAndDeploy/AWHKSetupAndDeploy
 pack.sh
 pack-awhk.sh
-.vs/
+Thumbs.db
+UpgradeLog.xml
+*.psess
 *.VC.db
+.vs/

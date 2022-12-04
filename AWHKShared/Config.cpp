@@ -21,66 +21,58 @@
 #include "Config.h"
 #include "RegistryKeys.h"
 
-AWHK_APP_CONFIG::AWHK_APP_CONFIG()
-	: AllowSnapToOthers( TRUE )
-	, MaxEdgeSearchSize( 128 )
-	, GridX( 8 )
-	, GridY( 4 )
-	, FineX( 32 )
-	, FineY( 16 )
-	, HelpKey( VK_F1 )
-	, HelpKeyMod( MOD_ALT )
-	, ConfigKey( VK_F2 )
-	, ConfigKeyMod( MOD_ALT )
-	, MoveKeyMod( MOD_ALT )
-	, NextKeyMod( MOD_CONTROL )
-	, FineKeyMod( MOD_SHIFT )
-{
-	ResizeKeys.LeftKey = VK_LEFT;
-	ResizeKeys.RightKey = VK_RIGHT;
-	ResizeKeys.UpKey = VK_UP;
-	ResizeKeys.DownKey = VK_DOWN;
-
-	MoveKeys.LeftKey = 'A';
-	MoveKeys.RightKey = 'D';
-	MoveKeys.UpKey = 'W';
-	MoveKeys.DownKey = 'S';
-}
-
-void LoadConfigGridValue( LPCWSTR strName, DWORD* value )
+BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
 	DWORD gridVal = 0;
 	if ( LoadRegistryDword( strName, &gridVal ) )
 	{
 		*value = max( gridVal, 2 );
 		*value = min( *value, 0xFF );
+        return TRUE;
 	}
+    return FALSE;
+}
+
+BOOL LoadKeyCombo( LPCWSTR strName, AWHK_KEY_COMBO* combo )
+{
+    return LoadRegistryKeyCombo( strName, &combo->Trigger, &combo->Modifiers );
+}
+
+BOOL SaveKeyCombo( LPCWSTR strName, const AWHK_KEY_COMBO* combo )
+{
+    return StoreRegistryKeyCombo( strName, combo->Trigger, combo->Modifiers );
 }
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 {
-	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	, &cfg->AllowSnapToOthers );
-	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	, &cfg->MaxEdgeSearchSize );
+	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	    , &cfg->AllowSnapToOthers );
+	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	    , &cfg->MaxEdgeSearchSize );
 
-	LoadConfigGridValue	( AWHK_REG_GRID_X		, &cfg->GridX );
-	LoadConfigGridValue	( AWHK_REG_GRID_Y		, &cfg->GridY );
-	LoadConfigGridValue	( AWHK_REG_FINE_X		, &cfg->FineX );
-	LoadConfigGridValue	( AWHK_REG_FINE_Y		, &cfg->FineY );
+	LoadConfigGridValue	( AWHK_REG_GRID_X		    , &cfg->GridX );
+	LoadConfigGridValue	( AWHK_REG_GRID_Y		    , &cfg->GridY );
+	LoadConfigGridValue	( AWHK_REG_FINE_X		    , &cfg->FineX );
+	LoadConfigGridValue	( AWHK_REG_FINE_Y		    , &cfg->FineY );
 
-	LoadRegistryVKey	( AWKH_REG_HELP_KEY		, &cfg->HelpKey );
-	LoadRegistryKeyMod	( AWKH_REG_HELP_KEY_MOD	, &cfg->HelpKeyMod );
-	LoadRegistryVKey	( AWKH_REG_CFG_KEY		, &cfg->ConfigKey );
-	LoadRegistryKeyMod	( AWKH_REG_CFG_KEY_MOD	, &cfg->ConfigKeyMod );
+	LoadKeyCombo	    ( AWKH_REG_HELP_COMBO	    , &cfg->HelpCombo );
+	LoadKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->ConfigCombo );
+    
+	LoadRegistryVKey	( AWHK_REG_RESIZE_LEFT		, &cfg->ResizeKeys.LeftKey );
+	LoadRegistryVKey	( AWHK_REG_RESIZE_RIGHT	    , &cfg->ResizeKeys.RightKey );
+	LoadRegistryVKey	( AWHK_REG_RESIZE_UP	    , &cfg->ResizeKeys.UpKey );
+	LoadRegistryVKey	( AWHK_REG_RESIZE_DOWN		, &cfg->ResizeKeys.DownKey );
 
-	LoadRegistryVKey	( AWHK_REG_LEFT_KEY		, &cfg->ResizeKeys.LeftKey );
-	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY	, &cfg->ResizeKeys.RightKey );
-	LoadRegistryVKey	( AWHK_REG_UP_KEY		, &cfg->ResizeKeys.UpKey );
-	LoadRegistryVKey	( AWHK_REG_DOWN_KEY		, &cfg->ResizeKeys.DownKey );
+	LoadRegistryVKey	( AWHK_REG_MOVE_LEFT	    , &cfg->MoveKeys.LeftKey );
+	LoadRegistryVKey	( AWHK_REG_MOVE_RIGHT	    , &cfg->MoveKeys.RightKey );
+	LoadRegistryVKey	( AWHK_REG_MOVE_UP		    , &cfg->MoveKeys.UpKey );
+	LoadRegistryVKey	( AWHK_REG_MOVE_DOWN	    , &cfg->MoveKeys.DownKey );
 
-	LoadRegistryVKey	( AWHK_REG_LEFT_KEY_2	, &cfg->MoveKeys.LeftKey );
-	LoadRegistryVKey	( AWHK_REG_RIGHT_KEY_2	, &cfg->MoveKeys.RightKey );
-	LoadRegistryVKey	( AWHK_REG_UP_KEY_2		, &cfg->MoveKeys.UpKey );
-	LoadRegistryVKey	( AWHK_REG_DOWN_KEY_2	, &cfg->MoveKeys.DownKey );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaNext );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
+    LoadKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
 
 	DWORD moveKeyMod = cfg->MoveKeyMod;
 	DWORD fineKeyMod = cfg->FineKeyMod;
@@ -99,37 +91,43 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
 		cfg->NextKeyMod = nextKeyMod;
 
-	return TRUE;
+    return TRUE;
 }
 
 BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
 {
-	StoreRegistryDword( AWHK_REG_ALLOW_SNAP		, cfg->AllowSnapToOthers );
-	StoreRegistryDword( AWHK_REG_EDGE_SEARCH	, cfg->MaxEdgeSearchSize );
+	StoreRegistryDword  ( AWHK_REG_ALLOW_SNAP		, cfg->AllowSnapToOthers );
+	StoreRegistryDword  ( AWHK_REG_EDGE_SEARCH	    , cfg->MaxEdgeSearchSize );
 
-	StoreRegistryDword( AWHK_REG_GRID_X			, cfg->GridX );
-	StoreRegistryDword( AWHK_REG_GRID_Y			, cfg->GridY );
-	StoreRegistryDword( AWHK_REG_FINE_X			, cfg->FineX );
-	StoreRegistryDword( AWHK_REG_FINE_Y			, cfg->FineY );
+	StoreRegistryDword  ( AWHK_REG_GRID_X			, cfg->GridX );
+	StoreRegistryDword  ( AWHK_REG_GRID_Y			, cfg->GridY );
+	StoreRegistryDword  ( AWHK_REG_FINE_X			, cfg->FineX );
+	StoreRegistryDword  ( AWHK_REG_FINE_Y			, cfg->FineY );
 
-	StoreRegistryDword( AWKH_REG_HELP_KEY		, cfg->HelpKey );
-	StoreRegistryDword( AWKH_REG_HELP_KEY_MOD	, cfg->HelpKeyMod );
-	StoreRegistryDword( AWKH_REG_CFG_KEY		, cfg->ConfigKey );
-	StoreRegistryDword( AWKH_REG_CFG_KEY_MOD	, cfg->ConfigKeyMod );
+	SaveKeyCombo	    ( AWKH_REG_HELP_COMBO	    , &cfg->HelpCombo );
+	SaveKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->ConfigCombo );
 
-	StoreRegistryDword( AWHK_REG_LEFT_KEY		, cfg->ResizeKeys.LeftKey );
-	StoreRegistryDword( AWHK_REG_RIGHT_KEY		, cfg->ResizeKeys.RightKey );
-	StoreRegistryDword( AWHK_REG_UP_KEY			, cfg->ResizeKeys.UpKey );
-	StoreRegistryDword( AWHK_REG_DOWN_KEY		, cfg->ResizeKeys.DownKey );
+	StoreRegistryDword	( AWHK_REG_RESIZE_LEFT		, cfg->ResizeKeys.LeftKey );
+	StoreRegistryDword	( AWHK_REG_RESIZE_RIGHT	    , cfg->ResizeKeys.RightKey );
+	StoreRegistryDword	( AWHK_REG_RESIZE_UP	    , cfg->ResizeKeys.UpKey );
+	StoreRegistryDword	( AWHK_REG_RESIZE_DOWN		, cfg->ResizeKeys.DownKey );
 
-	StoreRegistryDword( AWHK_REG_LEFT_KEY_2		, cfg->MoveKeys.LeftKey );
-	StoreRegistryDword( AWHK_REG_RIGHT_KEY_2	, cfg->MoveKeys.RightKey );
-	StoreRegistryDword( AWHK_REG_UP_KEY_2		, cfg->MoveKeys.UpKey );
-	StoreRegistryDword( AWHK_REG_DOWN_KEY_2		, cfg->MoveKeys.DownKey );
+    StoreRegistryDword	( AWHK_REG_MOVE_LEFT	    , cfg->MoveKeys.LeftKey );
+	StoreRegistryDword	( AWHK_REG_MOVE_RIGHT	    , cfg->MoveKeys.RightKey );
+	StoreRegistryDword	( AWHK_REG_MOVE_UP		    , cfg->MoveKeys.UpKey );
+	StoreRegistryDword	( AWHK_REG_MOVE_DOWN	    , cfg->MoveKeys.DownKey );
 
-	StoreRegistryDword( AWHK_REG_MOVE_KEY_MOD	, cfg->MoveKeyMod );
-	StoreRegistryDword( AWHK_REG_NEXT_KEY_MOD	, cfg->NextKeyMod );
-	StoreRegistryDword( AWHK_REG_FINE_KEY_MOD	, cfg->FineKeyMod );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
+    SaveKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
 	
-	return TRUE;
+	StoreRegistryDword	( AWHK_REG_MOVE_KEY_MOD     , cfg->MoveKeyMod );
+	StoreRegistryDword	( AWHK_REG_NEXT_KEY_MOD     , cfg->NextKeyMod );
+	StoreRegistryDword	( AWHK_REG_FINE_KEY_MOD     , cfg->FineKeyMod );
+
+    return TRUE;
 }
