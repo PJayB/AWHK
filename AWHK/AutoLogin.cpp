@@ -20,7 +20,6 @@
 #include "stdafx.h"
 
 #include "AutoLogin.h"
-#include "SupportFile.h"
 
 #include <strsafe.h>
 

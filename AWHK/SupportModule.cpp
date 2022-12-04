@@ -19,7 +19,6 @@
 
 #include "stdafx.h"
 #include "SupportModule.h"
-#include "SupportFile.h"
 
 struct CONFIG_PROCESS_THREAD_DATA
 {

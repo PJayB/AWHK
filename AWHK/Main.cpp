@@ -30,7 +30,6 @@
 #include "WindowSnap.h"
 #include "MediaKeys.h"
 #include "Config.h"
-#include "SupportFile.h"
 
 using namespace std;
 
