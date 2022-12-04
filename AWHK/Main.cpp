@@ -608,9 +608,9 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow )
+	HINSTANCE /*hPrevInstance*/,
+	LPSTR /*lpCmdLine*/,
+	int /*nCmdShow*/ )
 {
 	if ( AppAlreadyOpenCheck() )
 		return -1;
