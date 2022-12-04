@@ -22,7 +22,7 @@
 typedef void (* ASYNC_FORM_CLOSED_PROC)( 
 	LPVOID pUserData );
 
-BOOL ShowSettingsDialogAsync(
+BOOL ShowConfigEditorAsync(
 	ASYNC_FORM_CLOSED_PROC pfCallback,
 	LPVOID pUserData );
 

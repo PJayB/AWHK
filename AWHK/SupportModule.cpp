@@ -19,9 +19,7 @@
 
 #include "stdafx.h"
 #include "SupportModule.h"
-
-#include "..\AWHKShared\SupportFile.h"
-
+#include "SupportFile.h"
 
 struct CONFIG_PROCESS_THREAD_DATA
 {
@@ -37,7 +35,7 @@ INT ConfigProcessWaitThread( CONFIG_PROCESS_THREAD_DATA* pShared )
 	if ( pShared->pfCallback )
 		pShared->pfCallback( pShared->pUserData );
 
-	DWORD exitCode = -1;
+	DWORD exitCode = 255;
 	::GetExitCodeProcess( pShared->ProcessInfo.hProcess, &exitCode );
 
 	::CloseHandle( pShared->ProcessInfo.hProcess );
@@ -48,14 +46,14 @@ INT ConfigProcessWaitThread( CONFIG_PROCESS_THREAD_DATA* pShared )
 	return exitCode;
 }
 
-
-BOOL ShowSettingsDialogAsync(
+BOOL ShowConfigEditorAsync(
 		ASYNC_FORM_CLOSED_PROC pfCallback,
 		LPVOID pUserData )
 {
-	TCHAR strLibName[MAX_PATH];
-	if ( !GetSupportFilePath( AWHK_CONFIG_PANEL_EXE, strLibName, MAX_PATH ) )
-		return FALSE;
+	// todo: look up main editor
+	// todo: hook up to config path
+
+	TCHAR strLibName[MAX_PATH] = _T("notepad.exe");
 
 	CONFIG_PROCESS_THREAD_DATA* pShared = new CONFIG_PROCESS_THREAD_DATA;
 	pShared->pfCallback = pfCallback;

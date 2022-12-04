@@ -20,7 +20,7 @@
 #include "stdafx.h"
 
 #include "AutoLogin.h"
-#include "..\AWHKShared\SupportFile.h"
+#include "SupportFile.h"
 
 #include <strsafe.h>
 
@@ -43,7 +43,7 @@ BOOL IsAutoLoginEnabled()
 BOOL EnableAutoLogin()
 {
 	TCHAR strModuleName[MAX_PATH];
-	if ( !GetSupportFilePath( AWHK_MAIN_EXE, strModuleName, MAX_PATH ) )
+	if ( !GetModuleFileName( nullptr, strModuleName, _countof(strModuleName) ) )
 		return FALSE;
 
 	HKEY hKey;

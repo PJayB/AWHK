@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "Config.h"
-#include "../AWHKShared/RegistryKeys.h"
+#include "RegistryKeys.h"
 
 BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
@@ -54,7 +54,7 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 	LoadConfigGridValue	( AWHK_REG_FINE_Y		    , &cfg->FineY );
 
 	LoadKeyCombo	    ( AWKH_REG_HELP_COMBO	    , &cfg->HelpCombo );
-	LoadKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->ConfigCombo );
+	LoadKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->EditConfigCombo );
     
 	LoadRegistryVKey	( AWHK_REG_RESIZE_LEFT		, &cfg->ResizeKeys.LeftKey );
 	LoadRegistryVKey	( AWHK_REG_RESIZE_RIGHT	    , &cfg->ResizeKeys.RightKey );

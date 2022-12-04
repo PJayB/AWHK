@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../AWHKShared/Hotkey.h"
+#include "Hotkey.h"
 
 struct AWHK_CURSOR_KEYS
 {
@@ -40,7 +40,7 @@ struct AWHK_APP_CONFIG
 	DWORD				FineY;
 
 	AWHK_KEY_COMBO      HelpCombo;
-	AWHK_KEY_COMBO      ConfigCombo;
+    AWHK_KEY_COMBO      EditConfigCombo;
 
 	DWORD				MoveKeyMod;
 	DWORD				NextKeyMod;

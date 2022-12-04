@@ -1,12 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32630.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWHK", "AWHK\AWHK.vcxproj", "{6C76DD89-2541-48FB-B006-A6D01D17C458}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC} = {BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{223121A3-A659-4D47-B515-FBCD5C4C6B2B}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,18 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		Help\style.css = Help\style.css
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWHKShared", "AWHKShared\AWHKShared.vcxproj", "{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWHKConfigApp", "AWHKConfigApp\AWHKConfigApp.csproj", "{3DA913E6-C757-420E-9F5E-503F4C4794BD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{38F94816-A713-44DB-BD64-0794F85FACD7} = {38F94816-A713-44DB-BD64-0794F85FACD7}
-		{299FD6CC-916F-4872-A6B0-05DAC19CDD3B} = {299FD6CC-916F-4872-A6B0-05DAC19CDD3B}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AWHKConfigShared", "AWHKConfigShared\AWHKConfigShared.vcxproj", "{38F94816-A713-44DB-BD64-0794F85FACD7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotKeyCustomControlLibrary", "HotKeyCustomControlLibrary\HotKeyCustomControlLibrary.csproj", "{299FD6CC-916F-4872-A6B0-05DAC19CDD3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,24 +22,11 @@ Global
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Debug|Win32.Build.0 = Debug|Win32
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Release|Win32.ActiveCfg = Release|Win32
 		{6C76DD89-2541-48FB-B006-A6D01D17C458}.Release|Win32.Build.0 = Release|Win32
-		{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}.Debug|Win32.Build.0 = Debug|Win32
-		{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}.Release|Win32.ActiveCfg = Release|Win32
-		{BA92561F-0CB1-4A9D-A47A-C375F0DE8ADC}.Release|Win32.Build.0 = Release|Win32
-		{3DA913E6-C757-420E-9F5E-503F4C4794BD}.Debug|Win32.ActiveCfg = Debug|x86
-		{3DA913E6-C757-420E-9F5E-503F4C4794BD}.Debug|Win32.Build.0 = Debug|x86
-		{3DA913E6-C757-420E-9F5E-503F4C4794BD}.Release|Win32.ActiveCfg = Release|x86
-		{3DA913E6-C757-420E-9F5E-503F4C4794BD}.Release|Win32.Build.0 = Release|x86
-		{38F94816-A713-44DB-BD64-0794F85FACD7}.Debug|Win32.ActiveCfg = Debug|Win32
-		{38F94816-A713-44DB-BD64-0794F85FACD7}.Debug|Win32.Build.0 = Debug|Win32
-		{38F94816-A713-44DB-BD64-0794F85FACD7}.Release|Win32.ActiveCfg = Release|Win32
-		{38F94816-A713-44DB-BD64-0794F85FACD7}.Release|Win32.Build.0 = Release|Win32
-		{299FD6CC-916F-4872-A6B0-05DAC19CDD3B}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{299FD6CC-916F-4872-A6B0-05DAC19CDD3B}.Debug|Win32.Build.0 = Debug|Any CPU
-		{299FD6CC-916F-4872-A6B0-05DAC19CDD3B}.Release|Win32.ActiveCfg = Release|Any CPU
-		{299FD6CC-916F-4872-A6B0-05DAC19CDD3B}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11B1A41F-EFD0-4551-8C02-8D02F0692441}
 	EndGlobalSection
 EndGlobal

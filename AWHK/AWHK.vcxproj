@@ -78,29 +78,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AutoLogin.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Hotkey.h" />
     <ClInclude Include="MediaKeys.h" />
+    <ClInclude Include="RegistryKeys.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SupportFile.h" />
     <ClInclude Include="SupportModule.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Version.h" />
     <ClInclude Include="WindowSnap.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoLogin.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="MediaKeys.cpp" />
+    <ClCompile Include="RegistryKeys.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="SupportFile.cpp" />
     <ClCompile Include="SupportModule.cpp" />
     <ClCompile Include="WindowSnap.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AWHKShared\AWHKShared.vcxproj">
-      <Project>{ba92561f-0cb1-4a9d-a47a-c375f0de8adc}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Icon.ico" />

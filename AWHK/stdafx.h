@@ -44,6 +44,6 @@ namespace std {
 
 #include <Windows.h>
 
-#include "../AWHKShared/Hotkey.h"
+#include "Hotkey.h"
 
 #define APPLICATION_TITLE L"Advanced Window HotKeys"

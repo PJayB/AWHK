@@ -178,10 +178,6 @@
     <Resource Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AWHKConfigShared\AWHKConfigShared.vcxproj">
-      <Project>{38f94816-a713-44db-bd64-0794f85facd7}</Project>
-      <Name>AWHKConfigShared</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HotKeyCustomControlLibrary\HotKeyCustomControlLibrary.csproj">
       <Project>{299fd6cc-916f-4872-a6b0-05dac19cdd3b}</Project>
       <Name>HotKeyCustomControlLibrary</Name>

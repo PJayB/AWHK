@@ -30,8 +30,7 @@
 #include "WindowSnap.h"
 #include "MediaKeys.h"
 #include "Config.h"
-#include "..\AWHKShared\IPC.h"
-#include "..\AWHKShared\SupportFile.h"
+#include "SupportFile.h"
 
 using namespace std;
 
@@ -57,15 +56,14 @@ struct AWHK_APP_STATE
 	HINSTANCE		    hInstance;
 	DWORD			    dwMainThreadID;
     HANDLE              hAppOpenSemaphore;
-	AWHK_IPC		    Comms;
 
-	UINT			    MsgOpenControlPanel;
-	UINT			    MsgControlPanelClosed;
+	UINT			    MsgEditConfigFile;
+	UINT				MsgConfigEditorClosed;
 	UINT			    MsgReloadConfig;
     UINT                MsgSuspend;
     UINT                MsgResume;
 
-	volatile BOOL	    ControlPanelOpen;
+	volatile BOOL	    ConfigEditorOpen;
 	AWHK_REGISTRATION   Registration;
 };
 
@@ -115,7 +113,7 @@ BOOL AppAlreadyOpenCheck()
 
 		::MessageBox( 
 			nullptr,
-			AWHK_MAIN_EXE L" is already running.",
+			L"AWHK is already running.",
 			APPLICATION_TITLE,
 			MB_OK | MB_ICONSTOP );
 
@@ -123,60 +121,6 @@ BOOL AppAlreadyOpenCheck()
 	}
 
 	return FALSE;
-}
-
-INT IPCThread( AWHK_APP_STATE* appState )
-{
-	AWHK_IPC_MSG msg;
-	while ( ReadMessageIPC( &appState->Comms, &msg ) )
-	{
-		switch (msg)
-		{
-		case IPC_MSG_QUIT:
-			::PostThreadMessage(
-				appState->dwMainThreadID,
-				WM_QUIT,
-				0, 0 );
-			break;
-
-		case IPC_MSG_RELOAD_CONFIG:
-			::PostThreadMessage(
-				appState->dwMainThreadID,
-				appState->MsgReloadConfig,
-				0, 0 );
-			break;
-
-        case IPC_MSG_SUSPEND:
-            ::PostThreadMessage(
-                appState->dwMainThreadID,
-                appState->MsgSuspend,
-                0, 0 );
-			break;
-
-        case IPC_MSG_RESUME:
-            ::PostThreadMessage(
-                appState->dwMainThreadID,
-                appState->MsgResume,
-                0, 0 );
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	return 0;
-}
-
-BOOL StartIPCThread( AWHK_APP_STATE* appState )
-{
-	return ::CreateThread( 
-		nullptr,
-		0,
-		(LPTHREAD_START_ROUTINE) IPCThread,
-		(LPVOID) appState,
-		0,
-		nullptr ) != nullptr;
 }
 
 BOOL ShowWebHelp()
@@ -190,11 +134,11 @@ BOOL ShowWebHelp()
 		SW_SHOWNORMAL ) > 32;
 }
 
-BOOL ShowControlPanel( const AWHK_APP_STATE* pState )
+BOOL EditConfigFile( const AWHK_APP_STATE* pState )
 {
 	return ::PostThreadMessage(
 		pState->dwMainThreadID,
-		pState->MsgOpenControlPanel,
+		pState->MsgEditConfigFile,
 		0, 0 );
 }
 
@@ -230,8 +174,8 @@ BOOL HandleHotKey(
 	// Deal with system keys
 	if ( key == cfg->HelpCombo )
 		return ShowWebHelp();
-	else if ( key == cfg->ConfigCombo )
-		return ShowControlPanel( state );
+	else if ( key == cfg->EditConfigCombo)
+		return EditConfigFile( state );
     else if ( key == cfg->MediaPlayPause )
         return MediaPlayPause();
     else if ( key == cfg->MediaStop )
@@ -271,7 +215,7 @@ BOOL HandleHotKey(
 		);
 }
 
-void AsyncControlPanelClosedCallback(
+void AsyncConfigEditorClosedCallback(
 	const AWHK_APP_STATE* pState )
 {
 	::PostThreadMessage( 
@@ -281,24 +225,26 @@ void AsyncControlPanelClosedCallback(
 
 	::PostThreadMessage( 
 		pState->dwMainThreadID,
-		pState->MsgControlPanelClosed,
+		pState->MsgConfigEditorClosed,
 		0, 0 );
 }
 
-BOOL OpenSupportControlPanel( const AWHK_APP_STATE* pState )
+
+BOOL OpenConfigEditor( const AWHK_APP_STATE* pState )
 {
-	if ( !ShowSettingsDialogAsync(
-		(ASYNC_FORM_CLOSED_PROC) AsyncControlPanelClosedCallback,
+	// todo: warning message
+	// todo: config file path
+	if ( !ShowConfigEditorAsync(
+		(ASYNC_FORM_CLOSED_PROC) AsyncConfigEditorClosedCallback,
 		(LPVOID) pState ) )
     {
         ::MessageBox( NULL, 
-			APPLICATION_TITLE L" was unable to open the control panel. Please verify your installation.",
+			APPLICATION_TITLE L" was unable to invoke a text editor. You can edit the config file at: <path>",
 			APPLICATION_TITLE,
 			MB_ICONERROR | MB_OK );
 
         return FALSE;
     }
-
     return TRUE;
 }
 
@@ -379,7 +325,7 @@ void RegisterExtraHotKeys(
 	AWHK_REGISTRATION* pKeyStatus )
 {
 	RegisterHotKeyAtIndex( &cfg->HelpCombo,         pKeyStatus );
-	RegisterHotKeyAtIndex( &cfg->ConfigCombo,       pKeyStatus );
+	RegisterHotKeyAtIndex( &cfg->EditConfigCombo,   pKeyStatus );
 	RegisterHotKeyAtIndex( &cfg->MediaPlayPause,    pKeyStatus );
 	RegisterHotKeyAtIndex( &cfg->MediaStop,         pKeyStatus );
 	RegisterHotKeyAtIndex( &cfg->MediaNext,         pKeyStatus );
@@ -529,17 +475,17 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 	while ( GetMessage( &msg, nullptr, 0, 0 ) )
 	{
-		if ( msg.message == appState->MsgOpenControlPanel &&
-			 !appState->ControlPanelOpen )
+		if ( msg.message == appState->MsgEditConfigFile &&
+			 !appState->ConfigEditorOpen )
 		{
-			appState->ControlPanelOpen = OpenSupportControlPanel( appState );
+			appState->ConfigEditorOpen = OpenConfigEditor( appState );
 			continue;
 		}
 
-		if ( msg.message == appState->MsgControlPanelClosed &&
-			 !appState->ControlPanelOpen )
+		if ( msg.message == appState->MsgConfigEditorClosed &&
+			 !appState->ConfigEditorOpen )
 		{
-			appState->ControlPanelOpen = FALSE;
+			appState->ConfigEditorOpen = FALSE;
 			continue;
 		}
 
@@ -553,7 +499,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
                 appState,
 				appCfg );
 
-			appState->ControlPanelOpen = FALSE;
+			appState->ConfigEditorOpen = FALSE;
 			continue;
 		}
 
@@ -619,9 +565,9 @@ int CALLBACK WinMain(
     ZeroMemory( &appState, sizeof(appState) );
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = ::GetCurrentThreadId();
-	appState.ControlPanelOpen = FALSE;
-	appState.MsgOpenControlPanel = ::RegisterWindowMessage( L"AWHKOpenControlPanelMsg" );
-	appState.MsgControlPanelClosed = ::RegisterWindowMessage( L"AWHKControlPanelClosedMsg" );
+	appState.ConfigEditorOpen = FALSE;
+	appState.MsgEditConfigFile = ::RegisterWindowMessage( L"AWHKEditConfigMsg" );
+	appState.MsgConfigEditorClosed = ::RegisterWindowMessage( L"AWHKConfigEditorClosed" );
 	appState.MsgReloadConfig = ::RegisterWindowMessage( L"AWHKReloadConfigMsg" );
 	appState.MsgSuspend = ::RegisterWindowMessage( L"AWHKSuspendMsg" );
 	appState.MsgResume = ::RegisterWindowMessage( L"AWHKResumeMsg" );
@@ -638,9 +584,6 @@ int CALLBACK WinMain(
 		MAXINT32,
 		AWHK_APP_SEM );
 
-    // Host the interprocess communication ringbuffer
-    CreateIPC( &appState.Comms );
-
 	AWHK_APP_CONFIG appCfg;
     ZeroMemory( &appCfg, sizeof(appCfg) );
 	LoadConfiguration( &appCfg );
@@ -649,12 +592,9 @@ int CALLBACK WinMain(
         &appState,
 		&appCfg );
 
-	StartIPCThread( &appState );
-
 	int ret = MessageLoop( &appState, &appCfg );
 
 	UnregisterHotkeys( &appState.Registration );
-	CloseIPC( &appState.Comms );
     CloseHandle( appState.hAppOpenSemaphore );
 
 	return ret;
