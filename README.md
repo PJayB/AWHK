@@ -1,23 +1,21 @@
-AdvancedWindowHotkeys
-=====================
+Advanced Window Hot-Keys
+========================
 
-Augments the functionality of the [Windows key + cursor keys] keyboard shortcuts.
+Enables advanced and exact window positioning in Windows using hot-keys:
 
-Download & License
-------------------
+* snap windows to sub-sections of the screen
+* snap windows to other windows
 
-This application is provided free for private or commercial use. By downloading you agree that:
-- this program comes with no warranty, guaranteed or implied,
-- the author is not responsible for damage caused to equipment or data (which is highly unlikely),
-- the feedback email alias below is for mail relating to this application only and no other purpose.
+See the [help](index.html) for examples.
 
-See http://repo.pjblewis.com/AWHK/ for docs and download.
-
-For questions, help or feedback, please email [awhktool@pjblewis.com]. Feedback is greatly welcomed. 
+[License](LICENSE.txt).
 
 ToDo
 -----------
 
+- Load config from a file
+- Invoke a proper config editor
+- Monitor for config changes & reload when changed
 - Installer/uninstaller
 - More consistency (doesn't work for some windows, e.g. Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
