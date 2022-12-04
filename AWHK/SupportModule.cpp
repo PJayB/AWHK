@@ -22,6 +22,9 @@ SOFTWARE.
 
 #include "stdafx.h"
 #include "SupportModule.h"
+#include <Shlobj.h>
+
+#define AWHK_CONFIG_FILE_NAME L"AWHK.ini"
 
 struct CONFIG_PROCESS_THREAD_DATA
 {
@@ -29,6 +32,27 @@ struct CONFIG_PROCESS_THREAD_DATA
 	LPVOID pUserData;
 	PROCESS_INFORMATION ProcessInfo;
 };
+
+// Get the path to the INI file.
+BOOL GetConfigFilePath(PWSTR pOut, SIZE_T OutSize)
+{
+	BOOL result = FALSE;
+
+	// Get the user data directory
+	PWSTR userDataDir = nullptr;
+	if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppDataLow, 0, nullptr, &userDataDir)))
+	{
+		if (OutSize >= wcslen(userDataDir) + wcslen(AWHK_CONFIG_FILE_NAME) + 2)
+		{
+			swprintf_s(pOut, OutSize, L"%s\\%s", userDataDir, AWHK_CONFIG_FILE_NAME);
+			result = TRUE;
+		}
+	}
+
+	CoTaskMemFree(userDataDir);
+	return result;
+}
+
 
 INT ConfigProcessWaitThread( CONFIG_PROCESS_THREAD_DATA* pShared )
 {
@@ -54,8 +78,16 @@ BOOL ShowConfigEditorAsync(
 {
 	// todo: look up main editor
 	// todo: hook up to config path
+	// todo: create the file if it doesn't exist
+	// todo: dynamic string lengths
 
 	TCHAR strLibName[MAX_PATH] = _T("notepad.exe");
+	TCHAR strCfgFile[MAX_PATH];
+	if (!GetConfigFilePath(strCfgFile, _countof(strCfgFile)))
+		return FALSE;
+
+	TCHAR cmdLine[1000];
+	swprintf_s(cmdLine, _countof(cmdLine), L"\"%s\" \"%s\"", strLibName, strCfgFile);
 
 	CONFIG_PROCESS_THREAD_DATA* pShared = new CONFIG_PROCESS_THREAD_DATA;
 	pShared->pfCallback = pfCallback;
@@ -69,7 +101,7 @@ BOOL ShowConfigEditorAsync(
 	// Start the process
 	if ( !::CreateProcess(
 		nullptr,
-		strLibName,
+		cmdLine,
 		nullptr,
 		nullptr,
 		FALSE,

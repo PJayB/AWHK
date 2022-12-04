@@ -24,6 +24,15 @@ SOFTWARE.
 #include "Config.h"
 #include "RegistryKeys.h"
 
+/*
+	Key Combo (Modifier Set (UInt[]) + Virtual Key (UInt))
+	Virtual Key (UInt)
+	Key Modifier (Modifier Set (UInt[]))
+	Grid Value (UInt [2, 255])
+	Bool
+
+*/
+
 BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
 	DWORD gridVal = 0;

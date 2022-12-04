@@ -45,9 +45,6 @@
     <ClInclude Include="RegistryKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SupportFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Version.h">
       <Filter>Header Files</Filter>
     </ClInclude>

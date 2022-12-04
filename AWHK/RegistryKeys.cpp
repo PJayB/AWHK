@@ -1,3 +1,5 @@
+// todo: delete me
+
 /*
 Copyright (c) 2022 Pete Lewis
 
@@ -29,6 +31,7 @@ struct DEFAULT_KEY_VALUE
     DWORD Value;
 };
 
+// todo: move to Config.cpp
 static const DEFAULT_KEY_VALUE c_DefaultValues[] =
 {
     { AWHK_REG_ALLOW_SNAP,          TRUE },
