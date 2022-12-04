@@ -29,7 +29,7 @@
 
 union AWHK_KEY_COMBO
 {
-    DWORD dwBits;
+    LONG dwBits;
     struct { 
         USHORT Modifiers;
         USHORT Trigger;
@@ -38,7 +38,7 @@ union AWHK_KEY_COMBO
 
 static inline AWHK_KEY_COMBO CreateKeyCombo( DWORD bits )
 {
-    AWHK_KEY_COMBO kc = { bits };
+    AWHK_KEY_COMBO kc = { static_cast<LONG>(bits) };
 #ifdef _DEBUG
     assert(kc.Trigger == AWHK_GET_TRIGGER_KEY(bits));   
     assert(kc.Modifiers == AWHK_GET_MODIFIER_KEYS(bits));   
