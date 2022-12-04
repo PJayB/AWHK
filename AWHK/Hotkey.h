@@ -27,6 +27,8 @@
 #define AWHK_GET_TRIGGER_KEY( packed ) HIWORD( packed )
 #define AWHK_GET_MODIFIER_KEYS( packed) LOWORD( packed )
 
+#pragma warning(push)
+#pragma warning(disable : 4201) // nonstandard extension: anonymous struct
 union AWHK_KEY_COMBO
 {
     LONG dwBits;
@@ -35,6 +37,7 @@ union AWHK_KEY_COMBO
         USHORT Trigger;
     };
 };
+#pragma warning(pop)
 
 static inline AWHK_KEY_COMBO CreateKeyCombo( DWORD bits )
 {
