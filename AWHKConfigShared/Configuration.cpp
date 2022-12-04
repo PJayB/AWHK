@@ -6,7 +6,6 @@
 #include <Windows.h>
 #include "../AWHKShared/RegistryKeys.h"
 #include "../AWHKShared/SupportFile.h"
-#include "../AWHKShared/Config.h"
 #include "../AWHKShared/AutoLogin.h"
 
 #include "Configuration.h"

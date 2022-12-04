@@ -79,7 +79,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AutoLogin.h" />
-    <ClInclude Include="Config.h" />
     <ClInclude Include="Hotkey.h" />
     <ClInclude Include="IPC.h" />
     <ClInclude Include="RegistryKeys.h" />
@@ -90,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoLogin.cpp" />
-    <ClCompile Include="Config.cpp" />
     <ClCompile Include="IPC.cpp" />
     <ClCompile Include="RegistryKeys.cpp" />
     <ClCompile Include="stdafx.cpp">

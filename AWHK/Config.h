@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Hotkey.h"
+#include "../AWHKShared/Hotkey.h"
 
 struct AWHK_CURSOR_KEYS
 {
@@ -59,5 +59,4 @@ struct AWHK_APP_CONFIG
 };
 
 BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );
-BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg );
 

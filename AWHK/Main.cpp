@@ -29,7 +29,7 @@
 #include "SupportModule.h"
 #include "WindowSnap.h"
 #include "MediaKeys.h"
-#include "..\AWHKShared\Config.h"
+#include "Config.h"
 #include "..\AWHKShared\IPC.h"
 #include "..\AWHKShared\SupportFile.h"
 

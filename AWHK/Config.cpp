@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "Config.h"
-#include "RegistryKeys.h"
+#include "../AWHKShared/RegistryKeys.h"
 
 BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
 {
@@ -90,44 +90,6 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 		cfg->FineKeyMod = fineKeyMod;
 	if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
 		cfg->NextKeyMod = nextKeyMod;
-
-    return TRUE;
-}
-
-BOOL SaveConfiguration( const AWHK_APP_CONFIG* cfg )
-{
-	StoreRegistryDword  ( AWHK_REG_ALLOW_SNAP		, cfg->AllowSnapToOthers );
-	StoreRegistryDword  ( AWHK_REG_EDGE_SEARCH	    , cfg->MaxEdgeSearchSize );
-
-	StoreRegistryDword  ( AWHK_REG_GRID_X			, cfg->GridX );
-	StoreRegistryDword  ( AWHK_REG_GRID_Y			, cfg->GridY );
-	StoreRegistryDword  ( AWHK_REG_FINE_X			, cfg->FineX );
-	StoreRegistryDword  ( AWHK_REG_FINE_Y			, cfg->FineY );
-
-	SaveKeyCombo	    ( AWKH_REG_HELP_COMBO	    , &cfg->HelpCombo );
-	SaveKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->ConfigCombo );
-
-	StoreRegistryDword	( AWHK_REG_RESIZE_LEFT		, cfg->ResizeKeys.LeftKey );
-	StoreRegistryDword	( AWHK_REG_RESIZE_RIGHT	    , cfg->ResizeKeys.RightKey );
-	StoreRegistryDword	( AWHK_REG_RESIZE_UP	    , cfg->ResizeKeys.UpKey );
-	StoreRegistryDword	( AWHK_REG_RESIZE_DOWN		, cfg->ResizeKeys.DownKey );
-
-    StoreRegistryDword	( AWHK_REG_MOVE_LEFT	    , cfg->MoveKeys.LeftKey );
-	StoreRegistryDword	( AWHK_REG_MOVE_RIGHT	    , cfg->MoveKeys.RightKey );
-	StoreRegistryDword	( AWHK_REG_MOVE_UP		    , cfg->MoveKeys.UpKey );
-	StoreRegistryDword	( AWHK_REG_MOVE_DOWN	    , cfg->MoveKeys.DownKey );
-
-    SaveKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaPrev );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
-    SaveKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
-	
-	StoreRegistryDword	( AWHK_REG_MOVE_KEY_MOD     , cfg->MoveKeyMod );
-	StoreRegistryDword	( AWHK_REG_NEXT_KEY_MOD     , cfg->NextKeyMod );
-	StoreRegistryDword	( AWHK_REG_FINE_KEY_MOD     , cfg->FineKeyMod );
 
     return TRUE;
 }
