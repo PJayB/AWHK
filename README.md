@@ -14,7 +14,6 @@ ToDo
 -----------
 
 - Load config from a file
-- Invoke a proper config editor
 - Monitor for config changes & reload when changed
 - Installer/uninstaller
 - More consistency (doesn't work for some windows, e.g. Spotify)
