@@ -203,7 +203,7 @@ BOOL HandleHotKey(
         return MediaNextTrack();
     else if (key.dwBits == cfg->MediaPrev.dwBits)
         return MediaPrevTrack();
-    else if (key.dwBits == cfg->MediaMute.dwBits)
+    else if (key.dwBits == cfg->MediaVolumeMute.dwBits)
         return MediaMute();
     else if (key.dwBits == cfg->MediaVolumeDown.dwBits)
         return MediaVolumeDown();
@@ -368,7 +368,7 @@ void RegisterExtraHotKeys(
 	RegisterKeyComboAtIndex( &cfg->MediaStop,         pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaNext,         pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaPrev,         pKeyStatus );
-	RegisterKeyComboAtIndex( &cfg->MediaMute,         pKeyStatus );
+	RegisterKeyComboAtIndex( &cfg->MediaVolumeMute,   pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaVolumeUp,     pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaVolumeDown,   pKeyStatus );
 }
@@ -585,6 +585,10 @@ int CALLBACK WinMain(
 	LPSTR lpCmdLine,
 	int nCmdShow)
 {
+	UNUSED(hPrevInstance);
+	UNUSED(lpCmdLine);
+	UNUSED(nCmdShow);
+
 	if ( AppAlreadyOpenCheck() )
 		return -1;
 
@@ -613,7 +617,7 @@ int CALLBACK WinMain(
 		AWHK_APP_SEM );
 
 	AWHK_APP_CONFIG appCfg;
-    ZeroMemory( &appCfg, sizeof(appCfg) );
+	InitConfiguration(&appCfg);
 	LoadConfiguration(appState.ConfigFile, &appCfg);
 
 	RegisterHotKeysAndWarn(

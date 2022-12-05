@@ -43,22 +43,22 @@ typedef union
 #pragma warning(pop)
 
 // todo: retire all of this
-static AWHK_KEY_COMBO CreateKeyCombo( DWORD bits )
+static inline AWHK_KEY_COMBO CreateKeyCombo(DWORD bits)
 {
     AWHK_KEY_COMBO kc = { (LONG)bits };
 #ifdef _DEBUG
-    assert(kc.Trigger == AWHK_GET_TRIGGER_KEY(bits));   
-    assert(kc.Modifiers == AWHK_GET_MODIFIER_KEYS(bits));   
+    assert(kc.Trigger == AWHK_GET_TRIGGER_KEY(bits));
+    assert(kc.Modifiers == AWHK_GET_MODIFIER_KEYS(bits));
 #endif
     return kc;
 }
 
-static inline AWHK_KEY_COMBO CreateKeyComboFromModAndTrigger( USHORT modifiers, USHORT trigger )
+static inline AWHK_KEY_COMBO CreateKeyComboFromModAndKey(USHORT modifiers, USHORT trigger)
 {
-    AWHK_KEY_COMBO kc = { AWHK_MAKE_HOTKEY( modifiers, trigger ) };
+    AWHK_KEY_COMBO kc = { AWHK_MAKE_HOTKEY(modifiers, trigger) };
 #ifdef _DEBUG
-    assert(kc.Trigger == trigger);   
-    assert(kc.Modifiers == modifiers);   
+    assert(kc.Trigger == trigger);
+    assert(kc.Modifiers == modifiers);
 #endif
     return kc;
 }

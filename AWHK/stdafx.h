@@ -35,6 +35,8 @@ SOFTWARE.
 
 #include <Windows.h>
 
-#include "Hotkey.h"
+#include "KeyCombo.h"
 
 #define APPLICATION_TITLE L"Advanced Window HotKeys"
+
+#define UNUSED(x) ((void)x)

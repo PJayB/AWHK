@@ -22,7 +22,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "Hotkey.h"
+#include "KeyCombo.h"
 
 typedef struct
 {
@@ -56,10 +56,11 @@ typedef struct
     AWHK_KEY_COMBO      MediaNext;
     AWHK_KEY_COMBO      MediaStop;
     AWHK_KEY_COMBO      MediaPlayPause;
-    AWHK_KEY_COMBO      MediaVolumeUp;
+    AWHK_KEY_COMBO      MediaVolumeMute;
     AWHK_KEY_COMBO      MediaVolumeDown;
-    AWHK_KEY_COMBO      MediaMute;
+    AWHK_KEY_COMBO      MediaVolumeUp;
 } AWHK_APP_CONFIG;
 
+void InitConfiguration(AWHK_APP_CONFIG* cfg);
 BOOL LoadConfiguration(LPCWSTR pPath, AWHK_APP_CONFIG* cfg);
 BOOL SaveConfiguration(LPCWSTR pPath, const AWHK_APP_CONFIG* cfg);

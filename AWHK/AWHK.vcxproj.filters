@@ -36,10 +36,7 @@
     <ClInclude Include="AutoLogin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hotkey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RegistryKeys.h">
+    <ClInclude Include="KeyCombo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Version.h">
@@ -60,9 +57,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Config.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RegistryKeys.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AutoLogin.c">

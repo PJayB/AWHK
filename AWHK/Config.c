@@ -22,41 +22,52 @@ SOFTWARE.
 
 #include "stdafx.h"
 #include "Config.h"
-#include "RegistryKeys.h"
 
-/*
-	Key Combo (Modifier Set (UInt[]) + Virtual Key (UInt))
-	Virtual Key (UInt)
-	Key Modifier (Modifier Set (UInt[]))
-	Grid Value (UInt [2, 255])
-	Bool
-
-*/
-
-BOOL LoadConfigGridValue( LPCWSTR strName, DWORD* value )
+void InitConfiguration(AWHK_APP_CONFIG* cfg)
 {
-	DWORD gridVal = 0;
-	if ( LoadRegistryDword( strName, &gridVal ) )
-	{
-		*value = max( gridVal, 2 );
-		*value = min( *value, 0xFF );
-        return TRUE;
-	}
-    return FALSE;
-}
+	ZeroMemory(cfg, sizeof(*cfg));
 
-BOOL LoadKeyCombo( LPCWSTR strName, AWHK_KEY_COMBO* combo )
-{
-    return LoadRegistryKeyCombo( strName, &combo->Trigger, &combo->Modifiers );
-}
-
-BOOL SaveKeyCombo( LPCWSTR strName, const AWHK_KEY_COMBO* combo )
-{
-    return StoreRegistryKeyCombo( strName, combo->Trigger, combo->Modifiers );
+	cfg->AllowSnapToOthers				= TRUE;
+	cfg->MaxEdgeSearchSize				= 128;
+	cfg->GridX							= 8;
+	cfg->GridY							= 4;
+	cfg->FineX							= 32;
+	cfg->FineY							= 16;
+	cfg->HelpCombo						= CreateKeyComboFromModAndKey(MOD_ALT, VK_F1);
+	cfg->EditConfigCombo				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F2);
+	cfg->MoveKeyMod						= MOD_ALT;
+	cfg->NextKeyMod						= MOD_CONTROL;
+	cfg->FineKeyMod						= MOD_SHIFT;
+	cfg->ResizeKeys.LeftKey				= VK_LEFT;
+	cfg->ResizeKeys.RightKey			= VK_RIGHT;
+	cfg->ResizeKeys.UpKey				= VK_UP;
+	cfg->ResizeKeys.DownKey				= VK_DOWN;
+	cfg->MoveKeys.LeftKey				= 'A';
+	cfg->MoveKeys.RightKey				= 'D';
+	cfg->MoveKeys.UpKey					= 'W';
+	cfg->MoveKeys.DownKey				= 'S';
+	cfg->MediaPrev						= CreateKeyComboFromModAndKey(MOD_ALT | MOD_SHIFT, VK_F11);
+	cfg->MediaNext						= CreateKeyComboFromModAndKey(MOD_ALT | MOD_SHIFT, VK_F12);
+	// cfg->MediaStop not bound by default.
+	cfg->MediaPlayPause					= CreateKeyComboFromModAndKey(MOD_ALT, VK_F9);
+	cfg->MediaVolumeMute				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F10);
+	cfg->MediaVolumeDown				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F11);
+	cfg->MediaVolumeUp					= CreateKeyComboFromModAndKey(MOD_ALT, VK_F12);
 }
 
 BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
 {
+	UNUSED(pConfigFile);
+	UNUSED(cfg);
+	return FALSE;
+	/*
+	if (!pConfigFile || !*pConfigFile)
+		return FALSE;
+
+	HANDLE file = CreateFile(pConfigFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (file == INVALID_HANDLE_VALUE)
+		return FALSE;
+
 	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	    , &cfg->AllowSnapToOthers );
 	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	    , &cfg->MaxEdgeSearchSize );
 
@@ -103,7 +114,9 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
 	if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
 		cfg->NextKeyMod = nextKeyMod;
 
+	CloseHandle(file);
     return TRUE;
+	*/
 }
 
 BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
@@ -116,6 +129,7 @@ BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 		return FALSE;
 
 	// todo: write the settings
+	UNUSED(pCfg);
 
 	CloseHandle(file);
 	return TRUE;
