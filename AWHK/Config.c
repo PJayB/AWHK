@@ -202,13 +202,33 @@ PARSING_ERROR* ParsingError(PARSING_ERROR* pPrev, size_t lineNum, const wchar_t*
 	return pNew;
 }
 
-PARSING_ERROR* ReverseParsingError(PARSING_ERROR* pTail)
+PARSING_ERROR* ReverseParsingError(PARSING_ERROR* pNode, PARSING_ERROR** ppHead)
 {
-	if (pTail == NULL)
-		return pTail;
+	if (pNode->pNext == NULL)
+	{
+		// I am the tail
+		assert(*ppHead == NULL);
+		*ppHead = pNode;
+		return pNode;
+	}
 
-	// todo
-	return pTail;
+	PARSING_ERROR* pTail = ReverseParsingError(pNode->pNext, ppHead);
+
+	assert(pTail->pNext == NULL);
+	pTail->pNext = pNode;
+	pNode->pNext = NULL;
+	return pNode;
+}
+
+PARSING_ERROR* ReverseParsingErrors(PARSING_ERROR* pNode)
+{
+	if (pNode == NULL || pNode->pNext == NULL)
+		return pNode;
+
+	PARSING_ERROR* pNewHead = NULL;
+	ReverseParsingError(pNode, &pNewHead);
+
+	return pNewHead;
 }
 
 void FreeParsingErrors(PARSING_ERROR* pTail)
@@ -432,7 +452,7 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, PARSING_ERROR
 	// Reverse the error linked list (if there is one)
 	if (pErrorTail)
 	{
-		*ppErrors = ReverseParsingError(pErrorTail);
+		*ppErrors = ReverseParsingErrors(pErrorTail);
 		success = FALSE;
 	}
 
