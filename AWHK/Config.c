@@ -60,12 +60,22 @@ LPCWSTR ModifierToString(DWORD mod)
 
 LPCWSTR KeyToString(DWORD key)
 {
+	static TCHAR single[2] = { 0, 0 };
 #define KEYCODE(name, vk)	case vk: return JOIN(L, #name);
 	switch (key)
 	{
 	case 0:
-	default:
 		return NULL;
+	default:
+		if (isprint((int)key))
+		{
+			single[0] = (TCHAR)toupper(key);
+			return single;
+		}
+		else
+		{
+			return NULL;
+		}
 #	include "KeyCodes.inl"
 	}
 #undef KEYCODE
@@ -147,10 +157,18 @@ void WriteConfig_MODKEY(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR 
 
 void WriteConfig_AWHK_KEY_COMBO(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_KEY_COMBO* value)
 {
-	pScratch[0] = 0;
-	AppendModifiersToString(value->Modifiers, pScratch, scratchSize, L"+");
-	AppendKeyToString(value->Trigger, pScratch, scratchSize, L"+");
-	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
+	// Special case if no key is set
+	if (value->dwBits == 0)
+	{
+		fwprintf_s(file, L"%s=\n", pKey);
+	}
+	else
+	{
+		pScratch[0] = 0;
+		AppendModifiersToString(value->Modifiers, pScratch, scratchSize, L"+");
+		AppendKeyToString(value->Trigger, pScratch, scratchSize, L"+");
+		fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
+	}
 }
 
 void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_CURSOR_KEYS* value)
