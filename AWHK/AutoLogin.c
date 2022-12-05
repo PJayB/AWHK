@@ -32,24 +32,24 @@ SOFTWARE.
 BOOL IsAutoLoginEnabled()
 {
 	DWORD dwValueSize = 0;
-	return ::RegGetValue( 
+	return RegGetValue( 
 		HKEY_CURRENT_USER,
 		AWHK_RUN_KEY,
 		AWHK_RUN_ENTRY_NAME,
 		RRF_RT_REG_SZ,
-		nullptr,
-		nullptr, 
+		NULL,
+		NULL, 
 		&dwValueSize ) == ERROR_SUCCESS;
 }
 
 BOOL EnableAutoLogin()
 {
 	TCHAR strModuleName[MAX_PATH];
-	if ( !GetModuleFileName( nullptr, strModuleName, _countof(strModuleName) ) )
+	if ( !GetModuleFileName( NULL, strModuleName, _countof(strModuleName) ) )
 		return FALSE;
 
 	HKEY hKey;
-	if ( ::RegOpenKeyEx(
+	if ( RegOpenKeyEx(
 		HKEY_CURRENT_USER,
 		AWHK_RUN_KEY,
 		0,
@@ -65,7 +65,7 @@ BOOL EnableAutoLogin()
 		MAX_PATH,
 		&moduleNameLen );
 
-	LONG ret = ::RegSetValueEx(
+	LONG ret = RegSetValueEx(
 		hKey,
 		AWHK_RUN_ENTRY_NAME,
 		0,
@@ -73,7 +73,7 @@ BOOL EnableAutoLogin()
 		(BYTE*) strModuleName, 
 		(DWORD) moduleNameLen );
 	
-	::RegCloseKey( hKey );
+	RegCloseKey( hKey );
 
 	return ret == ERROR_SUCCESS;
 }
@@ -81,7 +81,7 @@ BOOL EnableAutoLogin()
 BOOL DisableAutoLogin()
 {
 	HKEY hKey;
-	if ( ::RegOpenKeyEx(
+	if ( RegOpenKeyEx(
 		HKEY_CURRENT_USER,
 		AWHK_RUN_KEY,
 		0,
@@ -91,11 +91,11 @@ BOOL DisableAutoLogin()
 		return FALSE;
 	}
 
-	LONG ret = ::RegDeleteValue(
+	LONG ret = RegDeleteValue(
 		hKey,
 		AWHK_RUN_ENTRY_NAME );
 	
-	::RegCloseKey( hKey );
+	RegCloseKey( hKey );
 
 	return ret == ERROR_SUCCESS;
 }

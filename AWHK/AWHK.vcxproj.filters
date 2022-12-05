@@ -47,25 +47,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="stdafx.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowSnap.cpp">
+    <ClCompile Include="WindowSnap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MediaKeys.cpp">
+    <ClCompile Include="MediaKeys.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="Config.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RegistryKeys.cpp">
+    <ClCompile Include="RegistryKeys.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AutoLogin.cpp">
+    <ClCompile Include="AutoLogin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

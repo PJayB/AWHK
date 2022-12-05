@@ -24,15 +24,15 @@ SOFTWARE.
 
 #include "Hotkey.h"
 
-struct AWHK_CURSOR_KEYS
+typedef struct
 {
 	DWORD				LeftKey;
 	DWORD				RightKey;
 	DWORD				UpKey;
 	DWORD				DownKey;
-};
+} AWHK_CURSOR_KEYS;
 
-struct AWHK_APP_CONFIG
+typedef struct
 {
 	BOOL				AllowSnapToOthers;
 	DWORD				MaxEdgeSearchSize;
@@ -59,7 +59,7 @@ struct AWHK_APP_CONFIG
     AWHK_KEY_COMBO      MediaVolumeUp;
     AWHK_KEY_COMBO      MediaVolumeDown;
     AWHK_KEY_COMBO      MediaMute;
-};
+} AWHK_APP_CONFIG;
 
-BOOL LoadConfiguration( LPCWSTR pPath, AWHK_APP_CONFIG* cfg );
+BOOL LoadConfiguration(LPCWSTR pPath, AWHK_APP_CONFIG* cfg);
 BOOL SaveConfiguration(LPCWSTR pPath, const AWHK_APP_CONFIG* cfg);

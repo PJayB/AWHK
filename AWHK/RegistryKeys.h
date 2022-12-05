@@ -59,8 +59,6 @@ SOFTWARE.
 #define AWHK_REG_MEDIA_VOLUME_DOWN      L"MediaVolumeDown"
 #define AWHK_REG_MEDIA_MUTE             L"MediaMute"
 
-DWORD GetRegistryDefaultValue( LPCWSTR strKey );
-
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue );
 BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue );
 BOOL StoreRegistryKeyCombo( LPCWSTR strComboName, USHORT usTrigger, USHORT usModifiers );

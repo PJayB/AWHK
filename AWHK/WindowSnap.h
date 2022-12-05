@@ -22,7 +22,7 @@ SOFTWARE.
 
 #pragma once
 
-enum DIRECTION
+typedef enum
 {
 	DIR_LEFT,
 	DIR_RIGHT,
@@ -30,9 +30,9 @@ enum DIRECTION
 	DIR_DOWN,
 
 	DIR_UNKNOWN
-};
+} DIRECTION;
 
-enum WINDOW_SNAP_FLAGS
+typedef enum
 {
 	WINDOW_SNAP_TO_GRID		= 1,
 	WINDOW_SNAP_TO_OTHERS	= 2,
@@ -41,12 +41,10 @@ enum WINDOW_SNAP_FLAGS
 	WINDOW_MOVE_ONLY		= 16,
 
 	WINDOW_SNAP_DEFAULT		= 0xFF
-};
+} WINDOW_SNAP_FLAGS;
 
-struct WINDOW_SNAP_PARAMS
+typedef struct
 {
-	WINDOW_SNAP_PARAMS();
-
 	DWORD Flags;
 	DWORD GridDivisorX;
 	DWORD GridDivisorY;
@@ -56,7 +54,10 @@ struct WINDOW_SNAP_PARAMS
 	// Size is in max possible searchable /edges in each direction/
 	// (i.e. num windows * 2)
 	DWORD MaxEdgeSearchSize;
-};
+} WINDOW_SNAP_PARAMS;
+
+void InitWindowSnapParams(
+	WINDOW_SNAP_PARAMS* params);
 
 BOOL 
 ForegroundWindowSnap( 

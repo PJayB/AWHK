@@ -20,45 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
+// stdafx.cpp : source file that includes just the standard includes
+// WindowEnum.pch will be the pre-compiled header
+// stdafx.obj will contain the pre-compiled type information
 
-#ifdef _DEBUG
-#   include <assert.h>
-#endif
+#include "stdafx.h"
 
-#define AWHK_MAKE_HOTKEY( mods, trigger ) MAKELONG( mods, trigger )
-#define AWHK_GET_TRIGGER_KEY( packed ) HIWORD( packed )
-#define AWHK_GET_MODIFIER_KEYS( packed) LOWORD( packed )
-
-#pragma warning(push)
-#pragma warning(disable : 4201) // nonstandard extension: anonymous struct
-typedef union
-{
-    LONG dwBits;
-    struct { 
-        USHORT Modifiers;
-        USHORT Trigger;
-    };
-} AWHK_KEY_COMBO;
-#pragma warning(pop)
-
-// todo: retire all of this
-static AWHK_KEY_COMBO CreateKeyCombo( DWORD bits )
-{
-    AWHK_KEY_COMBO kc = { (LONG)bits };
-#ifdef _DEBUG
-    assert(kc.Trigger == AWHK_GET_TRIGGER_KEY(bits));   
-    assert(kc.Modifiers == AWHK_GET_MODIFIER_KEYS(bits));   
-#endif
-    return kc;
-}
-
-static inline AWHK_KEY_COMBO CreateKeyComboFromModAndTrigger( USHORT modifiers, USHORT trigger )
-{
-    AWHK_KEY_COMBO kc = { AWHK_MAKE_HOTKEY( modifiers, trigger ) };
-#ifdef _DEBUG
-    assert(kc.Trigger == trigger);   
-    assert(kc.Modifiers == modifiers);   
-#endif
-    return kc;
-}
+// TODO: reference any additional headers you need in STDAFX.H
+// and not in this file

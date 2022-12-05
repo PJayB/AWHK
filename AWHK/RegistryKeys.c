@@ -25,11 +25,11 @@ SOFTWARE.
 #include "stdafx.h"
 #include "RegistryKeys.h"
 
-struct DEFAULT_KEY_VALUE
+typedef struct
 {
     LPCWSTR Name;
     DWORD Value;
-};
+} DEFAULT_KEY_VALUE;
 
 // todo: move to Config.cpp
 static const DEFAULT_KEY_VALUE c_DefaultValues[] =
@@ -135,12 +135,12 @@ BOOL LoadRegistryDword( LPCWSTR strName, DWORD* pOut )
 {
 	DWORD dwValue = 0;
 	DWORD dwValueSize = sizeof( DWORD );
-	if ( ::RegGetValue( 
+	if ( RegGetValue( 
 		HKEY_CURRENT_USER,
 		AWHK_REG_KEY,
 		strName,
 		RRF_RT_DWORD,
-		nullptr,
+		NULL,
 		&dwValue, 
 		&dwValueSize ) == ERROR_SUCCESS )
 	{
@@ -155,12 +155,12 @@ BOOL LoadRegistryQword( LPCWSTR strName, LONGLONG* pOut )
 {
 	LONGLONG qwValue = 0;
 	DWORD dwValueSize = sizeof( LONGLONG );
-	if ( ::RegGetValue( 
+	if ( RegGetValue( 
 		HKEY_CURRENT_USER,
 		AWHK_REG_KEY,
 		strName,
 		RRF_RT_QWORD,
-		nullptr,
+		NULL,
 		&qwValue, 
 		&dwValueSize ) == ERROR_SUCCESS )
 	{
@@ -276,7 +276,7 @@ BOOL LoadRegistryKeyCombo( LPCWSTR strComboName, USHORT* pusTrigger, USHORT* pus
 BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 {
 	HKEY hKey;
-	if ( ::RegCreateKey(
+	if ( RegCreateKey(
 		HKEY_CURRENT_USER,
 		AWHK_REG_KEY,
 		&hKey ) != ERROR_SUCCESS )
@@ -285,7 +285,7 @@ BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 	}
 
 	DWORD dwValueSize = sizeof( DWORD );
-	LONG ret = ::RegSetValueEx(
+	LONG ret = RegSetValueEx(
 		hKey,
 		strName,
 		0,
@@ -293,7 +293,7 @@ BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 		(BYTE*) &dwValue, 
 		dwValueSize );
 	
-	::RegCloseKey( hKey );
+	RegCloseKey( hKey );
 
 	return ret == ERROR_SUCCESS;
 }
@@ -301,7 +301,7 @@ BOOL StoreRegistryDword( LPCWSTR strName, DWORD dwValue )
 BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
 {
 	HKEY hKey;
-	if ( ::RegCreateKey(
+	if ( RegCreateKey(
 		HKEY_CURRENT_USER,
 		AWHK_REG_KEY,
 		&hKey ) != ERROR_SUCCESS )
@@ -310,7 +310,7 @@ BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
 	}
 
 	DWORD dwValueSize = sizeof( LONGLONG );
-	LONG ret = ::RegSetValueEx(
+	LONG ret = RegSetValueEx(
 		hKey,
 		strName,
 		0,
@@ -318,7 +318,7 @@ BOOL StoreRegistryQword( LPCWSTR strName, LONGLONG qwValue )
 		(BYTE*) &qwValue, 
 		dwValueSize );
 	
-	::RegCloseKey( hKey );
+	RegCloseKey( hKey );
 
 	return ret == ERROR_SUCCESS;
 }
