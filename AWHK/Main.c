@@ -29,10 +29,20 @@ SOFTWARE.
 #include "WindowSnap.h"
 #include "MediaKeys.h"
 #include "Config.h"
+#include "AutoLogin.h"
 
 #define AWHK_MAX_HOTKEYS		64
 #define AWHK_APP_SEM			L"AWHK_APP_OPEN_SEM" 
 #define AWHK_CONFIG_FILE_NAME	L"AWHK.ini"
+
+typedef enum
+{
+	EXIT_SUCCESS_ = EXIT_SUCCESS,
+	EXIT_FAILURE_ = EXIT_FAILURE,
+	EXIT_ALREADY_RUNNING,
+	EXIT_COM_INIT_FAILURE,
+	EXIT_BAD_CONFIG,
+} EXIT_CODES;
 
 typedef struct
 {
@@ -55,13 +65,16 @@ typedef struct
     HANDLE              hAppOpenSemaphore;
 
 	UINT			    MsgEditConfigFile;
-	UINT			    MsgReloadConfig;
     UINT                MsgSuspend;
     UINT                MsgResume;
 
 	AWHK_REGISTRATION   Registration;
 	PWSTR				ConfigFile;
+
+	BOOL				Suspended;
 } AWHK_APP_STATE;
+
+BOOL RegisterHotKeysAndWarn( AWHK_REGISTRATION* reg, const AWHK_APP_CONFIG* cfg );
 
 DIRECTION DirectionFromVKey( 
 	const AWHK_CURSOR_KEYS* cfg, 
@@ -128,6 +141,34 @@ BOOL ShowWebHelp()
 		NULL,
 		NULL,
 		SW_SHOWNORMAL ) > 32;
+}
+
+BOOL LoadConfigurationAndBind(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, AWHK_REGISTRATION* pRegistration)
+{
+	// Reset the configuration
+	InitConfiguration(pCfg);
+
+	// Get the current state of autologin
+	pCfg->LaunchOnStartUp = IsAutoLoginEnabled();
+
+	BOOL success = TRUE;
+
+	// Attempt to load it from the file
+	if (!LoadConfiguration(pConfigFile, pCfg))
+	{
+		// todo: error handling here
+	}
+
+	// Register the hotkeys
+	if (!RegisterHotKeysAndWarn(pRegistration, pCfg))
+	{
+		// todo: error handling here
+	}
+
+	// Set autologin state
+	SetAutoLoginEnabled(pCfg->LaunchOnStartUp);
+
+	return success;
 }
 
 // Get the path to the INI file.
@@ -482,16 +523,19 @@ void ShowRegistrationFailures( const AWHK_REGISTRATION* pKeyState )
 		MB_ICONERROR | MB_OK );
 }
 
-void RegisterHotKeysAndWarn( AWHK_APP_STATE* appState, const AWHK_APP_CONFIG* cfg )
+BOOL RegisterHotKeysAndWarn( AWHK_REGISTRATION* reg, const AWHK_APP_CONFIG* cfg )
 {
-    ZeroMemory( &appState->Registration, sizeof(appState->Registration) );
+    ZeroMemory( reg, sizeof(*reg) );
 
-	RegisterHotKeys( cfg, &appState->Registration );
+	RegisterHotKeys( cfg, reg );
 
-    if ( appState->Registration.ErrorCount > 0 )
+    if ( reg->ErrorCount > 0 )
     {
-        ShowRegistrationFailures( &appState->Registration );
+        ShowRegistrationFailures( reg );
+		return FALSE;
     }
+
+	return TRUE;
 }
 
 void UnregisterHotkeys( AWHK_REGISTRATION* pReg )
@@ -517,38 +561,30 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			continue;
 		}
 
-		if ( msg.message == appState->MsgReloadConfig )
-		{
-			UnregisterHotkeys( &appState->Registration );
-
-			// Reload the settings
-			LoadConfiguration(appState->ConfigFile, appCfg);
-			RegisterHotKeysAndWarn(appState, appCfg);
-
-			continue;
-		}
-
-        // The control panel can suspend and resume the functionality without quitting the application
-        if ( msg.message == appState->MsgSuspend )
+        if (msg.message == appState->MsgSuspend && !appState->Suspended)
         {
             UnregisterHotkeys( &appState->Registration );
+			appState->Suspended = TRUE;
             continue;
         }
-        if ( msg.message == appState->MsgResume )
+        else if (msg.message == appState->MsgResume && appState->Suspended)
         {
-            // Silent reload here.
-			RegisterHotKeysAndWarn( 
-				appState,
-				appCfg );
+			appState->Suspended = FALSE;
 
-            continue;
+			// Reload the settings
+			if (!LoadConfigurationAndBind(appState->ConfigFile, appCfg, &appState->Registration))
+			{
+				return EXIT_BAD_CONFIG;
+			}
+
+			continue;
         }
 
 		switch ( msg.message )
 		{
 		case WM_QUIT:
 			{
-				return 0;
+				return EXIT_SUCCESS;
 			}
 			break;
 		case WM_HOTKEY:
@@ -574,7 +610,14 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 		}
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
+}
+
+void Shutdown(AWHK_APP_STATE* appState)
+{
+	UnregisterHotkeys( &appState->Registration );
+	CloseHandle( appState->hAppOpenSemaphore );
+	HeapFree(GetProcessHeap(), 0, appState->ConfigFile);
 }
 
 int CALLBACK WinMain(
@@ -588,19 +631,20 @@ int CALLBACK WinMain(
 	UNUSED(nCmdShow);
 
 	if ( AppAlreadyOpenCheck() )
-		return -1;
+		return EXIT_ALREADY_RUNNING;
 
-	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	if (FAILED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
+		return EXIT_COM_INIT_FAILURE;
 
 	AWHK_APP_STATE appState;
     ZeroMemory( &appState, sizeof(appState) );
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = GetCurrentThreadId();
 	appState.MsgEditConfigFile = RegisterWindowMessage( L"AWHKEditConfigMsg" );
-	appState.MsgReloadConfig = RegisterWindowMessage( L"AWHKReloadConfigMsg" );
 	appState.MsgSuspend = RegisterWindowMessage( L"AWHKSuspendMsg" );
 	appState.MsgResume = RegisterWindowMessage( L"AWHKResumeMsg" );
 	appState.ConfigFile = GetConfigFilePath();
+	appState.Suspended = FALSE;
 
     // Open the application semaphore
 	SECURITY_ATTRIBUTES sa;
@@ -616,17 +660,17 @@ int CALLBACK WinMain(
 
 	AWHK_APP_CONFIG appCfg;
 	InitConfiguration(&appCfg);
-	LoadConfiguration(appState.ConfigFile, &appCfg);
 
-	RegisterHotKeysAndWarn(
-        &appState,
-		&appCfg );
+	// Attempt to load the config
+	if (!LoadConfigurationAndBind(appState.ConfigFile, &appCfg, &appState.Registration))
+	{
+		Shutdown(&appState);
+		return EXIT_BAD_CONFIG;
+	}
 
 	int ret = MessageLoop( &appState, &appCfg );
 
-	UnregisterHotkeys( &appState.Registration );
-    CloseHandle( appState.hAppOpenSemaphore );
-	HeapFree(GetProcessHeap(), 0, appState.ConfigFile);
+	Shutdown(&appState);
 
 	return ret;
 }

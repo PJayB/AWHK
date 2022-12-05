@@ -23,3 +23,4 @@ ToDo
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Defer repaint to improve performance?
 - Help CHM
+- Quit, suspend and resume keys
