@@ -34,31 +34,9 @@ typedef struct
 
 typedef struct
 {
-	BOOL				AllowSnapToOthers;
-	DWORD				MaxEdgeSearchSize;
-
-	DWORD				GridX;
-	DWORD				GridY;
-	DWORD				FineX;
-	DWORD				FineY;
-
-	AWHK_KEY_COMBO      HelpCombo;
-    AWHK_KEY_COMBO      EditConfigCombo;
-
-	DWORD				MoveKeyMod;
-	DWORD				NextKeyMod;
-	DWORD				FineKeyMod;
-
-	AWHK_CURSOR_KEYS	ResizeKeys;
-	AWHK_CURSOR_KEYS	MoveKeys;
-
-    AWHK_KEY_COMBO      MediaPrev;
-    AWHK_KEY_COMBO      MediaNext;
-    AWHK_KEY_COMBO      MediaStop;
-    AWHK_KEY_COMBO      MediaPlayPause;
-    AWHK_KEY_COMBO      MediaVolumeMute;
-    AWHK_KEY_COMBO      MediaVolumeDown;
-    AWHK_KEY_COMBO      MediaVolumeUp;
+#define CONFIG_VALUE(name, type, value)			type name;
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
 } AWHK_APP_CONFIG;
 
 void InitConfiguration(AWHK_APP_CONFIG* cfg);

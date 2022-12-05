@@ -22,11 +22,35 @@ SOFTWARE.
 
 #include "stdafx.h"
 #include "Config.h"
+#include <stdio.h>
+
+#define JOIN(x, y) x##y
+
+AWHK_KEY_COMBO NullKeyCombo()
+{
+	AWHK_KEY_COMBO k;
+	k.dwBits = 0;
+	return k;
+}
+
+AWHK_CURSOR_KEYS CreateCursorKeys(DWORD left, DWORD right, DWORD up, DWORD down)
+{
+	AWHK_CURSOR_KEYS k;
+	k.LeftKey = left;
+	k.RightKey = right;
+	k.UpKey = up;
+	k.DownKey = down;
+	return k;
+}
 
 void InitConfiguration(AWHK_APP_CONFIG* cfg)
 {
 	ZeroMemory(cfg, sizeof(*cfg));
 
+#define CONFIG_VALUE(name, type, value)	cfg-> name = value;
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
+	/*
 	cfg->AllowSnapToOthers				= TRUE;
 	cfg->MaxEdgeSearchSize				= 128;
 	cfg->GridX							= 8;
@@ -53,6 +77,7 @@ void InitConfiguration(AWHK_APP_CONFIG* cfg)
 	cfg->MediaVolumeMute				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F10);
 	cfg->MediaVolumeDown				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F11);
 	cfg->MediaVolumeUp					= CreateKeyComboFromModAndKey(MOD_ALT, VK_F12);
+	*/
 }
 
 BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
@@ -119,18 +144,59 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
 	*/
 }
 
+void WriteConfig_BOOL(FILE* file, LPCTSTR pKey, const BOOL* value)
+{
+	fwprintf_s(file, L"%s=%s\n", pKey, *value ? L"true" : L"false");
+}
+
+void WriteConfig_DWORD(FILE* file, LPCTSTR pKey, const DWORD* value)
+{
+	fwprintf_s(file, L"%s=%u\n", pKey, *value);
+}
+
+LPCWSTR ModifierToString(DWORD mod)
+{
+	switch (mod)
+	{
+	case MOD_SHIFT:
+		return L"SHIFT";
+	case MOD_CONTROL:
+		return L"CONTROL";
+	case MOD_ALT:
+		return L"ALT";
+	default:
+		assert(0 && "Modifier needs to be only one of SHIFT, ALT or CONTROL");
+		return NULL;
+	}
+}
+
+void WriteConfig_AWHK_KEY_COMBO(FILE* file, LPCTSTR pKey, const AWHK_KEY_COMBO* value)
+{
+	// todo
+	fwprintf_s(file, L"%s=%u\n", pKey, value->dwBits);
+}
+
+void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, LPCTSTR pKey, const AWHK_CURSOR_KEYS* value)
+{
+	// todo
+	fwprintf_s(file, L"%s=%u,%u,%u,%u\n", pKey, value->LeftKey, value->RightKey, value->UpKey, value->DownKey);
+}
+
 BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 {
 	if (!pConfigFile || !*pConfigFile)
 		return FALSE;
 
-	HANDLE file = CreateFile(pConfigFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (file == INVALID_HANDLE_VALUE)
+	FILE* f = NULL;
+	if (_wfopen_s(&f, pConfigFile, L"w") != 0)
+	{
 		return FALSE;
+	}
 
-	// todo: write the settings
-	UNUSED(pCfg);
+#define CONFIG_VALUE(name, type, val) JOIN(WriteConfig_, type)(f, JOIN(L, #name), &pCfg-> name);
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
 
-	CloseHandle(file);
+	fclose(f);
 	return TRUE;
 }
