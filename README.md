@@ -13,13 +13,21 @@ See the [help](index.html) for examples.
 ToDo
 -----------
 
-- Load config from a file
-- Prompt for autologin on first run
+Config
 - Error dialog for bad configuration
 - Monitor for config changes & reload when changed
+
+OOBE
+- First run detection
+- Prompt for autologin on first run
+- Create a [Start menu shortcut](https://learn.microsoft.com/en-us/windows/win32/shell/links) on first run
 - Installer/uninstaller
+
+Window Handling
 - More consistency (doesn't work for some windows, e.g. Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Defer repaint to improve performance?
-- Help CHM
+
+Misc.
 - Suspend and resume keys
+- Help CHM

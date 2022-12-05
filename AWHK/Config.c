@@ -22,8 +22,17 @@ SOFTWARE.
 
 #include "stdafx.h"
 #include "Config.h"
+#include <stdint.h>
 
 #define JOIN(x, y) x##y
+
+void StreamConfiguration(FILE* f, const AWHK_APP_CONFIG* pCfg);
+
+/*
+* 
+* DEFAULT CONFIGURATION
+* 
+*/
 
 AWHK_KEY_COMBO NullKeyCombo()
 {
@@ -41,6 +50,406 @@ AWHK_CURSOR_KEYS CreateCursorKeys(DWORD left, DWORD right, DWORD up, DWORD down)
 	k.DownKey = down;
 	return k;
 }
+
+void InitConfiguration(AWHK_APP_CONFIG* cfg)
+{
+	ZeroMemory(cfg, sizeof(*cfg));
+
+#define CONFIG_VALUE(name, type, value)	cfg-> name = value;
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
+}
+
+/*
+* 
+* LOADING CONFIGURATION
+* 
+*/
+
+USHORT StringToModifier(LPCWSTR mod)
+{
+	if (_wcsicmp(L"SHIFT", mod) == 0)
+		return MOD_SHIFT;
+	else if (_wcsicmp(L"CONTROL", mod) == 0)
+		return MOD_CONTROL;
+	else if (_wcsicmp(L"ALT", mod) == 0)
+		return MOD_ALT;
+	else
+		return 0;
+}
+
+USHORT StringToKey(LPCWSTR key)
+{
+	if (FALSE) {}
+#define KEYCODE(name, vk) \
+		else if (_wcsicmp(key, JOIN(L, #name)) == 0) return vk;
+#	include "KeyCodes.inl"
+#undef KEYCODE
+	else
+	{
+		// Check for printable keys
+		if (wcslen(key) == 1 && *key < 0xFF)
+		{
+			return *key;
+		}
+
+		// Unknown key
+		return 0;
+	}
+}
+
+BOOL TrimStringSegment(LPWSTR* pStart, LPWSTR* pEnd)
+{
+	// Find start
+	while ((**pStart) && iswspace(**pStart))
+		(*pStart)++;
+
+	// Find the end
+	while ((*pEnd > *pStart) && iswspace(*((*pEnd)-1)))
+		(*pEnd)--;
+
+	return *pEnd > *pStart;
+}
+
+BOOL SplitKeyValuePair(LPWSTR pLine, LPCWSTR* ppKey, LPCWSTR* ppValue)
+{
+	// Find start of the line
+	while (*pLine && iswspace(*pLine))
+		pLine++;
+
+	// Find the end of the line
+	LPWSTR pEnd = pLine;
+	while (*pEnd && *pEnd != '\n' && *pEnd != '#')
+		pEnd++;
+
+	// Walk back (trim right)
+	while (pEnd > pLine && iswspace(*(pEnd-1)))
+		pEnd--;
+
+	// Empty line
+	if (pEnd == pLine)
+		return FALSE;
+
+	// Find the delimiter
+	LPWSTR pDelim = pLine;
+	while (*pDelim && pDelim != pEnd && *pDelim != '=')
+		pDelim++;
+
+	// Extract the key, if there is one
+	LPWSTR pKeyStart = pLine;
+	LPWSTR pKeyEnd = pDelim;
+	if (!TrimStringSegment(&pKeyStart, &pKeyEnd))
+		return FALSE;
+
+	// Extract the value, if there is one
+	LPWSTR pValueStart = pDelim+1;
+	LPWSTR pValueEnd = pEnd;
+	TrimStringSegment(&pValueStart, &pValueEnd);
+
+	// Delimit the strings and return
+	*pKeyEnd = 0;
+	*pValueEnd = 0;
+	*ppKey = pKeyStart;
+	*ppValue = pValueStart;
+
+	return TRUE;
+}
+
+size_t SplitString(LPWSTR pStr, WCHAR delim, LPCWSTR* pTokens, size_t maxTokens)
+{
+	size_t count = 0;
+	LPWSTR pEnd = pStr + wcslen(pStr);
+	while (pStr < pEnd)
+	{
+		// Find the next delimiter
+		LPWSTR pDelim = pStr;
+		while (pDelim < pEnd && *pDelim != delim)
+			pDelim++;
+
+		// Extract the token
+		LPWSTR pTokStart = pStr;
+		LPWSTR pTokEnd = pDelim;
+		if (TrimStringSegment(&pTokStart, &pTokEnd))
+		{
+			*pTokEnd = 0;
+			if (count < maxTokens)
+			{
+				pTokens[count] = pTokStart;
+			}
+			count++;
+		}
+
+		// Move on to the next string
+		pStr = pDelim+1;
+	}
+
+	return count;
+}
+
+PARSING_ERROR* ParsingError(PARSING_ERROR* pPrev, size_t lineNum, const wchar_t* pError, ...)
+{
+	PARSING_ERROR* pNew = (PARSING_ERROR*)malloc(sizeof(PARSING_ERROR));
+	ZeroMemory(pNew, sizeof(*pNew));
+
+	pNew->LineNumber = lineNum;
+	pNew->pNext = pPrev;
+
+	va_list args;
+	va_start(args, pError);
+	vswprintf_s(pNew->ErrorText, _countof(pNew->ErrorText), pError, args);
+	va_end(args);
+
+	return pNew;
+}
+
+PARSING_ERROR* ReverseParsingError(PARSING_ERROR* pTail)
+{
+	if (pTail == NULL)
+		return pTail;
+
+	// todo
+	return pTail;
+}
+
+void FreeParsingErrors(PARSING_ERROR* pTail)
+{
+	if (pTail)
+	{
+		FreeParsingErrors(pTail->pNext);
+		free(pTail);
+	}
+}
+
+BOOL StringToBool(LPCWSTR pValue, BOOL* pResult)
+{
+	if (_wcsicmp(pValue, L"true") == 0 || _wcsicmp(pValue, L"1") == 0||
+		_wcsicmp(pValue, L"yes") == 0 || _wcsicmp(pValue, L"y") == 0)
+	{
+		*pResult = TRUE;
+		return TRUE;
+	}
+	else if (_wcsicmp(pValue, L"false") == 0 || _wcsicmp(pValue, L"0") == 0||
+		_wcsicmp(pValue, L"no") == 0 || _wcsicmp(pValue, L"n") == 0)
+	{
+		*pResult = FALSE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL StringToDword(LPCWSTR pValue, DWORD* pResult)
+{
+	int64_t val = 0;
+	int r = swscanf_s(pValue, L"%lld", &val);
+	if (r == 1 && val >= 0 && val <= 0xFFFFFFFFull)
+	{
+		*pResult = (DWORD)val;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+PARSING_ERROR* ReadConfig_BOOL(PARSING_ERROR* pLastError, size_t lineNum, LPCWSTR pValue, BOOL* pResult)
+{
+	if (!StringToBool(pValue, pResult))
+	{
+		return ParsingError(pLastError, lineNum,
+			L"Expected bool 'true' or 'false' but got '%s'",
+			pValue);
+	}
+	return pLastError;
+}
+
+PARSING_ERROR* ReadConfig_DWORD(PARSING_ERROR* pLastError, size_t lineNum, LPCWSTR pValue, DWORD* pResult)
+{
+	if (!StringToDword(pValue, pResult))
+	{
+		return ParsingError(pLastError, lineNum,
+			L"Invalid integer, or integer out of range: '%s'",
+			pValue);
+	}
+	return pLastError;
+}
+
+PARSING_ERROR* ReadConfig_MODKEY(PARSING_ERROR* pLastError, size_t lineNum, LPCWSTR pValue, MODKEY* pResult)
+{
+	USHORT mod = StringToModifier(pValue);
+	if (mod == 0)
+	{
+		return ParsingError(pLastError, lineNum,
+			L"Unknown modifier: %s",
+			pValue);
+	}
+
+	*pResult = mod;
+
+	return pLastError;
+}
+
+PARSING_ERROR* ReadConfig_AWHK_KEY_COMBO(PARSING_ERROR* pLastError, size_t lineNum, LPWSTR pValue, AWHK_KEY_COMBO* pResult)
+{
+	LPCWSTR tokens[4];
+	size_t numTokens = SplitString(pValue, L'+', tokens, _countof(tokens));
+	if (numTokens > 4)
+	{
+		return ParsingError(pLastError, lineNum,
+			L"Can't have more than 3 modifiers for a key combo");
+	}
+
+	USHORT modifiers = 0;
+	USHORT key = 0;
+
+	for (size_t i = 0; i < numTokens; ++i)
+	{
+		// Is it a modifier?
+		USHORT k = StringToModifier(tokens[i]);
+		if (k == 0)
+		{
+			// Is it a key?
+			k = StringToKey(tokens[i]);
+			if (k == 0)
+			{
+				return ParsingError(pLastError, lineNum,
+					L"Unknown modifier or key name: '%s'",
+					tokens[i]);
+			}
+			else if (key)
+			{
+				return ParsingError(pLastError, lineNum,
+					L"Can't assign more than a single key: '%s'",
+					tokens[i]);
+			}
+			else
+			{
+				key = k;
+			}
+		}
+		else
+		{
+			modifiers |= k;
+		}
+	}
+
+	pResult->Modifiers = modifiers;
+	pResult->Trigger = key;
+
+	return pLastError;
+}
+
+PARSING_ERROR* ReadConfig_AWHK_CURSOR_KEYS(PARSING_ERROR* pLastError, size_t lineNum, LPWSTR pValue, AWHK_CURSOR_KEYS* pResult)
+{
+	LPCWSTR tokens[4];
+	size_t numTokens = SplitString(pValue, L',', tokens, _countof(tokens));
+	if (numTokens != _countof(tokens))
+	{
+		return ParsingError(pLastError, lineNum,
+			L"Expected 4 comma-separated keys: left, right, up, down");
+	}
+
+	USHORT keys[4];
+
+	// Convert them to keys
+	for (size_t i = 0; i < numTokens; ++i)
+	{
+		// Is it a key?
+		keys[i] = StringToKey(tokens[i]);
+		if (keys[i] == 0)
+		{
+			return ParsingError(pLastError, lineNum,
+				L"Unknown key name: '%s'",
+				tokens[i]);
+		}
+	}
+
+	// Check for duplicates
+	for (size_t i = 0; i < _countof(keys) - 1; ++i)
+	{
+		for (size_t j = i+1; j < _countof(keys); ++j)
+		{
+			if (keys[i] == keys[j])
+			{
+				return ParsingError(pLastError, lineNum,
+					L"Duplicate key found: %s",
+					tokens[i]);
+			}
+		}
+	}
+
+	pResult->LeftKey = keys[0];
+	pResult->RightKey = keys[1];
+	pResult->UpKey = keys[2];
+	pResult->DownKey = keys[3];
+
+	return pLastError;
+}
+
+BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, PARSING_ERROR** ppErrors)
+{
+	if (!pConfigFile || !*pConfigFile)
+		return FALSE;
+
+	FILE* f = NULL;
+	if (_wfopen_s(&f, pConfigFile, L"r") != 0 || !f)
+	{
+		return FALSE;
+	}
+
+	// Read file line-by-line
+	BOOL success = TRUE;
+	WCHAR line[1024] = { 0 };
+	PARSING_ERROR* pErrorTail = NULL;
+	for (size_t lineNum = 1; fgetws(line, _countof(line), f); ++lineNum)
+	{
+		LPWSTR key = NULL, value = NULL;
+		if (!SplitKeyValuePair(line, &key, &value))
+		{
+			continue;
+		}
+
+		// Find and set the key
+		if (FALSE) {}
+#define CONFIG_VALUE(name, type, val) \
+		else if (_wcsicmp(key, JOIN(L, #name)) == 0) \
+			pErrorTail = JOIN(ReadConfig_, type)( \
+				pErrorTail, lineNum, \
+				value, &pCfg-> name);
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
+		else
+		{
+			pErrorTail = ParsingError(pErrorTail, lineNum,
+				L"Unknown key: '%s'",
+				key);
+		}
+	}
+
+	// If we aborted for some reason, set the error bit
+	if (ferror(f))
+	{
+		pErrorTail = ParsingError(pErrorTail, 0, L"Unexpected end of file");
+	}
+
+	// Reverse the error linked list (if there is one)
+	if (pErrorTail)
+	{
+		*ppErrors = ReverseParsingError(pErrorTail);
+		success = FALSE;
+	}
+
+#ifdef _DEBUG
+	// Dump out to stderr so we can verify the results
+	StreamConfiguration(stderr, pCfg);
+#endif
+
+	fclose(f);
+	return success;
+}
+
+/*
+* 
+* SAVING CONFIGURATION
+* 
+*/
 
 LPCWSTR ModifierToString(DWORD mod)
 {
@@ -110,28 +519,9 @@ void AppendKeyToString(DWORD key, PWSTR buf, size_t bufSize, LPCWSTR delim)
 	else
 	{
 		TCHAR tmp[64];
-		swprintf_s(tmp, _countof(tmp), L"%x", key);
+		swprintf_s(tmp, _countof(tmp), L"%u", key);
 		wcscat_s(buf, bufSize, tmp);
 	}
-}
-
-void InitConfiguration(AWHK_APP_CONFIG* cfg)
-{
-	ZeroMemory(cfg, sizeof(*cfg));
-
-#define CONFIG_VALUE(name, type, value)	cfg-> name = value;
-#	include "ConfigDefaults.inl"
-#undef CONFIG_VALUE
-}
-
-BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
-{
-	UNUSED(pConfigFile);
-	UNUSED(cfg);
-
-	// todo
-
-	return FALSE;
 }
 
 void WriteConfig_BOOL(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const BOOL* value)
@@ -181,6 +571,15 @@ void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, PTSTR pScratch, size_t scratchSize
 	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
 }
 
+void StreamConfiguration(FILE* f, const AWHK_APP_CONFIG* pCfg)
+{
+	TCHAR scratchBuffer[256] = { 0 };
+
+#define CONFIG_VALUE(name, type, val) JOIN(WriteConfig_, type)(f, scratchBuffer, _countof(scratchBuffer), JOIN(L, #name), &pCfg-> name);
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
+}
+
 BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 {
 	if (!pConfigFile || !*pConfigFile)
@@ -192,11 +591,7 @@ BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 		return FALSE;
 	}
 
-	TCHAR scratchBuffer[256] = { 0 };
-
-#define CONFIG_VALUE(name, type, val) JOIN(WriteConfig_, type)(f, scratchBuffer, _countof(scratchBuffer), JOIN(L, #name), &pCfg-> name);
-#	include "ConfigDefaults.inl"
-#undef CONFIG_VALUE
+	StreamConfiguration(f, pCfg);
 
 	fclose(f);
 	return TRUE;

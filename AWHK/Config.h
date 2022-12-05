@@ -32,6 +32,13 @@ typedef struct
 	DWORD				DownKey;
 } AWHK_CURSOR_KEYS;
 
+typedef struct PARSING_ERROR_
+{
+	WCHAR					ErrorText[1020];
+	size_t					LineNumber;
+	struct PARSING_ERROR_*	pNext;
+} PARSING_ERROR;
+
 typedef DWORD MODKEY;
 
 typedef struct
@@ -42,5 +49,7 @@ typedef struct
 } AWHK_APP_CONFIG;
 
 void InitConfiguration(AWHK_APP_CONFIG* cfg);
-BOOL LoadConfiguration(LPCWSTR pPath, AWHK_APP_CONFIG* cfg);
+BOOL LoadConfiguration(LPCWSTR pPath, AWHK_APP_CONFIG* cfg, PARSING_ERROR** ppErrors);
 BOOL SaveConfiguration(LPCWSTR pPath, const AWHK_APP_CONFIG* cfg);
+
+void FreeParsingErrors(PARSING_ERROR* pError);

@@ -152,11 +152,20 @@ BOOL LoadConfigurationAndBind(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, AWHK_R
 	pCfg->LaunchOnStartUp = IsAutoLoginEnabled();
 
 	BOOL success = TRUE;
+	PARSING_ERROR* errors = NULL;
 
 	// Attempt to load it from the file
-	if (!LoadConfiguration(pConfigFile, pCfg))
+	if (!LoadConfiguration(pConfigFile, pCfg, &errors))
 	{
 		// todo: error handling here
+		for (const PARSING_ERROR* e = errors; e; e = e->pNext)
+		{
+			// todo
+			OutputDebugString(e->ErrorText);
+			OutputDebugString(L"\n");
+		}
+
+		FreeParsingErrors(errors);
 	}
 
 	// Register the hotkeys
