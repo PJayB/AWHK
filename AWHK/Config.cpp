@@ -55,7 +55,7 @@ BOOL SaveKeyCombo( LPCWSTR strName, const AWHK_KEY_COMBO* combo )
     return StoreRegistryKeyCombo( strName, combo->Trigger, combo->Modifiers );
 }
 
-BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
+BOOL LoadConfiguration(LPCWSTR /*pConfigFile*/, AWHK_APP_CONFIG* cfg)
 {
 	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	    , &cfg->AllowSnapToOthers );
 	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	    , &cfg->MaxEdgeSearchSize );
@@ -104,4 +104,19 @@ BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg )
 		cfg->NextKeyMod = nextKeyMod;
 
     return TRUE;
+}
+
+BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* /*pCfg*/)
+{
+	if (!pConfigFile || !*pConfigFile)
+		return FALSE;
+
+	auto file = CreateFile(pConfigFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (file == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+	// todo: write the settings
+
+	CloseHandle(file);
+	return TRUE;
 }

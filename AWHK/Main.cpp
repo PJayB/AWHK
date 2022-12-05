@@ -28,16 +28,17 @@ SOFTWARE.
 #include <vector>
 #include <sstream>
 #include <assert.h>
+#include <Shlobj.h>
 
-#include "SupportModule.h"
 #include "WindowSnap.h"
 #include "MediaKeys.h"
 #include "Config.h"
 
 using namespace std;
 
-#define AWHK_MAX_HOTKEYS    64
-#define AWHK_APP_SEM	    L"AWHK_APP_OPEN_SEM" 
+#define AWHK_MAX_HOTKEYS		64
+#define AWHK_APP_SEM			L"AWHK_APP_OPEN_SEM" 
+#define AWHK_CONFIG_FILE_NAME	L"AWHK.ini"
 
 struct AWHK_REGISTER_STATUS
 {
@@ -60,13 +61,12 @@ struct AWHK_APP_STATE
     HANDLE              hAppOpenSemaphore;
 
 	UINT			    MsgEditConfigFile;
-	UINT				MsgConfigEditorClosed;
 	UINT			    MsgReloadConfig;
     UINT                MsgSuspend;
     UINT                MsgResume;
 
-	volatile BOOL	    ConfigEditorOpen;
 	AWHK_REGISTRATION   Registration;
+	PWSTR				ConfigFile;
 };
 
 DIRECTION DirectionFromVKey( 
@@ -134,6 +134,27 @@ BOOL ShowWebHelp()
 		nullptr,
 		nullptr,
 		SW_SHOWNORMAL ) > 32;
+}
+
+// Get the path to the INI file.
+PWSTR GetConfigFilePath()
+{
+	PWSTR result = nullptr;
+
+	// Get the user data directory
+	PWSTR userDataDir = nullptr;
+	if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppDataLow, 0, nullptr, &userDataDir)))
+	{
+		auto resultSize = wcslen(userDataDir) + wcslen(AWHK_CONFIG_FILE_NAME) + 2;
+		result = static_cast<PWSTR>(HeapAlloc(GetProcessHeap(), 0, resultSize * sizeof(WCHAR)));
+		if (result)
+		{
+			swprintf_s(result, resultSize, L"%s\\%s", userDataDir, AWHK_CONFIG_FILE_NAME);
+		}
+	}
+
+	CoTaskMemFree(userDataDir);
+	return result;
 }
 
 BOOL EditConfigFile( const AWHK_APP_STATE* pState )
@@ -217,37 +238,54 @@ BOOL HandleHotKey(
 		);
 }
 
-void AsyncConfigEditorClosedCallback(
-	const AWHK_APP_STATE* pState )
+BOOL FileExists(LPCTSTR szPath)
 {
-	::PostThreadMessage( 
-		pState->dwMainThreadID,
-		pState->MsgReloadConfig,
-		0, 0 );
+	DWORD dwAttrib = GetFileAttributes(szPath);
 
-	::PostThreadMessage( 
-		pState->dwMainThreadID,
-		pState->MsgConfigEditorClosed,
-		0, 0 );
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-
-BOOL OpenConfigEditor( const AWHK_APP_STATE* pState )
+BOOL ValidateConfigFileExists(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 {
-	// todo: warning message
-	// todo: config file path
-	if ( !ShowConfigEditorAsync(
-		(ASYNC_FORM_CLOSED_PROC) AsyncConfigEditorClosedCallback,
-		(LPVOID) pState ) )
+	if (!pConfigFile || !*pConfigFile)
+	{
+		return FALSE;
+	}
+
+	if (!FileExists(pConfigFile))
+	{
+		// Create the file
+		// todo
+		return SaveConfiguration(pConfigFile, pCfg);
+	}
+
+	return TRUE;
+}
+
+void OpenConfigEditor(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
+{
+	if (!ValidateConfigFileExists(pConfigFile, pCfg))
+	{
+		::MessageBox(NULL,
+			APPLICATION_TITLE L" was unable to write settings to your user profile.",
+			APPLICATION_TITLE,
+			MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	if (FAILED(ShellExecute(nullptr, L"edit", pConfigFile, nullptr, nullptr, SW_SHOWDEFAULT)))
     {
+		TCHAR msg[256];
+		swprintf_s(
+			msg, _countof(msg),
+			APPLICATION_TITLE L" was unable to invoke a text editor. You can edit the config file at: <path>"": %s",
+			pConfigFile);
         ::MessageBox( NULL, 
-			APPLICATION_TITLE L" was unable to invoke a text editor. You can edit the config file at: <path>",
+			msg,
 			APPLICATION_TITLE,
 			MB_ICONERROR | MB_OK );
-
-        return FALSE;
     }
-    return TRUE;
 }
 
 void RegisterHotKeyAtIndex( DWORD keyMod, DWORD vKey, AWHK_REGISTRATION* pKeyStatus )
@@ -477,17 +515,9 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 
 	while ( GetMessage( &msg, nullptr, 0, 0 ) )
 	{
-		if ( msg.message == appState->MsgEditConfigFile &&
-			 !appState->ConfigEditorOpen )
+		if (msg.message == appState->MsgEditConfigFile)
 		{
-			appState->ConfigEditorOpen = OpenConfigEditor( appState );
-			continue;
-		}
-
-		if ( msg.message == appState->MsgConfigEditorClosed &&
-			 !appState->ConfigEditorOpen )
-		{
-			appState->ConfigEditorOpen = FALSE;
+			OpenConfigEditor(appState->ConfigFile, appCfg);
 			continue;
 		}
 
@@ -496,12 +526,9 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			UnregisterHotkeys( &appState->Registration );
 
 			// Reload the settings
-			LoadConfiguration( appCfg );
-			RegisterHotKeysAndWarn( 
-                appState,
-				appCfg );
+			LoadConfiguration(appState->ConfigFile, appCfg);
+			RegisterHotKeysAndWarn(appState, appCfg);
 
-			appState->ConfigEditorOpen = FALSE;
 			continue;
 		}
 
@@ -563,16 +590,17 @@ int CALLBACK WinMain(
 	if ( AppAlreadyOpenCheck() )
 		return -1;
 
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
 	AWHK_APP_STATE appState;
     ZeroMemory( &appState, sizeof(appState) );
 	appState.hInstance = hInstance;
 	appState.dwMainThreadID = ::GetCurrentThreadId();
-	appState.ConfigEditorOpen = FALSE;
 	appState.MsgEditConfigFile = ::RegisterWindowMessage( L"AWHKEditConfigMsg" );
-	appState.MsgConfigEditorClosed = ::RegisterWindowMessage( L"AWHKConfigEditorClosed" );
 	appState.MsgReloadConfig = ::RegisterWindowMessage( L"AWHKReloadConfigMsg" );
 	appState.MsgSuspend = ::RegisterWindowMessage( L"AWHKSuspendMsg" );
 	appState.MsgResume = ::RegisterWindowMessage( L"AWHKResumeMsg" );
+	appState.ConfigFile = GetConfigFilePath();
 
     // Open the application semaphore
 	SECURITY_ATTRIBUTES sa;
@@ -588,7 +616,7 @@ int CALLBACK WinMain(
 
 	AWHK_APP_CONFIG appCfg;
     ZeroMemory( &appCfg, sizeof(appCfg) );
-	LoadConfiguration( &appCfg );
+	LoadConfiguration(appState.ConfigFile, &appCfg);
 
 	RegisterHotKeysAndWarn(
         &appState,
@@ -598,6 +626,7 @@ int CALLBACK WinMain(
 
 	UnregisterHotkeys( &appState.Registration );
     CloseHandle( appState.hAppOpenSemaphore );
+	HeapFree(GetProcessHeap(), 0, appState.ConfigFile);
 
 	return ret;
 }

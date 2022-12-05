@@ -61,5 +61,5 @@ struct AWHK_APP_CONFIG
     AWHK_KEY_COMBO      MediaMute;
 };
 
-BOOL LoadConfiguration( AWHK_APP_CONFIG* cfg );
-
+BOOL LoadConfiguration( LPCWSTR pPath, AWHK_APP_CONFIG* cfg );
+BOOL SaveConfiguration(LPCWSTR pPath, const AWHK_APP_CONFIG* cfg);
