@@ -192,12 +192,34 @@ PWSTR GetConfigFilePath()
 	return result;
 }
 
-BOOL EditConfigFile( const AWHK_APP_STATE* pState )
+BOOL PostEditConfigFile( const AWHK_APP_STATE* pState )
 {
 	return PostThreadMessage(
 		pState->dwMainThreadID,
 		pState->MsgEditConfigFile,
 		0, 0 );
+}
+
+BOOL PostReloadConfig(const AWHK_APP_STATE* pState)
+{
+	if (!pState->Suspended)
+	{
+		return PostThreadMessage(pState->dwMainThreadID, pState->MsgSuspend, 0, 0)
+			&& PostThreadMessage(pState->dwMainThreadID, pState->MsgResume, 0, 0);
+	}
+	return FALSE;
+}
+
+BOOL PostQuitPrompt()
+{
+	if (MessageBox(NULL,
+		L"Are you sure you want to quit " APPLICATION_TITLE L"?",
+		APPLICATION_TITLE,
+		MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) == IDYES)
+	{
+		PostQuitMessage(EXIT_SUCCESS);
+	}
+	return TRUE;
 }
 
 void ConfigureWindowSnapParams( 
@@ -229,12 +251,20 @@ BOOL HandleHotKey(
 	const AWHK_APP_CONFIG* cfg,
 	AWHK_KEY_COMBO key )
 {
+	// If the app is suspended, ignore hotkeys
+	if (state->Suspended)
+	{
+		return FALSE;
+	}
+
 	// Deal with system keys
 	if (key.dwBits == cfg->HelpCombo.dwBits)
 		return ShowWebHelp();
 	else if (key.dwBits == cfg->EditConfigCombo.dwBits)
-		return EditConfigFile( state );
-    else if (key.dwBits == cfg->MediaPlayPause.dwBits)
+		return PostEditConfigFile( state );
+	else if (key.dwBits == cfg->QuitCombo.dwBits)
+		return PostQuitPrompt();
+	else if (key.dwBits == cfg->MediaPlayPause.dwBits)
         return MediaPlayPause();
     else if (key.dwBits == cfg->MediaStop.dwBits)
         return MediaStop();
@@ -248,7 +278,6 @@ BOOL HandleHotKey(
         return MediaVolumeDown();
     else if (key.dwBits == cfg->MediaVolumeUp.dwBits)
         return MediaVolumeUp();
-    
 
 	WINDOW_SNAP_PARAMS params;
 	InitWindowSnapParams(&params);
@@ -292,8 +321,6 @@ BOOL ValidateConfigFileExists(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 
 	if (!FileExists(pConfigFile))
 	{
-		// Create the file
-		// todo
 		return SaveConfiguration(pConfigFile, pCfg);
 	}
 
@@ -403,6 +430,7 @@ void RegisterExtraHotKeys(
 {
 	RegisterKeyComboAtIndex( &cfg->HelpCombo,         pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->EditConfigCombo,   pKeyStatus );
+	RegisterKeyComboAtIndex( &cfg->QuitCombo,		  pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaPlayPause,    pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaStop,         pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaNext,         pKeyStatus );

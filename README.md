@@ -14,7 +14,6 @@ ToDo
 -----------
 
 - Load config from a file
-- Set autologin on startup
 - Prompt for autologin on first run
 - Error dialog for bad configuration
 - Monitor for config changes & reload when changed
@@ -23,4 +22,4 @@ ToDo
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Defer repaint to improve performance?
 - Help CHM
-- Quit, suspend and resume keys
+- Suspend and resume keys
