@@ -31,7 +31,6 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <tchar.h>
-#include <strsafe.h>
 
 #include <Windows.h>
 
@@ -40,3 +39,9 @@ SOFTWARE.
 #define APPLICATION_TITLE L"Advanced Window HotKeys"
 
 #define UNUSED(x) ((void)x)
+
+#ifdef _DEBUG
+#	include <assert.h>
+#else
+#	define assert(x)
+#endif

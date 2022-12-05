@@ -22,7 +22,6 @@ SOFTWARE.
 
 #include "stdafx.h"
 #include "Config.h"
-#include <stdio.h>
 
 #define JOIN(x, y) x##y
 

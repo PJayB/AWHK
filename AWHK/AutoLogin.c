@@ -21,9 +21,7 @@ SOFTWARE.
 */
 
 #include "stdafx.h"
-
 #include "AutoLogin.h"
-
 #include <strsafe.h>
 
 #define AWHK_RUN_KEY			L"Software\\Microsoft\\Windows\\CurrentVersion\\Run"

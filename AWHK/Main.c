@@ -24,8 +24,6 @@ SOFTWARE.
 //
 
 #include "stdafx.h"
-
-#include <assert.h>
 #include <Shlobj.h>
 
 #include "WindowSnap.h"
