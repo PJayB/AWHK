@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Inline Files">
+      <UniqueIdentifier>{ee82ed66-cade-4871-9c7f-56a1f1c8f444}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -75,10 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ConfigDefaults.inl">
-      <Filter>Header Files</Filter>
+      <Filter>Inline Files</Filter>
     </None>
     <None Include="KeyCodes.inl">
-      <Filter>Header Files</Filter>
+      <Filter>Inline Files</Filter>
     </None>
   </ItemGroup>
 </Project>
