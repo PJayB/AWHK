@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ConfigDefaults.inl" />
+    <None Include="KeyCodes.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

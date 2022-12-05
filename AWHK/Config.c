@@ -43,117 +43,6 @@ AWHK_CURSOR_KEYS CreateCursorKeys(DWORD left, DWORD right, DWORD up, DWORD down)
 	return k;
 }
 
-void InitConfiguration(AWHK_APP_CONFIG* cfg)
-{
-	ZeroMemory(cfg, sizeof(*cfg));
-
-#define CONFIG_VALUE(name, type, value)	cfg-> name = value;
-#	include "ConfigDefaults.inl"
-#undef CONFIG_VALUE
-	/*
-	cfg->AllowSnapToOthers				= TRUE;
-	cfg->MaxEdgeSearchSize				= 128;
-	cfg->GridX							= 8;
-	cfg->GridY							= 4;
-	cfg->FineX							= 32;
-	cfg->FineY							= 16;
-	cfg->HelpCombo						= CreateKeyComboFromModAndKey(MOD_ALT, VK_F1);
-	cfg->EditConfigCombo				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F2);
-	cfg->MoveKeyMod						= MOD_ALT;
-	cfg->NextKeyMod						= MOD_CONTROL;
-	cfg->FineKeyMod						= MOD_SHIFT;
-	cfg->ResizeKeys.LeftKey				= VK_LEFT;
-	cfg->ResizeKeys.RightKey			= VK_RIGHT;
-	cfg->ResizeKeys.UpKey				= VK_UP;
-	cfg->ResizeKeys.DownKey				= VK_DOWN;
-	cfg->MoveKeys.LeftKey				= 'A';
-	cfg->MoveKeys.RightKey				= 'D';
-	cfg->MoveKeys.UpKey					= 'W';
-	cfg->MoveKeys.DownKey				= 'S';
-	cfg->MediaPrev						= CreateKeyComboFromModAndKey(MOD_ALT | MOD_SHIFT, VK_F11);
-	cfg->MediaNext						= CreateKeyComboFromModAndKey(MOD_ALT | MOD_SHIFT, VK_F12);
-	// cfg->MediaStop not bound by default.
-	cfg->MediaPlayPause					= CreateKeyComboFromModAndKey(MOD_ALT, VK_F9);
-	cfg->MediaVolumeMute				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F10);
-	cfg->MediaVolumeDown				= CreateKeyComboFromModAndKey(MOD_ALT, VK_F11);
-	cfg->MediaVolumeUp					= CreateKeyComboFromModAndKey(MOD_ALT, VK_F12);
-	*/
-}
-
-BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
-{
-	UNUSED(pConfigFile);
-	UNUSED(cfg);
-	return FALSE;
-	/*
-	if (!pConfigFile || !*pConfigFile)
-		return FALSE;
-
-	HANDLE file = CreateFile(pConfigFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (file == INVALID_HANDLE_VALUE)
-		return FALSE;
-
-	LoadRegistryBool	( AWHK_REG_ALLOW_SNAP	    , &cfg->AllowSnapToOthers );
-	LoadConfigGridValue	( AWHK_REG_EDGE_SEARCH	    , &cfg->MaxEdgeSearchSize );
-
-	LoadConfigGridValue	( AWHK_REG_GRID_X		    , &cfg->GridX );
-	LoadConfigGridValue	( AWHK_REG_GRID_Y		    , &cfg->GridY );
-	LoadConfigGridValue	( AWHK_REG_FINE_X		    , &cfg->FineX );
-	LoadConfigGridValue	( AWHK_REG_FINE_Y		    , &cfg->FineY );
-
-	LoadKeyCombo	    ( AWKH_REG_HELP_COMBO	    , &cfg->HelpCombo );
-	LoadKeyCombo	    ( AWKH_REG_CFG_COMBO	    , &cfg->EditConfigCombo );
-    
-	LoadRegistryVKey	( AWHK_REG_RESIZE_LEFT		, &cfg->ResizeKeys.LeftKey );
-	LoadRegistryVKey	( AWHK_REG_RESIZE_RIGHT	    , &cfg->ResizeKeys.RightKey );
-	LoadRegistryVKey	( AWHK_REG_RESIZE_UP	    , &cfg->ResizeKeys.UpKey );
-	LoadRegistryVKey	( AWHK_REG_RESIZE_DOWN		, &cfg->ResizeKeys.DownKey );
-
-	LoadRegistryVKey	( AWHK_REG_MOVE_LEFT	    , &cfg->MoveKeys.LeftKey );
-	LoadRegistryVKey	( AWHK_REG_MOVE_RIGHT	    , &cfg->MoveKeys.RightKey );
-	LoadRegistryVKey	( AWHK_REG_MOVE_UP		    , &cfg->MoveKeys.UpKey );
-	LoadRegistryVKey	( AWHK_REG_MOVE_DOWN	    , &cfg->MoveKeys.DownKey );
-
-    LoadKeyCombo        ( AWHK_REG_MEDIA_PREV       , &cfg->MediaPrev );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_NEXT       , &cfg->MediaNext );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_STOP       , &cfg->MediaStop );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_PLAY_PAUSE , &cfg->MediaPlayPause );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_UP  , &cfg->MediaVolumeUp );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_VOLUME_DOWN, &cfg->MediaVolumeDown );
-    LoadKeyCombo        ( AWHK_REG_MEDIA_MUTE       , &cfg->MediaMute );
-
-	DWORD moveKeyMod = cfg->MoveKeyMod;
-	DWORD fineKeyMod = cfg->FineKeyMod;
-	DWORD nextKeyMod = cfg->NextKeyMod;
-	LoadRegistryKeyMod	( AWHK_REG_MOVE_KEY_MOD	, &moveKeyMod );
-	LoadRegistryKeyMod	( AWHK_REG_NEXT_KEY_MOD	, &nextKeyMod );
-	LoadRegistryKeyMod	( AWHK_REG_FINE_KEY_MOD	, &fineKeyMod );
-
-	// We MUST have a move key mod (otherwise what's the point?)
-	if ( moveKeyMod )
-		cfg->MoveKeyMod = moveKeyMod;
-
-	// The two other modifiers must be different
-	if ( !fineKeyMod || ( fineKeyMod != moveKeyMod && fineKeyMod != nextKeyMod ) )
-		cfg->FineKeyMod = fineKeyMod;
-	if ( !nextKeyMod || ( nextKeyMod != moveKeyMod && nextKeyMod != fineKeyMod ) )
-		cfg->NextKeyMod = nextKeyMod;
-
-	CloseHandle(file);
-    return TRUE;
-	*/
-}
-
-void WriteConfig_BOOL(FILE* file, LPCTSTR pKey, const BOOL* value)
-{
-	fwprintf_s(file, L"%s=%s\n", pKey, *value ? L"true" : L"false");
-}
-
-void WriteConfig_DWORD(FILE* file, LPCTSTR pKey, const DWORD* value)
-{
-	fwprintf_s(file, L"%s=%u\n", pKey, *value);
-}
-
 LPCWSTR ModifierToString(DWORD mod)
 {
 	switch (mod)
@@ -170,16 +59,109 @@ LPCWSTR ModifierToString(DWORD mod)
 	}
 }
 
-void WriteConfig_AWHK_KEY_COMBO(FILE* file, LPCTSTR pKey, const AWHK_KEY_COMBO* value)
+LPCWSTR KeyToString(DWORD key)
 {
-	// todo
-	fwprintf_s(file, L"%s=%u\n", pKey, value->dwBits);
+#define KEYCODE(name, vk)	case vk: return JOIN(L, #name);
+	switch (key)
+	{
+	case 0:
+	default:
+		return NULL;
+#	include "KeyCodes.inl"
+	}
+#undef KEYCODE
 }
 
-void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, LPCTSTR pKey, const AWHK_CURSOR_KEYS* value)
+void AppendModifierToString(DWORD mod, PWSTR buf, size_t bufSize, LPCWSTR delim)
 {
+	if (*buf)
+		wcscat_s(buf, bufSize, delim);
+	wcscat_s(buf, bufSize, ModifierToString(mod));
+}
+
+void AppendModifiersToString(DWORD mods, PWSTR buf, size_t bufSize, LPCWSTR delim)
+{
+	if (mods & MOD_SHIFT)
+		AppendModifierToString(MOD_SHIFT, buf, bufSize, delim);
+	if (mods & MOD_CONTROL)
+		AppendModifierToString(MOD_CONTROL, buf, bufSize, delim);
+	if (mods & MOD_ALT)
+		AppendModifierToString(MOD_ALT, buf, bufSize, delim);
+}
+
+void AppendKeyToString(DWORD key, PWSTR buf, size_t bufSize, LPCWSTR delim)
+{
+	if (*buf)
+		wcscat_s(buf, bufSize, delim);
+	LPCWSTR name = KeyToString(key);
+	if (name)
+	{
+		wcscat_s(buf, bufSize, KeyToString(key));
+	}
+	else
+	{
+		TCHAR tmp[64];
+		swprintf_s(tmp, _countof(tmp), L"%x", key);
+		wcscat_s(buf, bufSize, tmp);
+	}
+}
+
+void InitConfiguration(AWHK_APP_CONFIG* cfg)
+{
+	ZeroMemory(cfg, sizeof(*cfg));
+
+#define CONFIG_VALUE(name, type, value)	cfg-> name = value;
+#	include "ConfigDefaults.inl"
+#undef CONFIG_VALUE
+}
+
+BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* cfg)
+{
+	UNUSED(pConfigFile);
+	UNUSED(cfg);
+
 	// todo
-	fwprintf_s(file, L"%s=%u,%u,%u,%u\n", pKey, value->LeftKey, value->RightKey, value->UpKey, value->DownKey);
+
+	return FALSE;
+}
+
+void WriteConfig_BOOL(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const BOOL* value)
+{
+	UNUSED(pScratch);
+	UNUSED(scratchSize);
+	fwprintf_s(file, L"%s=%s\n", pKey, *value ? L"true" : L"false");
+}
+
+void WriteConfig_DWORD(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const DWORD* value)
+{
+	UNUSED(pScratch);
+	UNUSED(scratchSize);
+	fwprintf_s(file, L"%s=%u\n", pKey, *value);
+}
+
+void WriteConfig_MODKEY(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const DWORD* value)
+{
+	UNUSED(pScratch);
+	UNUSED(scratchSize);
+	fwprintf_s(file, L"%s=%s\n", pKey, ModifierToString(*value));
+}
+
+void WriteConfig_AWHK_KEY_COMBO(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_KEY_COMBO* value)
+{
+	pScratch[0] = 0;
+	AppendModifiersToString(value->Modifiers, pScratch, scratchSize, L"+");
+	AppendKeyToString(value->Trigger, pScratch, scratchSize, L"+");
+	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
+}
+
+void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_CURSOR_KEYS* value)
+{
+	pScratch[0] = 0;
+	AppendKeyToString(value->LeftKey, pScratch, scratchSize, L",");
+	AppendKeyToString(value->RightKey, pScratch, scratchSize, L",");
+	AppendKeyToString(value->UpKey, pScratch, scratchSize, L",");
+	AppendKeyToString(value->DownKey, pScratch, scratchSize, L",");
+	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
 }
 
 BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
@@ -193,7 +175,9 @@ BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 		return FALSE;
 	}
 
-#define CONFIG_VALUE(name, type, val) JOIN(WriteConfig_, type)(f, JOIN(L, #name), &pCfg-> name);
+	TCHAR scratchBuffer[256] = { 0 };
+
+#define CONFIG_VALUE(name, type, val) JOIN(WriteConfig_, type)(f, scratchBuffer, _countof(scratchBuffer), JOIN(L, #name), &pCfg-> name);
 #	include "ConfigDefaults.inl"
 #undef CONFIG_VALUE
 

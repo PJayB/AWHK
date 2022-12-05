@@ -32,6 +32,8 @@ typedef struct
 	DWORD				DownKey;
 } AWHK_CURSOR_KEYS;
 
+typedef DWORD MODKEY;
+
 typedef struct
 {
 #define CONFIG_VALUE(name, type, value)			type name;
