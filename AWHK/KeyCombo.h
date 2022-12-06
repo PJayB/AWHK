@@ -42,7 +42,6 @@ typedef union
 } AWHK_KEY_COMBO;
 #pragma warning(pop)
 
-// todo: retire all of this
 static inline AWHK_KEY_COMBO CreateKeyCombo(DWORD bits)
 {
     AWHK_KEY_COMBO kc = { (LONG)bits };

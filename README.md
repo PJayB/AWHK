@@ -14,7 +14,6 @@ ToDo
 -----------
 
 Config
-- Error dialog for bad configuration
 - Monitor for config changes & reload when changed
 
 OOBE

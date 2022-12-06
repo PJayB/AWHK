@@ -74,7 +74,8 @@ typedef struct
 	BOOL				Suspended;
 } AWHK_APP_STATE;
 
-BOOL RegisterHotKeysAndWarn( AWHK_REGISTRATION* reg, const AWHK_APP_CONFIG* cfg );
+void RegisterHotKeys(const AWHK_APP_CONFIG* cfg, AWHK_REGISTRATION* pKeyStatus);
+void UnregisterHotkeys( AWHK_REGISTRATION* pReg );
 
 DIRECTION DirectionFromVKey( 
 	const AWHK_CURSOR_KEYS* cfg, 
@@ -143,41 +144,207 @@ BOOL ShowWebHelp()
 		SW_SHOWNORMAL ) > 32;
 }
 
-BOOL LoadConfigurationAndBind(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, AWHK_REGISTRATION* pRegistration)
+LPCWSTR SafeKeyModString( DWORD keyMod )
 {
-	// Reset the configuration
-	InitConfiguration(pCfg);
+#define KEYMOD(x)	case MOD_##x: return TEXT(#x) TEXT(" ")
+	switch (keyMod)
+	{
+		KEYMOD(ALT);
+		KEYMOD(CONTROL);
+		KEYMOD(SHIFT);
+		KEYMOD(WIN);
+	default: 
+		return L"";
+	}
+#undef KEYMOD
+};
 
-	// Get the current state of autologin
-	pCfg->LaunchOnStartUp = IsAutoLoginEnabled();
+LPCWSTR HResultToString( HRESULT hr, LPWSTR buf, DWORD bufSize )
+{
+	INT len = (INT) FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		hr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		buf,
+		bufSize,
+		NULL);
+	if (len == 0)
+	{
+		swprintf_s( buf, bufSize, L"Unknown error." );
+		return buf;
+	}
 
+	// Strip newlines and periods from the end of the string.
+	for ( INT i = len-1; i > 0 && (buf[i] == L'\n' || buf[i] == L'\r' || buf[i] == L'.'); --i )
+	{
+		buf[i] = 0;
+	}
+
+	return buf;
+}
+
+void AppendRegistrationFailures( const AWHK_REGISTRATION* pKeyState, LPWSTR pMsg, size_t msgLen )
+{
+	WCHAR strHR[256] = {0};
+	LPCWSTR strEnd = pMsg + msgLen;
+	LPWSTR strCursor = pMsg;
+
+	strCursor += swprintf_s(
+		pMsg,
+		msgLen,
+		L"Some keys failed to register. Please check the following keys in the settings:\n\n" );
+
+	for ( LONG k = 0; k < pKeyState->AttemptCount; ++k )
+	{
+		const AWHK_REGISTER_STATUS* pStatus = &pKeyState->StatusCodes[k];
+
+		if ( FAILED( pStatus->Reason ) )
+		{
+			DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pStatus->dwCombo );
+			DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pStatus->dwCombo );
+
+			strCursor += swprintf_s(
+				strCursor, 
+				strEnd - strCursor,
+				L"%s%s%s%s%s: %s.\n",
+				SafeKeyModString( dwMod & MOD_ALT ),
+				SafeKeyModString( dwMod & MOD_SHIFT ),
+				SafeKeyModString( dwMod & MOD_CONTROL ),
+				SafeKeyModString( dwMod & MOD_WIN ),
+				KeyToString(dwVKey),
+				HResultToString( pStatus->Reason, strHR, _countof(strHR) ) );
+		}
+	}
+}
+
+typedef enum
+{
+	CONFIG_LOADED = 0,
+	CONFIG_ABORT = IDABORT,
+	CONFIG_RETRY = IDRETRY,
+	CONFIG_IGNORE = IDIGNORE,
+} CONFIG_LOAD_RESULT;
+
+CONFIG_LOAD_RESULT AttemptConfigurationAndBind(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, AWHK_REGISTRATION* pRegistration, BOOL ignoreMissingConfig)
+{
 	BOOL success = TRUE;
 	PARSING_ERROR* errors = NULL;
 
+	WCHAR errorText[2048] = {0};
+	size_t errorCur = 0;
+
 	// Attempt to load it from the file
-	if (!LoadConfiguration(pConfigFile, pCfg, &errors))
+	if (!LoadConfiguration(pConfigFile, pCfg, &errors) && !ignoreMissingConfig)
 	{
-		// todo: error handling here
+		errorCur += swprintf(errorText + errorCur,
+			_countof(errorText) - errorCur,
+			L"Couldn't read the configuration file, '%s'\n\n",
+			pConfigFile);
+
+		success = FALSE;
+	}
+
+	if (errors)
+	{
+		success = FALSE;
+
+		errorCur += swprintf(errorText + errorCur,
+			_countof(errorText) - errorCur,
+			L"There were syntax errors in configuration file '%s':\n\n",
+			pConfigFile);
+		
 		for (const PARSING_ERROR* e = errors; e; e = e->pNext)
 		{
-			// todo
-			OutputDebugString(e->ErrorText);
-			OutputDebugString(L"\n");
+			errorCur += swprintf(errorText + errorCur,
+				_countof(errorText) - errorCur,
+				L"On line %u: %s\n",
+				e->LineNumber,
+				e->ErrorText);
 		}
 
-		FreeParsingErrors(errors);
+		errorCur += swprintf(errorText + errorCur,
+			_countof(errorText) - errorCur,
+			L"\n");
 	}
 
-	// Register the hotkeys
-	if (!RegisterHotKeysAndWarn(pRegistration, pCfg))
+	FreeParsingErrors(errors);
+
+	// Apply the configuration. Register the new hotkeys.
+	if (success)
 	{
-		// todo: error handling here
+		RegisterHotKeys(pCfg, pRegistration);
+		if (pRegistration->ErrorCount > 0)
+		{
+			AppendRegistrationFailures(pRegistration, errorText + errorCur, 
+				_countof(errorText) - errorCur);
+			success = FALSE;
+		}
 	}
 
-	// Set autologin state
-	SetAutoLoginEnabled(pCfg->LaunchOnStartUp);
+	if (success)
+	{
+		return CONFIG_LOADED;
+	}
+	else
+	{
+		errorCur += swprintf(errorText + errorCur,
+			_countof(errorText) - errorCur,
+			L"Abort: quit " APPLICATION_TITLE L".\n"
+			L"Retry: attempt to load the configuration file again.\n"
+			L"Ignore: continue with the currently loaded configuration.\n");
 
-	return success;
+		return MessageBox(NULL, errorText, APPLICATION_TITLE, MB_ICONERROR | MB_ABORTRETRYIGNORE | MB_DEFBUTTON2);
+	}
+}
+
+BOOL LoadConfigurationAndBind(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, AWHK_REGISTRATION* pRegistration, BOOL ignoreMissingConfig)
+{
+	AWHK_APP_CONFIG newCfg;
+	AWHK_REGISTRATION newReg = *pRegistration;
+
+	CONFIG_LOAD_RESULT result;
+	do
+	{
+		// Unregister any existing hotkeys
+		UnregisterHotkeys(&newReg);
+
+		// Create a new configuration
+		InitConfiguration(&newCfg);
+
+		// Get the current state of autologin
+		newCfg.LaunchOnStartUp = IsAutoLoginEnabled();
+
+		// Create a new registration
+		ZeroMemory(&newReg, sizeof(newReg));
+
+		// Try and load the config and if there are errors, the user might want to retry
+		result = AttemptConfigurationAndBind(pConfigFile, &newCfg, &newReg, ignoreMissingConfig);
+	}
+	while (result == CONFIG_RETRY);
+
+	// Configuration is committed.
+	switch (result)
+	{
+	case CONFIG_LOADED:
+		*pCfg = newCfg;
+		*pRegistration = newReg;
+
+		// Set autologin state
+		SetAutoLoginEnabled(pCfg->LaunchOnStartUp);
+		return TRUE;
+	case CONFIG_ABORT:
+		// Quit the app
+		return FALSE;
+	case CONFIG_IGNORE:
+		// Ignore everything. Just rebind the old config.
+		RegisterHotKeys(pCfg, pRegistration);
+		// todo: show an error here or something
+		return pRegistration->ErrorCount == 0;
+	default:
+		assert(0);
+		return FALSE;
+	}
 }
 
 // Get the path to the INI file.
@@ -462,119 +629,6 @@ void RegisterHotKeys(
 	RegisterArrowKeys( cfg, &cfg->MoveKeys, pKeyStatus );
 }
 
-LPCWSTR GetKeyModString( DWORD keyMod )
-{
-#define KEYMOD(x)	case MOD_##x: return TEXT(#x) TEXT(" ")
-	switch (keyMod)
-	{
-	KEYMOD(ALT);
-	KEYMOD(CONTROL);
-	KEYMOD(SHIFT);
-	KEYMOD(WIN);
-	default: 
-		return L"";
-	}
-#undef KEYMOD
-};
-
-LPCWSTR HResultToString( HRESULT hr, LPWSTR buf, DWORD bufSize )
-{
-    INT len = (INT) FormatMessage(
-		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		hr,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		buf,
-		bufSize,
-		NULL);
-    if (len == 0)
-    {
-        swprintf_s( buf, bufSize, L"Unknown error." );
-        return buf;
-    }
-
-    // Strip newlines and periods from the end of the string.
-    for ( INT i = len-1; i > 0 && (buf[i] == L'\n' || buf[i] == L'\r' || buf[i] == L'.'); --i )
-    {
-        buf[i] = 0;
-    }
-
-    return buf;
-}
-
-void ShowRegistrationFailures( const AWHK_REGISTRATION* pKeyState )
-{
-    // TODO: pass this to the listeners instead
-    if ( pKeyState->ErrorCount == 0 )
-        return;
-
-    WCHAR strHR[256] = {0};
-	WCHAR strMsg[2048] = {0};
-	LPCWSTR strEnd = strMsg + _countof(strMsg);
-	LPWSTR strCursor = strMsg;
-
-	strCursor += swprintf_s(
-		strMsg,
-		_countof(strMsg),
-		L"Some keys failed to register. Please check the following keys in the settings:\n\n" );
-
-	for ( LONG k = 0; k < pKeyState->AttemptCount; ++k )
-	{
-		const AWHK_REGISTER_STATUS* pStatus = &pKeyState->StatusCodes[k];
-
-        if ( FAILED( pStatus->Reason ) )
-		{
-			DWORD dwVKey = AWHK_GET_TRIGGER_KEY( pStatus->dwCombo );
-			DWORD dwMod = AWHK_GET_MODIFIER_KEYS( pStatus->dwCombo );
-			UINT uScanCode = MapVirtualKey( dwVKey, 0 );
-
-            WCHAR strVKey[64] = {0};
-            GetKeyNameText( 
-                uScanCode << 16, 
-                strVKey, _countof(strVKey) );
-            if ( wcslen(strVKey) == 0 )
-			{
-				swprintf_s(
-					strVKey,
-					_countof(strVKey),
-					L"0x%X",
-					dwVKey );
-			}
-
-			strCursor += swprintf_s(
-				strCursor, 
-				strEnd - strCursor,
-				L"%s%s%s%s%s: %s.\n",
-				GetKeyModString( dwMod & MOD_ALT ),
-				GetKeyModString( dwMod & MOD_SHIFT ),
-				GetKeyModString( dwMod & MOD_CONTROL ),
-				GetKeyModString( dwMod & MOD_WIN ),
-				strVKey,
-                HResultToString( pStatus->Reason, strHR, _countof(strHR) ) );
-		}
-	}
-
-	MessageBox( NULL, 
-		strMsg,
-		APPLICATION_TITLE,
-		MB_ICONERROR | MB_OK );
-}
-
-BOOL RegisterHotKeysAndWarn( AWHK_REGISTRATION* reg, const AWHK_APP_CONFIG* cfg )
-{
-    ZeroMemory( reg, sizeof(*reg) );
-
-	RegisterHotKeys( cfg, reg );
-
-    if ( reg->ErrorCount > 0 )
-    {
-        ShowRegistrationFailures( reg );
-		return FALSE;
-    }
-
-	return TRUE;
-}
-
 void UnregisterHotkeys( AWHK_REGISTRATION* pReg )
 {
     LONG count = pReg->RegisteredCount;
@@ -609,7 +663,7 @@ int MessageLoop( AWHK_APP_STATE* appState, AWHK_APP_CONFIG* appCfg )
 			appState->Suspended = FALSE;
 
 			// Reload the settings
-			if (!LoadConfigurationAndBind(appState->ConfigFile, appCfg, &appState->Registration))
+			if (!LoadConfigurationAndBind(appState->ConfigFile, appCfg, &appState->Registration, TRUE))
 			{
 				return EXIT_BAD_CONFIG;
 			}
@@ -699,7 +753,7 @@ int CALLBACK WinMain(
 	InitConfiguration(&appCfg);
 
 	// Attempt to load the config
-	if (!LoadConfigurationAndBind(appState.ConfigFile, &appCfg, &appState.Registration))
+	if (!LoadConfigurationAndBind(appState.ConfigFile, &appCfg, &appState.Registration, TRUE))
 	{
 		Shutdown(&appState);
 		return EXIT_BAD_CONFIG;

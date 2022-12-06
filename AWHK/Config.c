@@ -191,7 +191,7 @@ PARSING_ERROR* ParsingError(PARSING_ERROR* pPrev, size_t lineNum, const wchar_t*
 	PARSING_ERROR* pNew = (PARSING_ERROR*)malloc(sizeof(PARSING_ERROR));
 	ZeroMemory(pNew, sizeof(*pNew));
 
-	pNew->LineNumber = lineNum;
+	pNew->LineNumber = (DWORD)lineNum;
 	pNew->pNext = pPrev;
 
 	va_list args;
@@ -415,7 +415,6 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, PARSING_ERROR
 	}
 
 	// Read file line-by-line
-	BOOL success = TRUE;
 	WCHAR line[1024] = { 0 };
 	PARSING_ERROR* pErrorTail = NULL;
 	for (size_t lineNum = 1; fgetws(line, _countof(line), f); ++lineNum)
@@ -453,7 +452,6 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, PARSING_ERROR
 	if (pErrorTail)
 	{
 		*ppErrors = ReverseParsingErrors(pErrorTail);
-		success = FALSE;
 	}
 
 #ifdef _DEBUG
@@ -462,7 +460,7 @@ BOOL LoadConfiguration(LPCWSTR pConfigFile, AWHK_APP_CONFIG* pCfg, PARSING_ERROR
 #endif
 
 	fclose(f);
-	return success;
+	return TRUE;
 }
 
 /*

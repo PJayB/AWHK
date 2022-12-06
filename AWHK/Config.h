@@ -35,7 +35,7 @@ typedef struct
 typedef struct PARSING_ERROR_
 {
 	WCHAR					ErrorText[1020];
-	size_t					LineNumber;
+	DWORD					LineNumber;
 	struct PARSING_ERROR_*	pNext;
 } PARSING_ERROR;
 
@@ -47,6 +47,9 @@ typedef struct
 #	include "ConfigDefaults.inl"
 #undef CONFIG_VALUE
 } AWHK_APP_CONFIG;
+
+LPCWSTR ModifierToString(DWORD mod);
+LPCWSTR KeyToString(DWORD key);
 
 void InitConfiguration(AWHK_APP_CONFIG* cfg);
 BOOL LoadConfiguration(LPCWSTR pPath, AWHK_APP_CONFIG* cfg, PARSING_ERROR** ppErrors);
