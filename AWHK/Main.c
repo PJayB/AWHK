@@ -135,10 +135,11 @@ BOOL AppAlreadyOpenCheck()
 
 BOOL ShowWebHelp()
 {
+	// todo: improve this
 	return (INT) ShellExecute(
 		NULL,
 		L"open",
-		L"http://gibbering.net/AWHK/",
+		L"index.html",
 		NULL,
 		NULL,
 		SW_SHOWNORMAL ) > 32;
@@ -354,7 +355,7 @@ PWSTR GetConfigFilePath()
 
 	// Get the user data directory
 	PWSTR userDataDir = NULL;
-	if (SUCCEEDED(SHGetKnownFolderPath(&FOLDERID_LocalAppDataLow, 0, NULL, &userDataDir)))
+	if (SUCCEEDED(SHGetKnownFolderPath(&FOLDERID_LocalAppData, 0, NULL, &userDataDir)))
 	{
 		size_t resultSize = wcslen(userDataDir) + wcslen(AWHK_CONFIG_FILE_NAME) + 2;
 		result = (PWSTR)HeapAlloc(GetProcessHeap(), 0, resultSize * sizeof(WCHAR));
@@ -380,8 +381,12 @@ BOOL PostReloadConfig(const AWHK_APP_STATE* pState)
 {
 	if (!pState->Suspended)
 	{
-		return PostThreadMessage(pState->dwMainThreadID, pState->MsgSuspend, 0, 0)
-			&& PostThreadMessage(pState->dwMainThreadID, pState->MsgResume, 0, 0);
+		if (MessageBox(NULL, L"Reload the configuration file?", APPLICATION_TITLE, MB_YESNO | MB_ICONQUESTION) == IDYES)
+		{
+			return PostThreadMessage(pState->dwMainThreadID, pState->MsgSuspend, 0, 0)
+				&& PostThreadMessage(pState->dwMainThreadID, pState->MsgResume, 0, 0);
+		}
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -438,6 +443,8 @@ BOOL HandleHotKey(
 		return ShowWebHelp();
 	else if (key.dwBits == cfg->EditConfigCombo.dwBits)
 		return PostEditConfigFile( state );
+	else if (key.dwBits == cfg->ReloadConfigCombo.dwBits)
+		return PostReloadConfig(state);
 	else if (key.dwBits == cfg->QuitCombo.dwBits)
 		return PostQuitPrompt();
 	else if (key.dwBits == cfg->MediaPlayPause.dwBits)
@@ -605,6 +612,7 @@ void RegisterExtraHotKeys(
 	AWHK_REGISTRATION* pKeyStatus )
 {
 	RegisterKeyComboAtIndex( &cfg->HelpCombo,         pKeyStatus );
+	RegisterKeyComboAtIndex( &cfg->ReloadConfigCombo, pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->EditConfigCombo,   pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->QuitCombo,		  pKeyStatus );
 	RegisterKeyComboAtIndex( &cfg->MediaPlayPause,    pKeyStatus );

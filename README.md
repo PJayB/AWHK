@@ -23,6 +23,7 @@ OOBE
 - Installer/uninstaller
 
 Window Handling
+- Opposite-edge resize
 - More consistency (doesn't work for some windows, e.g. Spotify)
 - Fix the issue with previously pinned (Win+R/L) windows reverting to their old size
 - Defer repaint to improve performance?

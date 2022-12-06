@@ -10,8 +10,10 @@
             Advanced Window HotKeys
         </h1>
         <p>
-            This program extends the functionality of the Windows 7 <b>[Win][Arrow 
-            Keys]</b> hotkeys, allowing you more control over your window layout.
+            This program extends the functionality of the Windows 7 <b>
+                [Win][Arrow
+                Keys]
+            </b> hotkeys, allowing you more control over your window layout.
         </p>
         <a id="install" />
         <h2>
@@ -23,10 +25,18 @@
         <p>
             <img class="download" src="cpp.png" title="Download" />Acquire the full source from <a href="http://github.com/PJayB/AWHK">GitHub</a>.
         </p>
-        <a id="basics" />
         <h2>
-            Basics
+            Using <em>AWHK</em>
         </h2>
+        <p>
+            <em>Note:</em> All keybindings in stated by document are configurable. You can change them in the <a href="#config">
+                Configuration File
+            </a>. The defaults are listed here for simplicity.
+        </p>
+        <a id="basics" />
+        <h3>
+            Basics
+        </h3>
         <div class="keys">
             <img src="alt.png" title="Alt" />
             <img src="arrows.png" title="Arrow Keys" />
@@ -35,20 +45,23 @@
             <img src="wasd.png" title="WASD" />
         </div>
         <p>
-            By default, <b>[Alt][Arrow Keys]</b> will expand the window in the 
+            By default, <b>[Alt][Arrow Keys]</b> will expand the window in the
             specified direction. By default, the window expands:
         </p>
         <ul>
             <li>until it hits the edge of the next window,</li>
-            <li>or by one eighth of your screen's width or one quarter of 
-                the screen's height.</li>
+            <li>
+                or by one eighth of your screen's width or one quarter of
+                the screen's height.
+            </li>
         </ul>
         <p>
             Using <b>[Alt][WASD]</b> will move the window in a similar way.
         </p>
         <p>
             You can change these settings in the <a href="#config">
-            Configuration Panel</a>. The window will never expand over monitor's
+                Configuration File
+            </a>. The window will never expand over monitor's
             border. To move a window over the edge of on monitor to another, use
             <b>[Win][Arrow Keys]</b>.
         </p>
@@ -64,7 +77,7 @@
                 </tr>
                 <tr>
                     <td>
-                        A window will expand until it hits the edge of the 
+                        A window will expand until it hits the edge of the
                         nearest window, or...
                     </td>
                     <td>
@@ -74,9 +87,9 @@
             </table>
         </div>
         <a id="fine" />
-        <h2>
+        <h3>
             Finer Control
-        </h2>
+        </h3>
         <div class="keys">
             <img src="shift.png" title="Shift" />
             <img src="alt.png" title="Alt" />
@@ -87,16 +100,16 @@
             <b>[Shift][Alt][Arrow Keys]</b>.
         </p>
         <a id="adjacency" />
-        <h2>
+        <h3>
             Keeping Other Windows In-Line
-        </h2>
+        </h3>
         <div class="keys">
             <img src="ctrl.png" title="Ctrl" />
             <img src="alt.png" title="Alt" />
             <img src="arrows.png" title="Arrow Keys" />
         </div>
         <p>
-            Take the case where you have a nice setup going, but one half of the 
+            Take the case where you have a nice setup going, but one half of the
             monitor isn't quite wide enough. Using <b>[Alt][Arrow Keys]</b> on the blue
             window below will cause the window to overlap the brown, and the
             pink would no longer be aligned.
@@ -124,127 +137,170 @@
         </div>
         <a id="config" />
         <h2>
-            The Configuration Panel
+            The Configuration File
         </h2>
         <div class="keys">
             <img src="alt.png" title="Alt" />
             <img src="f2.png" title="F2" />
         </div>
+        <div class="keys">
+            <img src="shift.png" title="Shift" />
+            <img src="alt.png" title="Alt" />
+            <img src="f2.png" title="F2" />
+        </div>
         <p>
-            The configuration panel allows you to adjust some of the keys and behaviour of <em>AWHK</em>.
-            The window is resizable so you can also use this to test your configuration once you hit 
-            <b>Apply</b>. 
+            The configuration file allows you to adjust some of the keys and behaviour of <em>AWHK</em>.
         </p>
         <p>
-            Future versions will apply settings as you change them for instant preview, and will allow
-            more advanced configuration such as rebinding all keys. 
+            It is a plain text file consisting of a set of key-value pairs. It doesn't exist by default.
+            You can find it or create it at the following location on disk:
+        </p>
+        <p class="code">
+            %LOCALAPPDATA%\AWHK.ini
+        </p>
+        <p>
+            If you create or make changes to this file, you can reload the configuration with the <em>Alt+F2</em> binding (by default).
+            You'll see this prompt:
+        </p>
+        <p>
+            <img src="reload.png" alt="Reload the configuration file?" />
+        </p>
+        <p>
+            AWHK can also create this file for you, and/or open it in your default text editor, using the <em>Shift+Alt+F2</em> binding (by default).
+        </p>
+        <p>
+            <img src="edit.png" alt="The configuration file, loaded with Shift+Alt+F2" />
         </p>
         <table id="configtable">
-            <tr class="r0">
+            <tr class="rh">
+                <td>Key Name</td>
+                <td>Default Value</td>
+                <td>Purpose</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">LaunchOnStartUp</td>
+                <td class="key">false</td>
                 <td>
-                    <h3>Enable Snapping to Other Windows</h3>
-                    <p>
-                        Unticking this will mean that the foreground window will only ever align to grid
-                        edges and not snap to other windows. This may be useful for users who generally
-                        have a lot of windows open.
-                    </p>
+                    Configures <em>AWHK</em> to run on Windows start-up. This only takes effect if the configuration file is parsed,
+                    either on <em>AWHK</em> start-up or after you reload the configuration file.
                 </td>
             </tr>
             <tr class="r1">
-                <td>
-                    <h3>Run When Windows Starts</h3>
-                    <p>
-                        Ticking this will run <em>AWHK</em> from it's current location whenyou log in to
-                        Windows.
-                    </p>
-                    <p class="warning">
-                        NOTE: If you ever move <em>AWHK</em>, you should untick, <b>Apply</b>, and
-                        re-tick this option to reset the Registry option.
-                    </p>
-                </td>
-            </tr>
-            <tr class="r0">
-                <td>
-                    <h3>Base Key Modifier</h3>
-                    <p>
-                        This option is currently not modifiable and defaults to <b>[Alt]</b>. This
-                        combination is the basis of all the actions in <em>AWHK</em>.
-                    </p>
-                </td>
+                <td class="key">AllowSnapToOthers</td>
+                <td class="key">false</td>
+                <td>Snaps window movements and resizes to the edges of other windows. (Caution: this can be annoying if you have many overlapping
+                    or obscured windows, so it is disabled by default.)</td>
             </tr>
             <tr class="r1">
-                <td>
-                    <h3>Fine-Snap Modifier</h3>
-                    <p>
-                        Holding this key, as well as the <b>Base Key Modifier</b>, will use the 
-                        <b>Fine-Snap Grid Settings</b> instead. This will give you <a href="#fine">
-                        finer resolution when grid-snapping</a>.
-                    </p>
-                </td>
-            </tr>
-            <tr class="r0">
-                <td>
-                    <h3>Adjacent Window Modifier</h3>
-                    <p>
-                        Holding this key will activate <a href="#adjacency">adjacent window modification</a>.
-                    </p>
-                </td>
+                <td class="key">MaxEdgeSearchSize</td>
+                <td class="key">128</td>
+                <td>The number of window edges to consider when searching for an edge to snap to. You generally should never need to change this,
+                    but if you have hundreds of windows, you might want to increase it.</td>
             </tr>
             <tr class="r1">
-                <td>
-                    <h3>Grid Snap Configuration</h3>
-                    <p>
-                        Here you can adjust how many grid lines you would like for each screen axis
-                        for both regular and fine-resolution grids.
-                    </p>
-                </td>
-            </tr>
-            <tr class="r0">
-                <td>
-                    <h3>Quit</h3>
-                    <p>
-                        This quits <em>AWHK</em> and the control panel.
-                    </p>
-                </td>
+                <td class="key">GridX</td>
+                <td class="key">8</td>
+                <td>Partitions the screen into N segments to snap to in the horizontal axis.</td>
             </tr>
             <tr class="r1">
-                <td>
-                    <h3>Apply, OK and Cancel</h3>
-                    <p>
-                        <b>Cancel</b> closes the configuration panel without saving any changes.<br />
-                        <b>Apply</b> applies changes immediately, without closing the configuration panel.<br />
-                        <b>OK</b> applies changes and closes the configuration panel.
-                    </p>
-                </td>
+                <td class="key">GridY</td>
+                <td class="key">4</td>
+                <td>Partitions the screen into N segments to snap to in the vertical axis.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">FineX</td>
+                <td class="key">32</td>
+                <td>Partitions the screen into N segments to snap to in the horizontal axis when using the <em>Fine</em> modifier.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">FineY</td>
+                <td class="key">16</td>
+                <td>Partitions the screen into N segments to snap to in the vertical axis when using the <em>Fine</em> modifier.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">HelpCombo</td>
+                <td class="key">ALT</td>
+                <td>Launch this help.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">ReloadConfigCombo</td>
+                <td class="key">ALT+F2</td>
+                <td>Prompt to reload the configuration file.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">EditConfigCombo</td>
+                <td class="key">SHIFT+ALT+F2</td>
+                <td>Launch the configuration file in your default text editor. If it doesn't exist, it is created.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">QuitCombo</td>
+                <td class="key">SHIFT+ALT+F4</td>
+                <td>Prompts to quit <em>AWHK</em>.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MoveKeyMod</td>
+                <td class="key">ALT</td>
+                <td>Hold this to enable the movement keys.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">NextKeyMod</td>
+                <td class="key">CONTROL</td>
+                <td>Hold this to also push or pull other windows touching the current window edge.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">FineKeyMod</td>
+                <td class="key">SHIFT</td>
+                <td>Hold this to snap to the finer grid.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">ResizeKeys</td>
+                <td class="key">LEFT,RIGHT,UP,DOWN</td>
+                <td>Use these with the modifiers to resize the current window.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MoveKeys</td>
+                <td class="key">A,D,W,S</td>
+                <td>Use these with the modifiers to move the current window.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaPrev</td>
+                <td class="key">SHIFT+ALT+F11</td>
+                <td>Skip back to the previous media track.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaNext</td>
+                <td class="key">SHIFT+ALT+F12</td>
+                <td>Skip to the next media track.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaStop</td>
+                <td class="key"><em>not bound</em></td>
+                <td></td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaPlayPause</td>
+                <td class="key">ALT+F9</td>
+                <td>Play or pause the current media track.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaVolumeMute</td>
+                <td class="key">ALT+F10</td>
+                <td>Mute the volume.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaVolumeDown</td>
+                <td class="key">ALT+F11</td>
+                <td>Reduce the volume.</td>
+            </tr>
+            <tr class="r1">
+                <td class="key">MediaVolumeUp</td>
+                <td class="key">ALT+F12</td>
+                <td>Increase the volume.</td>
             </tr>
         </table>
-        <h2>
-            Future
-        </h2>
-        <p>
-            Future versions of <em>AWHK</em> may include:
-        </p>
-        <ul>
-            <li>An install &amp; uninstall feature.</li>
-            <li>The ability to remap all keys.</li>
-        </ul>
-        <p>
-            If you urgently wish to see these or any other features, please email 
-            <a href="mailto:awhktool@pjblewis.com">awhktool@pjblewis.com</a>.
-        </p>
-        <h2>
-            Uninstallation
-        </h2>
-        <p>
-            Currently only manual uninstallation is supported. To uninstall:
-        </p>
-        <ul>
-            <li>Delete the files from your disk,</li>
-            <li>Delete the HKCU\Software\AWHK registry key.</li>
-        </ul>
         <p>
             <br />
-            Copyright &copy; 2013 Peter J. B. Lewis
+            Copyright &copy; 2022 Peter J. B. Lewis
         </p>
     </body>
 </html>
