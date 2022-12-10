@@ -202,31 +202,19 @@ PARSING_ERROR* ParsingError(PARSING_ERROR* pPrev, size_t lineNum, const wchar_t*
 	return pNew;
 }
 
-PARSING_ERROR* ReverseParsingError(PARSING_ERROR* pNode, PARSING_ERROR** ppHead)
-{
-	if (pNode->pNext == NULL)
-	{
-		// I am the tail
-		assert(*ppHead == NULL);
-		*ppHead = pNode;
-		return pNode;
-	}
-
-	PARSING_ERROR* pTail = ReverseParsingError(pNode->pNext, ppHead);
-
-	assert(pTail->pNext == NULL);
-	pTail->pNext = pNode;
-	pNode->pNext = NULL;
-	return pNode;
-}
-
 PARSING_ERROR* ReverseParsingErrors(PARSING_ERROR* pNode)
 {
 	if (pNode == NULL || pNode->pNext == NULL)
 		return pNode;
 
 	PARSING_ERROR* pNewHead = NULL;
-	ReverseParsingError(pNode, &pNewHead);
+	while (pNode)
+	{
+		PARSING_ERROR* pNext = pNode->pNext;
+		pNode->pNext = pNewHead;
+		pNewHead = pNode;
+		pNode = pNext;
+	}
 
 	return pNewHead;
 }
