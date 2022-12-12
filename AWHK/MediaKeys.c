@@ -28,18 +28,16 @@ SOFTWARE.
 
 BOOL IssueHotkey( DWORD vkey )
 {
-    INPUT input;
-    ZeroMemory( &input, sizeof(input) );
-    input.type = INPUT_KEYBOARD;
-    input.ki.wVk = (WORD) vkey;
-    
-    // Key down
-    if ( SendInput( 1, &input, sizeof(input) ) != 1 )
-        return FALSE;
+    INPUT inputs[2];
+    ZeroMemory( &inputs, sizeof(inputs) );
 
-    // Key up
-    input.ki.dwFlags |= KEYEVENTF_KEYUP;
-    if ( SendInput( 1, &input, sizeof(input) ) != 1 )
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = (WORD) vkey;
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = (WORD) vkey;
+    inputs[1].ki.dwFlags |= KEYEVENTF_KEYUP;
+
+    if ( SendInput( _countof(inputs), inputs, sizeof(inputs[0]) ) != _countof(inputs) )
         return FALSE;
 
     return TRUE;
