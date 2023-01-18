@@ -415,9 +415,9 @@ void ConfigureWindowSnapParams(
 	else
 		params->Flags |= WINDOW_SNAP_TO_GRID;
 
-	if ( ( modifiers & cfg->NextKeyMod ) == cfg->NextKeyMod )
+	if ( cfg->NextKeyMod && ( modifiers & cfg->NextKeyMod ) == cfg->NextKeyMod )
 		params->Flags |= WINDOW_MODIFY_ADJACENT;
-	if ( ( modifiers & cfg->FineKeyMod ) == cfg->FineKeyMod )
+	if (cfg->FineKeyMod && ( modifiers & cfg->FineKeyMod ) == cfg->FineKeyMod )
 		params->Flags |= WINDOW_SNAP_FINE_GRID;
 
 	params->MaxEdgeSearchSize = cfg->MaxEdgeSearchSize * 2;
@@ -598,7 +598,7 @@ void RegisterArrowKeys(
 		RegisterModifierAndKeyAtIndex( dwSoloKeyMod, pArrowKeys->DownKey, pKeyStatus );
 	}
 
-	if ( cfg->FineKeyMod | cfg->NextKeyMod )
+	if ( cfg->FineKeyMod && cfg->NextKeyMod )
 	{
 		RegisterModifierAndKeyAtIndex( dwAllKeyMods, pArrowKeys->LeftKey, pKeyStatus );
 		RegisterModifierAndKeyAtIndex( dwAllKeyMods, pArrowKeys->RightKey, pKeyStatus );

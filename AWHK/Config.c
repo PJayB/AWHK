@@ -279,17 +279,34 @@ PARSING_ERROR* ReadConfig_DWORD(PARSING_ERROR* pLastError, size_t lineNum, LPCWS
 	return pLastError;
 }
 
-PARSING_ERROR* ReadConfig_MODKEY(PARSING_ERROR* pLastError, size_t lineNum, LPCWSTR pValue, MODKEY* pResult)
+PARSING_ERROR* ReadConfig_MODKEYS(PARSING_ERROR* pLastError, size_t lineNum, LPWSTR pValue, MODKEYS* pResult)
 {
-	USHORT mod = StringToModifier(pValue);
-	if (mod == 0)
+	LPCWSTR tokens[3];
+	size_t numTokens = SplitString(pValue, L'+', tokens, _countof(tokens));
+	if (numTokens > 3)
 	{
 		return ParsingError(pLastError, lineNum,
-			L"Unknown modifier: %s",
-			pValue);
+			L"Can't have more than 3 modifiers for a modifier combo");
 	}
 
-	*pResult = mod;
+	USHORT modifiers = 0;
+
+	for (size_t i = 0; i < numTokens; ++i)
+	{
+		USHORT k = StringToModifier(tokens[i]);
+		if (k == 0)
+		{
+			return ParsingError(pLastError, lineNum,
+				L"Unknown modifier: '%s'",
+				tokens[i]);
+		}
+		else
+		{
+			modifiers |= k;
+		}
+	}
+
+	*pResult = modifiers;
 
 	return pLastError;
 }
@@ -544,11 +561,11 @@ void WriteConfig_DWORD(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR p
 	fwprintf_s(file, L"%s=%u\n", pKey, *value);
 }
 
-void WriteConfig_MODKEY(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const DWORD* value)
+void WriteConfig_MODKEYS(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const DWORD* value)
 {
-	UNUSED(pScratch);
-	UNUSED(scratchSize);
-	fwprintf_s(file, L"%s=%s\n", pKey, ModifierToString(*value));
+	pScratch[0] = 0;
+	AppendModifiersToString(*value, pScratch, scratchSize, L"+");
+	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
 }
 
 void WriteConfig_AWHK_KEY_COMBO(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_KEY_COMBO* value)
@@ -599,6 +616,6 @@ BOOL SaveConfiguration(LPCWSTR pConfigFile, const AWHK_APP_CONFIG* pCfg)
 
 	StreamConfiguration(f, pCfg);
 
-	fclose(f);
+	if (f) fclose(f);
 	return TRUE;
 }

@@ -39,7 +39,7 @@ typedef struct PARSING_ERROR_
 	struct PARSING_ERROR_*	pNext;
 } PARSING_ERROR;
 
-typedef DWORD MODKEY;
+typedef DWORD MODKEYS;
 
 typedef struct
 {
