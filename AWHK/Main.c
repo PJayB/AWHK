@@ -633,8 +633,14 @@ void RegisterHotKeys(
 	if ( !cfg->MoveKeyMod )
 		return;
 
-	RegisterArrowKeys( cfg, &cfg->ResizeKeys, pKeyStatus );
-	RegisterArrowKeys( cfg, &cfg->MoveKeys, pKeyStatus );
+	if (CursorKeysAreValid(&cfg->ResizeKeys))
+	{
+		RegisterArrowKeys(cfg, &cfg->ResizeKeys, pKeyStatus);
+	}
+	if (CursorKeysAreValid(&cfg->MoveKeys))
+	{
+		RegisterArrowKeys(cfg, &cfg->MoveKeys, pKeyStatus);
+	}
 }
 
 void UnregisterHotkeys( AWHK_REGISTRATION* pReg )

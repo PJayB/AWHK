@@ -48,6 +48,8 @@ typedef struct
 #undef CONFIG_VALUE
 } AWHK_APP_CONFIG;
 
+BOOL CursorKeysAreValid(const AWHK_CURSOR_KEYS* pKeys);
+
 LPCWSTR ModifierToString(DWORD mod);
 LPCWSTR KeyToString(DWORD key);
 

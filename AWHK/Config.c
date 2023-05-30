@@ -51,6 +51,11 @@ AWHK_CURSOR_KEYS CreateCursorKeys(DWORD left, DWORD right, DWORD up, DWORD down)
 	return k;
 }
 
+BOOL CursorKeysAreValid(const AWHK_CURSOR_KEYS* pKeys)
+{
+	return pKeys->DownKey != 0 || pKeys->LeftKey != 0 || pKeys->RightKey != 0 || pKeys->UpKey != 0;
+}
+
 void InitConfiguration(AWHK_APP_CONFIG* cfg)
 {
 	ZeroMemory(cfg, sizeof(*cfg));
@@ -365,6 +370,13 @@ PARSING_ERROR* ReadConfig_AWHK_CURSOR_KEYS(PARSING_ERROR* pLastError, size_t lin
 {
 	LPCWSTR tokens[4];
 	size_t numTokens = SplitString(pValue, L',', tokens, _countof(tokens));
+	if (numTokens == 0)
+	{
+		// User doesn't want this
+		memset(pResult, 0, sizeof(*pResult));
+		return pLastError;
+	}
+
 	if (numTokens != _countof(tokens))
 	{
 		return ParsingError(pLastError, lineNum,
@@ -587,10 +599,13 @@ void WriteConfig_AWHK_KEY_COMBO(FILE* file, PTSTR pScratch, size_t scratchSize, 
 void WriteConfig_AWHK_CURSOR_KEYS(FILE* file, PTSTR pScratch, size_t scratchSize, LPCTSTR pKey, const AWHK_CURSOR_KEYS* value)
 {
 	pScratch[0] = 0;
-	AppendKeyToString(value->LeftKey, pScratch, scratchSize, L",");
-	AppendKeyToString(value->RightKey, pScratch, scratchSize, L",");
-	AppendKeyToString(value->UpKey, pScratch, scratchSize, L",");
-	AppendKeyToString(value->DownKey, pScratch, scratchSize, L",");
+	if (CursorKeysAreValid(value))
+	{
+		AppendKeyToString(value->LeftKey, pScratch, scratchSize, L",");
+		AppendKeyToString(value->RightKey, pScratch, scratchSize, L",");
+		AppendKeyToString(value->UpKey, pScratch, scratchSize, L",");
+		AppendKeyToString(value->DownKey, pScratch, scratchSize, L",");
+	}
 	fwprintf_s(file, L"%s=%s\n", pKey, pScratch);
 }
 
